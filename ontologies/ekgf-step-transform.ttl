@@ -1,0 +1,110 @@
+@prefix : <https://ekgf.org/ontology/step-transform/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@base <https://ekgf.org/ontology/step-transform/> .
+
+<https://ekgf.org/ontology/step-transform/> rdf:type owl:Ontology ;
+                                             owl:imports <https://ekgf.org/ontology/concept/> ;
+                                             rdfs:label "The EKG DataOps Pipeline Transform Step Ontology"@en .
+
+#################################################################
+#    Annotation properties
+#################################################################
+
+###  http://purl.org/dc/elements/1.1/creator
+<http://purl.org/dc/elements/1.1/creator> rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.org/dc/elements/1.1/date
+<http://purl.org/dc/elements/1.1/date> rdf:type owl:AnnotationProperty .
+
+
+#################################################################
+#    Object Properties
+#################################################################
+
+###  https://ekgf.org/ontology/step-transform/creates
+:creates rdf:type owl:ObjectProperty ;
+         rdfs:domain :Rule ;
+         rdfs:range :CreationInfo ;
+         <http://purl.org/dc/elements/1.1/creator> <http://orcid.org/0000-0003-2309-5068> ;
+         <http://purl.org/dc/elements/1.1/date> "2020-04-08T07:01:36Z"^^xsd:dateTime ;
+         rdfs:comment "A rule can create new triples in the target graph, \"creates\" points to a blank node (usually) that has parts of a reified triple (rdf:Statement) showing what will be created by this rule."@en .
+
+
+###  https://ekgf.org/ontology/step-transform/deletes
+:deletes rdf:type owl:ObjectProperty ;
+         <http://purl.org/dc/elements/1.1/creator> <http://orcid.org/0000-0003-2309-5068> ;
+         <http://purl.org/dc/elements/1.1/date> "2020-04-08T07:17:55Z"^^xsd:dateTime ;
+         rdfs:comment "A rule can delete old triples in the source graph (the \"raw\" data graph usually). \"deletes\" points to a blank node (usually) that has parts of a reified triple (rdf:Statement) showing what will be deleted by this rule."@en .
+
+
+###  https://ekgf.org/ontology/step-transform/supportedByTransformRule
+:supportedByTransformRule rdf:type owl:ObjectProperty ;
+                          owl:inverseOf :supportsConcept ;
+                          rdfs:domain <https://ekgf.org/ontology/concept/Concept> ;
+                          rdfs:range :Rule ;
+                          <http://purl.org/dc/elements/1.1/creator> <http://orcid.org/0000-0003-2309-5068> ;
+                          <http://purl.org/dc/elements/1.1/date> "2020-07-02T13:11:03Z"^^xsd:dateTime ;
+                          rdfs:label "Supported by transform rule"@en .
+
+
+###  https://ekgf.org/ontology/step-transform/supportsConcept
+:supportsConcept rdf:type owl:ObjectProperty ;
+                 rdfs:domain :Rule ;
+                 rdfs:range <https://ekgf.org/ontology/concept/Concept> ;
+                 <http://purl.org/dc/elements/1.1/creator> <http://orcid.org/0000-0003-2309-5068> ;
+                 <http://purl.org/dc/elements/1.1/date> "2020-07-02T13:10:04Z"^^xsd:dateTime ;
+                 rdfs:comment "This Transform Rule supports the given Concept in the sense that it either uses or creates the data represented by the Concept"@en ;
+                 rdfs:label "Supports Concept"@en .
+
+
+#################################################################
+#    Data properties
+#################################################################
+
+###  https://ekgf.org/ontology/step-transform/createsProvenance
+:createsProvenance rdf:type owl:DatatypeProperty ;
+                   rdfs:domain :Rule ;
+                   rdfs:range xsd:boolean ;
+                   <http://purl.org/dc/elements/1.1/creator> <http://orcid.org/0000-0003-2309-5068> ;
+                   <http://purl.org/dc/elements/1.1/date> "2020-04-07T22:36:52Z"^^xsd:dateTime .
+
+
+###  https://ekgf.org/ontology/step-transform/sparqlRuleFileName
+:sparqlRuleFileName rdf:type owl:DatatypeProperty ,
+                             owl:FunctionalProperty ;
+                    rdfs:domain :SPARQLRule ;
+                    rdfs:range xsd:string ;
+                    <http://purl.org/dc/elements/1.1/creator> <http://orcid.org/0000-0003-2309-5068> ;
+                    <http://purl.org/dc/elements/1.1/date> "2020-04-07T22:36:25Z"^^xsd:dateTime .
+
+
+#################################################################
+#    Classes
+#################################################################
+
+###  https://ekgf.org/ontology/step-transform/CreationInfo
+:CreationInfo rdf:type owl:Class ;
+              <http://purl.org/dc/elements/1.1/creator> <http://orcid.org/0000-0003-2309-5068> ;
+              <http://purl.org/dc/elements/1.1/date> "2020-04-08T07:05:07Z"^^xsd:dateTime .
+
+
+###  https://ekgf.org/ontology/step-transform/Rule
+:Rule rdf:type owl:Class ;
+      <http://purl.org/dc/elements/1.1/creator> <http://orcid.org/0000-0003-2309-5068> ;
+      <http://purl.org/dc/elements/1.1/date> "2020-04-07T22:35:33Z"^^xsd:dateTime .
+
+
+###  https://ekgf.org/ontology/step-transform/SPARQLRule
+:SPARQLRule rdf:type owl:Class ;
+            rdfs:subClassOf :Rule ;
+            <http://purl.org/dc/elements/1.1/creator> <http://orcid.org/0000-0003-2309-5068> ;
+            <http://purl.org/dc/elements/1.1/date> "2020-04-07T22:35:38Z"^^xsd:dateTime ;
+            rdfs:label "SPARQL Rule"@en .
+
+
+###  Generated by the OWL API (version 4.5.9.2019-02-01T07:24:44Z) https://github.com/owlcs/owlapi

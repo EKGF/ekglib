@@ -1,0 +1,24 @@
+PREFIX kggraph: <https://kg.your-company.kom/graph/>
+PREFIX afn: <http://jena.hpl.hp.com/ARQ/function#>
+#
+# Copy all transform rules from the raw datasets to the target graph,
+# any graph name that starts with the prefix "metadata-transform-" is
+# merged into the single metadata graph
+#
+
+DELETE {
+    GRAPH ?transformRulesRawGraph {
+        ?s ?p ?o .
+    }
+}
+INSERT {
+    GRAPH kggraph:metadata {
+        ?s ?p ?o .
+    }
+}
+WHERE {
+    GRAPH ?transformRulesRawGraph {
+        ?s ?p ?o .
+    }
+    FILTER(CONTAINS(afn:localname(?transformRulesRawGraph), "metadata-transform-"))
+}

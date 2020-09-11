@@ -1,0 +1,20 @@
+PREFIX kggraph: <https://kg.your-company.kom/graph/>
+#
+# This is sort of a conditional DROP GRAPH statement:
+# only delete the target graph if the raw graph exists.
+#
+DELETE {
+  GRAPH kggraph:ontologies {
+    ?s ?p ?o 
+  }
+}
+WHERE {
+  GRAPH kggraph:ontologies {
+    ?s ?p ?o
+  }
+  FILTER EXISTS {
+    GRAPH kggraph:ontologies-raw {
+      ?rawS ?rawP ?rawO 
+    }
+  }
+}

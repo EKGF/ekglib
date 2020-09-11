@@ -1,0 +1,64 @@
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: Build & Test
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+#       python_version: [3.8, 3.9-dev] # The 3.9.0-rc1 version does not compile well with pandas binary compile
+        python_version: [3.8]
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python ${{ matrix.python_version }}
+        uses: actions/setup-python@v2.1.2
+        if: "!endsWith(matrix.python_version, '-dev')"
+        with:
+          python-version: ${{ matrix.python_version }}
+      - name: Set up Python ${{ matrix.python_version }}
+        uses: deadsnakes/action@v1.0.0
+        if: endsWith(matrix.python_version, '-dev')
+        with:
+          python-version: ${{ matrix.python_version }}
+      - name: Display Python version
+        run: python -c "import sys; print(sys.version)"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install setuptools wheel flake8 pytest pytest-cov pytest-html
+          python -m pip install -r requirements.txt
+          python -m pip wheel -r requirements.txt
+      - name: Lint with flake8
+        run: |
+          # stop the build if there are Python syntax errors or undefined names
+          python -m flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+          python -m flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+      - name: Test with pytest
+        run: |
+          python -m pytest tests/ -rA \
+            --doctest-modules \
+            --cov-report=html \
+            --html=test-results-${{ matrix.python_version }}.html \
+            --self-contained-html \
+            --maxfail=2 \
+            --showlocals \
+            --tb=short
+      - name: Upload pytest test results
+        uses: actions/upload-artifact@v1
+        with:
+          name: test-results-${{ matrix.python_version }}
+          path: test-results-${{ matrix.python_version }}.html
+        # Use always() to always run this step to publish test results when there are test failures
+        if: ${{ always() }}

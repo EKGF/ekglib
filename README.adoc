@@ -1,0 +1,68 @@
+= ekglib
+:icons: font
+:description: A Python Library for various tasks in an EKG DataOps operation.
+ifdef::env-github,env-browser[:outfilesuffix: .adoc]
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+WARNING: This is a pre-alpha project. Everything in this repo is subject to heavy change.
+
+image:https://github.com/EKGF/ekglib/workflows/Build%20&%20Test/badge.svg[Build & Test]
+
+View the Project on Github https://github.com/EKGF/ekglib[here].
+
+== Metadata Parsers
+
+- link:ekglib/concept_parser/[Concept Parser]
+- link:ekglib/persona_parser/[Persona Parser]
+- link:ekglib/transform_rule_parser/[Transform Rule Parser]
+- link:ekglib/transform_rules_capture/[Transform Rules Capture]
+- link:ekglib/transform_rules_execute/[Transform Rules Executor]
+- link:ekglib/use_case_parser/[Use Case Parser]
+- link:ekglib/user_story_parser/[User Story Parser]
+
+== Capture Steps
+
+- link:ekglib/xlsx_parser/[Xlsx Parser]
+- link:ekglib/ldap_parser/[LDAP Parser]
+
+== Installation
+
+[source]
+----
+pip3 install -r requirements.txt
+----
+
+python3 was not linked, so had to:
+
+[source]
+----
+brew link --overwrite python
+----
+
+== Tests
+To run the tests, run:
+
+[source]
+----
+./run-tests.sh
+----
+
+Tun run a single test, from root run:
+
+[source]
+----
+./run-tests.sh <name of test>
+----
+
+== Packaging
+
+[source]
+----
+pip3 wheel -r requirements.txt
+----

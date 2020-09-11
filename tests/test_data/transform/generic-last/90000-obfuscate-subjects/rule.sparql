@@ -1,0 +1,47 @@
+#
+# Obfuscate all subject IRIs in all graphs except the *-raw graphs
+#
+PREFIX afn: <http://jena.hpl.hp.com/ARQ/function#>
+PREFIX kgiri: <https://kg.your-company.kom/id/>
+
+DELETE {
+     GRAPH ?g {
+         ?oldKgIRI ?p ?o
+     }
+ }
+INSERT {
+    GRAPH ?g {
+        ?newKgIRI ?p ?o .
+    }
+}
+WHERE {
+    #
+    # TODO: filter out the *-raw datasets
+    #
+    GRAPH ?g {
+        ?oldKgIRI ?p ?o .
+
+        BIND(afn:namespace(?oldKgIRI) AS ?namespace)
+        FILTER(IRI(?namespace) = IRI(kgiri:))
+
+        BIND(afn:localname(?oldKgIRI) AS ?localName)
+        BIND(STRBEFORE(?localName, ':') AS ?hashMethod)
+
+        FILTER NOT EXISTS {
+            VALUES ?hashMethod {
+                "sha256"
+                "uuid"
+            }
+        }
+
+        BIND(IRI(CONCAT(?namespace, 'sha256:', SHA256(?localName))) AS ?newKgIRI)
+    }
+
+    #
+    # Skip all the raw data graphs, we want to keep reading those IRIs and these
+    # raw graphs are not loaded into the EKG anyway.
+    # It also has the added benefit that we decouple any possible links between
+    # raw graphs and normal data graphs.
+    #
+    FILTER(!STRENDS(afn:localname(?g), "-raw"))
+}

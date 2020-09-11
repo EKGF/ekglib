@@ -1,0 +1,11 @@
+@base              <https://kg.your-company.kom/id/> .
+@prefix rdf:       <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:      <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix transform: <https://ekgf.org/ontology/step-transform/> .
+
+<rule-00002-copy-all-personas>
+    a                            transform:SPARQLRule ;
+    rdfs:label                   "Copy all personas from the raw dataset to the target graph" ;
+    transform:sparqlRuleFileName "rule.sparql" ;
+    transform:createsProvenance  false ;
+.

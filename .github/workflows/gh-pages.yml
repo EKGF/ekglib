@@ -1,0 +1,78 @@
+name: Publish Docs
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  docs:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      - name: Configure git
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+        shell: bash
+
+      - name: Asciidoctor Setup
+        run: |
+          sudo apt-get install -y asciidoctor
+        shell: bash
+
+      # Avoids keeping the commit history for the gh-pages branch,
+      # so that such a branch keeps only the last commit.
+      # But this slows down the GitHub Pages website build process.
+      - name: Checking out the gh-pages branch without keeping its history
+        run: |
+          set -x
+          git branch -D gh-pages 1>/dev/null 2>/dev/null || true
+          echo X
+          git rev-parse --short HEAD > /tmp/commit-hash.txt
+          cat /tmp/commit-hash.txt
+          git checkout --orphan gh-pages master 1>/dev/null
+        shell: bash
+
+      - name: Converting AsciiDoc files to HTML
+        run: |
+          find . -name "*.adoc" | xargs asciidoctor -b html --attribute=nofooter
+          for FILE in `find . -name "README.html"`; do
+            mv "$FILE" "`dirname $FILE`/index.html";
+          done
+          for FILE in `find . -name "*.html"`; do
+            git add -f "$FILE";
+          done
+          find . -name "*.adoc" | xargs git rm -f --cached
+        shell: bash
+
+      - name: Remove irrelevant files from gh-pages branch
+        run: |
+          git rm --quiet -rf .github/ .idea/ .vscode/ .actrc .flake8 .tool-versions act.sh *.code-workspace *.iml
+          git rm --quiet -rf run-tests.sh requirements.txt
+          find . -name '*.py' -exec git rm --quiet --force {} \;
+        shell: bash
+
+      - name: Showing contents of gh-pages branch when running locally
+        if: ${{ contains(github.actor, '/act') }}
+        run: |
+          find . -path ./.git -prune -o -name '*' || true
+        shell: bash
+
+      - name: Commiting changes to gh-pages branch
+        if: ${{ ! contains(github.actor, '/act') }}
+        run: |
+          MSG="Build .adoc files for GitHub Pages from commit `cat /tmp/commit-hash.txt`"
+          git -c user.name="Github Action" -c user.email="github-actions@github.com" commit -m "$MSG" 1>/dev/null
+          set -x
+          git push -f --verbose --set-upstream origin gh-pages 1>/dev/null
+        shell: bash

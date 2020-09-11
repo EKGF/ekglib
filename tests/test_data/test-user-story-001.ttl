@@ -1,0 +1,49 @@
+@base              <https://kg.your-company.kom/id/> .
+@prefix story-svc: <https://ekgf.org/ontology/ekg-platform-story-service/> .
+@prefix owl:       <http://www.w3.org/2002/07/owl#> .
+@prefix persona:   <https://ekgf.org/ontology/persona/> .
+@prefix concept:   <https://ekgf.org/ontology/concept/> .
+@prefix prov:      <http://www.w3.org/ns/prov#> .
+@prefix rdf:       <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:      <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix use-case:  <https://ekgf.org/ontology/use-case/> .
+@prefix story:     <https://ekgf.org/ontology/user-story/> .
+@prefix xs:        <http://www.w3.org/2001/XMLSchema#> .
+
+<ekg-platform-story-service>
+    a story-svc:UserStoryService ;
+.
+
+<use-case-new-things>
+    a use-case:UseCase ;
+.
+
+<concept-prov-activity>
+    a concept:ClassConcept .
+
+<concept-thing-iri>
+    a concept:ClassConcept .
+
+<concept-session-id>
+    a concept:PropertyConcept .
+
+
+<user-story-00001-thing-new>
+    a                                 story:UserStory ;
+    story:key                         "new-thing" ;
+    rdfs:label                        "Create a new Thing" ;
+    story-svc:sparqlStatementFileName "test-user-story-001.sparql" ;
+    story-svc:shouldBeSuppliedBy      <ekg-platform-story-service> ;
+    use-case:usedIn                   <use-case-new-things> ;
+    story:hasPersona                  <persona-professional> ;
+    story:hasInput                    [ concept:hasConcept <concept-prov-activity> ;
+                                        story:randomIRI    true ; ] ;
+    story:hasInput                    [ concept:hasConcept <concept-thing-iri> ;
+                                        story:randomIRI    true ; ] ;
+    story:hasInput                    [ a                  story:MandatoryParameter ;
+                                        concept:hasConcept <concept-session-id> ; ] ;
+    story:hasOutput                   [ concept:hasConcept <concept-thing-iri> ; ] ;
+    story:hasOutput                   [ concept:hasConcept <concept-session-id> ; ] ;
+    story:hasOutput                   [ concept:hasConcept <concept-prov-activity> ; ] ;
+.
+

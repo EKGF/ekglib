@@ -1,0 +1,13 @@
+@base             <https://kg.your-company.kom/id/> .
+@prefix persona:  <https://ekgf.org/ontology/persona/> .
+@prefix rdf:      <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:     <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix use-case: <https://ekgf.org/ontology/use-case/> .
+@prefix story:    <https://ekgf.org/ontology/user-story/> .
+@prefix xsd:      <http://www.w3.org/2001/XMLSchema#> .
+
+<persona-professional>
+    a                            persona:Persona ;
+    rdfs:label                   "Professional" ;
+    use-case:isInvolvedInUseCase <use-case-address> ;
+.

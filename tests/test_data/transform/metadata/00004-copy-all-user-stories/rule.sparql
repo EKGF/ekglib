@@ -1,0 +1,21 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX kggraph: <https://kg.your-company.kom/graph/>
+PREFIX transform: <https://ekgf.org/ontology/step-transform/>
+
+DELETE {
+  GRAPH kggraph:metadata-user-stories-raw {
+    ?s ?p ?o .
+  }
+}
+INSERT {
+  GRAPH kggraph:metadata {
+    ?s ?p ?o .
+  }
+}
+WHERE {
+  GRAPH kggraph:metadata-user-stories-raw {
+    ?s ?p ?o .
+  }
+}

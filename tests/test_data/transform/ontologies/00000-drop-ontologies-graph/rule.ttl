@@ -1,0 +1,11 @@
+@base              <https://kg.your-company.kom/id/> .
+@prefix rdf:       <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:      <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix transform: <https://ekgf.org/ontology/step-transform/> .
+
+<rule-00000-drop-ontologies-graph>
+    a                            transform:SPARQLRule ;
+    rdfs:label                   "Drop the ontologies graph" ;
+    transform:sparqlRuleFileName "rule.sparql" ;
+    transform:createsProvenance  false ;
+.

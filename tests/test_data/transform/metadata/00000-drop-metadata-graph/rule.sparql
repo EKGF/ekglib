@@ -1,0 +1,37 @@
+PREFIX kggraph: <https://kg.your-company.kom/graph/>
+#
+# This is sort of a conditional DROP GRAPH statement:
+# only delete the target graph if the raw graph exists.
+#
+DELETE {
+  GRAPH kggraph:metadata {
+    ?s ?p ?o 
+  }
+}
+WHERE {
+    #
+    # After the loader did its work these are the 5 graphs that it loaded. 
+    # Delete the metadata graph if it exists because all subsequent transform rules
+    # are going to recreate that metadata graph from the graphs below.
+    #
+    FILTER EXISTS {
+        GRAPH kggraph:metadata-concepts-raw {
+            ?raw1S ?raw1P ?raw1O 
+        }
+        GRAPH kggraph:metadata-personas-raw {
+            ?raw2S ?raw2P ?raw2O 
+        }
+        GRAPH kggraph:metadata-transform-generic {
+            ?raw5S ?raw5P ?raw5O 
+        }
+        GRAPH kggraph:metadata-use-cases-raw {
+            ?ra3S ?raw3P ?raw3O 
+        }
+        GRAPH kggraph:metadata-user-stories-raw {
+            ?raw4S ?raw4P ?raw4O 
+        }
+  }  
+  GRAPH kggraph:metadata {
+    ?s ?p ?o
+  }
+}

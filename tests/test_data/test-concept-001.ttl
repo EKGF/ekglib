@@ -1,0 +1,29 @@
+@base              <https://kg.your-company.kom/id/> .
+@prefix rdf:       <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:      <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix use-case:  <https://ekgf.org/ontology/use-case/> .
+@prefix concept:   <https://ekgf.org/ontology/concept/> .
+@prefix story:     <https://ekgf.org/ontology/user-story/> .
+@prefix persona:   <https://ekgf.org/ontology/persona/> .
+@prefix story-svc: <https://ekgf.org/ontology/ekg-platform-story-service/> .
+@prefix prov:      <http://www.w3.org/ns/prov#> .
+@prefix xsd:       <http://www.w3.org/2001/XMLSchema#> .
+
+<concept-graph>
+    a            concept:PropertyConcept ;
+    rdfs:comment "Some Comment" ;
+    concept:key  "graph" ;
+    concept:type xsd:anyURI ;
+.
+
+<concept-dataset-code>
+    a            concept:PropertyConcept ;
+    concept:key  "dataset" ;
+    concept:type xsd:string ;
+.
+
+<concept-whatever>
+    a            concept:PropertyConcept ;
+    concept:key  "whatever" ;
+    concept:type xsd:string ;
+.

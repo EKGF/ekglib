@@ -7,9 +7,9 @@ import ldap3
 import rdflib
 import stringcase
 from botocore.exceptions import EndpointConnectionError
-from ldap3 import Entry, Connection, SchemaInfo
+from ldap3 import Entry, Connection, SchemaInfo, set_config_parameter
 from ldap3.core.exceptions import LDAPSocketOpenError, LDAPOperationResult, LDAPUnavailableCriticalExtensionResult, \
-    LDAPExtensionError
+    LDAPExtensionError, LDAPBindError, LDAPResponseTimeoutError, LDAPSocketReceiveError
 from ldap3.utils.log import set_library_log_activation_level, set_library_log_detail_level, EXTENDED
 from pyasn1.error import PyAsn1Error
 from rdflib import RDF, Literal, PROV, plugin, URIRef, RDFS, OWL
@@ -94,10 +94,13 @@ class LdapParser:
             set_library_log_activation_level(EXTENDED)
             set_library_log_detail_level(EXTENDED)
 
+        set_config_parameter('RESPONSE_WAITING_TIMEOUT', 10)
+        set_config_parameter('IGNORE_MALFORMED_SCHEMA', True)
+
         server = ldap3.Server(
             self.ldap_host,
             port=self.ldap_port,
-            connect_timeout=5,
+            connect_timeout=60,
             get_info=ldap3.ALL,
             use_ssl=False,
             tls=None,
@@ -112,10 +115,21 @@ class LdapParser:
             end = time.time()
             seconds = end - start
             log_item('Seconds', seconds)
+        except LDAPBindError:
+            log_error(f"Unable to bind using dn: {self.bind_dn} and the given password")
+            rc = 1
+        except LDAPResponseTimeoutError:
+            log_error(f"Server timed out")
+            rc = 2
         except LDAPSocketOpenError:
             log_error(f"Could not connect with {self.host_port}")
+            rc = 3
         except PyAsn1Error as e:
             log_error(f"Could not connect with {self.host_port}: {e}")
+            rc = 4
+        except LDAPSocketReceiveError as e:
+            log_error(f"LDAP Socket Receive Error: {e}")
+            rc = 5
 
         # activity_iri = self.prov_activity_start(xlsx_iri)
         # self.prov_activity_end(activity_iri)
@@ -144,7 +158,7 @@ class LdapParser:
             user=self.bind_dn,
             password=self.bind_auth,
             auto_bind=ldap3.AUTO_BIND_DEFAULT,
-            client_strategy=ldap3.ASYNC,
+            client_strategy=ldap3.SYNC,
             raise_exceptions=False,
             read_only=True,
             lazy=False,
@@ -249,11 +263,12 @@ class LdapParser:
             log_item(f'DN {class_of_entry}', self.dn_of_entry(entry))
             # log_dump('x', entry)
         else:
-            log_item('DN', self.dn_of_entry(entry))
+            if self.verbose:
+                log_item('DN', self.dn_of_entry(entry))
 
     def _process_search_get_entries(self, conn: Connection, base, scope):
-        # if self.verbose:
-        log_item(f"{scope}-search", base)
+        if self.verbose:
+            log_item(f"{scope}-search", base)
         paged_criticality = False
         if self.paged_size is not None:
             log_item("Paging enabled", True)
@@ -261,6 +276,8 @@ class LdapParser:
             paged_criticality = True
         else:
             log_item("Paging enabled", False)
+            paged_criticality = False
+
         conn.raise_exceptions = True  # Only if this is True the LDAPOperationResult exception can be thrown
         use_generator = True
         try:

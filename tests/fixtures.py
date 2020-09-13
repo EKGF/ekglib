@@ -77,6 +77,11 @@ def ldap_search_base(test_data_dir):
 
 
 @pytest.fixture
+def ldap_bind_auth(test_data_dir):
+    return value_for_test(test_data_dir, 'ldap-bind-auth')
+
+
+@pytest.fixture
 def ldap_bind_dn(test_data_dir):
     return value_for_test(test_data_dir, 'ldap-bind-dn')
 

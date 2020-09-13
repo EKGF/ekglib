@@ -119,12 +119,15 @@ def test_export_from_forumsys_dot_com(test_data_dir):
                 print(line, end='')
 
 
-def test_export_from_local_ldap_mock_server(ldap_search_base, ldap_bind_dn, local_ldap_port):
+def test_export_from_local_ldap_mock_server(kgiri_base, ldap_search_base, ldap_bind_dn, ldap_bind_auth, local_ldap_port):
     """This test should work if you have an LDAP mock server running at port 1389
     """
-    log_item('ldap_search_base', ldap_search_base)
+    log_item('KGIRI Base', kgiri_base)
+    log_item('Search Base', ldap_search_base)
+    log_item('Bind DN', ldap_bind_dn)
+    log_item('Bind Auth', ldap_bind_auth)
 
-    output_file_name = './test-ldap-5.nt'
+    output_file_name = './output/test-ldap-5.nt'
     with open(output_file_name, 'wb') as output_file:
         with mock.patch(
                 'argparse.ArgumentParser.parse_args',
@@ -134,11 +137,11 @@ def test_export_from_local_ldap_mock_server(ldap_search_base, ldap_bind_dn, loca
                     ldap_host="localhost",
                     ldap_port=local_ldap_port,
                     ldap_bind_dn=ldap_bind_dn,
-                    ldap_bind_auth='admin',
+                    ldap_bind_auth=ldap_bind_auth,
                     ldap_log=False,
                     data_source_code='ldap',
                     git_branch='test-branch',
-                    kgiri_base=f'https://kg.{ldap_search_base}',
+                    kgiri_base=kgiri_base,
                     verbose=False
                 )
         ):

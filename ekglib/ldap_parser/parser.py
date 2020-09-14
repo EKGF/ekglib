@@ -112,25 +112,23 @@ class LdapParser:
         rc = 0
         try:
             rc = self._process_connection(server)
-            end = time.time()
-            seconds = end - start
-            log_item('Seconds', seconds)
         except LDAPBindError:
             log_error(f"Unable to bind using dn: {self.bind_dn} and the given password")
-            rc = 1
+            rc = 3
         except LDAPResponseTimeoutError:
             log_error(f"Server timed out")
-            rc = 2
+            rc = 4
         except LDAPSocketOpenError:
             log_error(f"Could not connect with {self.host_port}")
-            rc = 3
+            rc = 5
         except PyAsn1Error as e:
             log_error(f"Could not connect with {self.host_port}: {e}")
-            rc = 4
+            rc = 6
         except LDAPSocketReceiveError as e:
             log_error(f"LDAP Socket Receive Error: {e}")
-            rc = 5
+            rc = 7
 
+        log_item('Seconds', time.time() - start)
         # activity_iri = self.prov_activity_start(xlsx_iri)
         # self.prov_activity_end(activity_iri)
         log_item("Return Code", rc)
@@ -184,7 +182,7 @@ class LdapParser:
 
             # self.look_into_schema(conn)
 
-            skip_naming_contexts = ('cn=schema', 'cn=localhost', 'cn=ibmpolicies')
+            skip_naming_contexts = ('cn=schema', 'cn=localhost', 'cn=ibmpolicies', 'cn=virtual access controls')
 
             try:
                 try:
@@ -214,6 +212,8 @@ class LdapParser:
         rc = 0
         try:
             for naming_context in _naming_contexts(server.info):
+                if not naming_context.strip():
+                    continue
                 log_item('Naming Context', naming_context)
                 if naming_context.lower() in skip_naming_contexts:
                     log_item("Skipping", naming_context)

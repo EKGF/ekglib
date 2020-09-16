@@ -99,7 +99,7 @@ class LdapParser:
             set_library_log_activation_level(EXTENDED)
             set_library_log_detail_level(EXTENDED)
 
-        set_config_parameter('RESPONSE_WAITING_TIMEOUT', 10)
+        set_config_parameter('RESPONSE_WAITING_TIMEOUT', 60)
         set_config_parameter('IGNORE_MALFORMED_SCHEMA', True)
 
         server = ldap3.Server(

@@ -16,6 +16,7 @@ def test_export_from_ldapclient_dot_com(test_data_dir, tmpdir):
                 'argparse.ArgumentParser.parse_args',
                 return_value=argparse.Namespace(
                     output=output_file,
+                    ldap_naming_context=None,
                     ldap_host="ldapclient.com",
                     ldap_port=389,
                     ldap_bind_dn=None,
@@ -45,6 +46,7 @@ def test_export_from_d_trust_dot_de(test_data_dir):
                     'argparse.ArgumentParser.parse_args',
                     return_value=argparse.Namespace(
                         output=output_file,
+                        ldap_naming_context=None,
                         ldap_host="directory.d-trust.de",
                         ldap_port=389,
                         ldap_bind_dn=None,
@@ -75,6 +77,7 @@ def test_export_from_a_trust_dot_at(test_data_dir):
                     'argparse.ArgumentParser.parse_args',
                     return_value=argparse.Namespace(
                         output=output_file,
+                        ldap_naming_context=None,
                         ldap_host="ldap.a-trust.at",
                         ldap_port=389,
                         ldap_bind_dn=None,
@@ -102,6 +105,7 @@ def test_export_from_forumsys_dot_com(test_data_dir):
                     'argparse.ArgumentParser.parse_args',
                     return_value=argparse.Namespace(
                         output=output_file,
+                        ldap_naming_context=None,
                         ldap_host="ldap.forumsys.com",
                         ldap_port=389,
                         ldap_bind_dn='uid=gauss,dc=example,dc=com',
@@ -119,21 +123,22 @@ def test_export_from_forumsys_dot_com(test_data_dir):
                 print(line, end='')
 
 
-def test_export_from_local_ldap_mock_server(kgiri_base, ldap_search_base, ldap_bind_dn, ldap_bind_auth, local_ldap_port):
+def test_export_from_local_ldap_mock_server_all_naming_contexts(
+        kgiri_base, ldap_naming_context, ldap_bind_dn, ldap_bind_auth, local_ldap_port, test_output_dir
+):
     """This test should work if you have an LDAP mock server running at port 1389
     """
     log_item('KGIRI Base', kgiri_base)
-    log_item('Search Base', ldap_search_base)
     log_item('Bind DN', ldap_bind_dn)
     log_item('Bind Auth', ldap_bind_auth)
 
-    output_file_name = './output/test-ldap-5.nt'
+    output_file_name = f'{test_output_dir}/test-ldap-5.nt'
     with open(output_file_name, 'wb') as output_file:
         with mock.patch(
                 'argparse.ArgumentParser.parse_args',
                 return_value=argparse.Namespace(
                     output=output_file,
-                    ldap_search_base=ldap_search_base,
+                    ldap_naming_context=None,
                     ldap_host="localhost",
                     ldap_port=local_ldap_port,
                     ldap_bind_dn=ldap_bind_dn,
@@ -152,5 +157,36 @@ def test_export_from_local_ldap_mock_server(kgiri_base, ldap_search_base, ldap_b
             print(line, end='')
 
 
-if __name__ == '__main__':
-    unittest.main()
+def test_export_from_local_ldap_mock_server_one_naming_context(
+        kgiri_base, ldap_naming_context, ldap_bind_dn, ldap_bind_auth, local_ldap_port, test_output_dir
+):
+    """This test should work if you have an LDAP mock server running at port 1389
+    """
+    log_item('KGIRI Base', kgiri_base)
+    log_item('Naming Context', ldap_naming_context)
+    log_item('Bind DN', ldap_bind_dn)
+    log_item('Bind Auth', ldap_bind_auth)
+
+    output_file_name = f'{test_output_dir}/test-ldap-6.nt'
+    with open(output_file_name, 'wb') as output_file:
+        with mock.patch(
+                'argparse.ArgumentParser.parse_args',
+                return_value=argparse.Namespace(
+                    output=output_file,
+                    ldap_naming_context=ldap_naming_context,
+                    ldap_host="localhost",
+                    ldap_port=local_ldap_port,
+                    ldap_bind_dn=ldap_bind_dn,
+                    ldap_bind_auth=ldap_bind_auth,
+                    ldap_log=False,
+                    data_source_code='ldap',
+                    git_branch='test-branch',
+                    kgiri_base=kgiri_base,
+                    verbose=False
+                )
+        ):
+            assert 0 == ldap_parser_to_file()
+    print('Last 8 lines of output:')
+    with open(output_file_name, 'r') as file:
+        for line in (file.readlines()[-8:]):
+            print(line, end='')

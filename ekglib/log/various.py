@@ -23,7 +23,7 @@ def error(msg):
 
 
 def log_error(msg):
-    eprint("\rERROR: {0}".format(msg))
+    eprint("\rERROR: x {0}".format(msg))
 
 
 def log(msg):
@@ -32,6 +32,13 @@ def log(msg):
 
 def log_item(item, msg):
     log(" - {:<26}: [{:}]".format(item, msg))
+
+
+def log_exception(e: Exception = None):
+    if e:
+        log_item("Exception", f"{repr(e)}: {e.args}")
+    else:
+        log_list('Exception', sys.exc_info())
 
 
 def log_dump(item, object_):

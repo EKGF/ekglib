@@ -28,6 +28,7 @@ def main():
     args.add_argument('--ldap-host', help='LDAP host', required=True)
     args.add_argument('--ldap-port', help='LDAP port', type=int, required=True)
     args.add_argument('--ldap-log', help='Switch on LDAP logging', default=False, action='store_true')
+    args.add_argument('--ldap-naming-context', help='Optional, DN of the top-level entry', default=None, required=False)
     kgiri_set_cli_params(args)
     data_source_set_cli_params(args)
 

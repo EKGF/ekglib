@@ -14,7 +14,7 @@ def main():
         allow_abbrev=False
     )
     args.add_argument('--verbose', '-v', help='verbose output', default=False, action='store_true')
-    args.add_argument('--ldap-search-base', help="The root level domain", required=True)
+    args.add_argument('--ldap-naming-context', help="The root level domain", required=True)
     args.add_argument('--ldap-host', help='LDAP host', required=True)
     args.add_argument('--ldap-port', help='LDAP port', required=True)
     kgiri_set_cli_params(args)

@@ -57,7 +57,7 @@ python3 -m ekglib.ldap_parser_to_s3 --help
 [source]
 ----
 usage: python3 -m ekglib.ldap_parser_to_s3 [-h] [--verbose]
-                --ldap-search-base LDAP_SEARCH_BASE --ldap-host LDAP_HOST
+                --ldap-naming-context LDAP_SEARCH_BASE --ldap-host LDAP_HOST
                 --ldap-port LDAP_PORT [--kgiri-base KGIRI_BASE]
                 --data-source-code DATA_SOURCE_CODE
                 --s3-endpoint S3_ENDPOINT --s3-bucket S3_BUCKET
@@ -70,7 +70,7 @@ Capture all information from the given LDAP endpoint and store it in S3 as an RD
 optional arguments:
   -h, --help            show this help message and exit
   --verbose, -v         verbose output
-  --ldap-search-base LDAP_SEARCH_BASE
+  --ldap-naming-context LDAP_SEARCH_BASE
                         The root level domain
   --ldap-host LDAP_HOST
                         LDAP host

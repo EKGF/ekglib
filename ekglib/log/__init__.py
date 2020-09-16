@@ -1,5 +1,5 @@
-from .various import error, log, log_error, log_item, log_rule, log_list, log_iri, log_resource, warning, eprint, \
-    log_dump  # noqa: F401
+from .various import error, log, log_error, log_item, log_rule, log_list, log_iri, log_resource, log_exception, \
+    warning, eprint, log_dump  # noqa: F401
 
 __all__ = [
     'error',
@@ -11,6 +11,7 @@ __all__ = [
     'log_iri',
     'log_dump',
     'log_resource',
+    'log_exception',
     'warning',
     'eprint'
 ]

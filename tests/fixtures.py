@@ -14,27 +14,34 @@ def test_data_dir():
 
 
 @pytest.fixture
-def local_sparql_port():
+def test_output_dir():
+    if os.path.isdir('output'):
+        return 'output'
+    if os.path.isdir('tests/output'):
+        return 'tests/output'
+    return ''
+
+
+def require_port(number, name):
     from ekglib.main.main import is_port_in_use
-    if not is_port_in_use(5820):
-        pytest.skip("SPARQL mock server not running on localhost:5820")
-    return 5820
+    if not is_port_in_use(number):
+        pytest.skip(f"{name} mock server not running on localhost:{number}")
+    return number
+
+
+@pytest.fixture
+def local_sparql_port():
+    return require_port(5820, 'SPARQL')
 
 
 @pytest.fixture
 def local_ldap_port():
-    from ekglib.main.main import is_port_in_use
-    if not is_port_in_use(1389):
-        pytest.skip("LDAP mock server not running on localhost:5820")
-    return 1389
+    return require_port(1389, 'LDAP')
 
 
 @pytest.fixture
 def local_s3_port():
-    from ekglib.main.main import is_port_in_use
-    if not is_port_in_use(9000):
-        pytest.skip("S3 mock server not running on localhost:9000")
-    return 9000
+    return require_port(9000, 'S3')
 
 
 def value_for_test(directory, name):
@@ -72,8 +79,8 @@ def kgiri_base(test_data_dir):
 
 
 @pytest.fixture
-def ldap_search_base(test_data_dir):
-    return value_for_test(test_data_dir, 'ldap-search-base')
+def ldap_naming_context(test_data_dir):
+    return value_for_test(test_data_dir, 'ldap-naming-context')
 
 
 @pytest.fixture

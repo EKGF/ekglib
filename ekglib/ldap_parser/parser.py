@@ -18,17 +18,18 @@ from typing.io import BinaryIO
 from ..dataset.various import export_graph
 from ..exceptions import PagingNotSupported, CannotCapture
 from ..kgiri import EKG_NS, parse_identity_key_with_prefix, kgiri_random
-from ..log import log, warning, error, log_item, log_error, log_dump
+from ..log import log, warning, error, log_item, log_error, log_dump, log_exception
 from ..main import dump_as_ttl_to_stdout
 from ..namespace import RAW, DATAOPS, LDAP
 from ..s3 import S3ObjectStore
-
 
 # logging.basicConfig(filename='ldap.log', level=logging.DEBUG)
 # logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
 # set_library_log_activation_level(EXTENDED)
 # set_library_log_detail_level(EXTENDED)
+
+skip_naming_contexts = ('cn=schema', 'cn=localhost', 'cn=ibmpolicies', 'cn=virtual access controls')
 
 
 def parse_ldap_domain(domain: str):
@@ -58,6 +59,7 @@ class LdapParser:
         self.args = args
         self.verbose = args.verbose
         self.ldap_log = args.ldap_log
+        self.naming_context = args.ldap_naming_context
         self.data_source_code = args.data_source_code
         self.g = rdflib.Graph()
         self.add_namespaces()
@@ -67,9 +69,12 @@ class LdapParser:
         self.stream = stream
         self.ldap_host = args.ldap_host
         self.ldap_port = args.ldap_port
-        self.host_port = f"{args.ldap_host}:{args.ldap_port}"
+        self.ldap_host_port = f"{args.ldap_host}:{args.ldap_port}"
+        #
+        # TODO: Support ldaps as well
+        #
 
-    def check_bind_creds(self):
+    def _check_bind_creds(self):
         if self.bind_dn == '':
             self.bind_dn = None
         if self.bind_dn is None:
@@ -86,8 +91,8 @@ class LdapParser:
         """ The only public method of this class, call straight after construction, returns an integer that
             can/should be used for the process exit value
         """
-        self.check_bind_creds()
-        log_item("Connecting to LDAP Server", self.host_port)
+        self._check_bind_creds()
+        log_item("Connecting to LDAP Server", self.ldap_host_port)
 
         if self.ldap_log:
             logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
@@ -116,13 +121,13 @@ class LdapParser:
             log_error(f"Unable to bind using dn: {self.bind_dn} and the given password")
             rc = 3
         except LDAPResponseTimeoutError:
-            log_error(f"Server timed out")
+            log_error("Server timed out")
             rc = 4
         except LDAPSocketOpenError:
-            log_error(f"Could not connect with {self.host_port}")
+            log_error(f"Could not connect with {self.ldap_host_port}")
             rc = 5
         except PyAsn1Error as e:
-            log_error(f"Could not connect with {self.host_port}: {e}")
+            log_error(f"Could not connect with {self.ldap_host_port}: {e}")
             rc = 6
         except LDAPSocketReceiveError as e:
             log_error(f"LDAP Socket Receive Error: {e}")
@@ -156,7 +161,7 @@ class LdapParser:
             user=self.bind_dn,
             password=self.bind_auth,
             auto_bind=ldap3.AUTO_BIND_DEFAULT,
-            client_strategy=ldap3.SYNC,
+            client_strategy=ldap3.ASYNC,
             raise_exceptions=False,
             read_only=True,
             lazy=False,
@@ -166,10 +171,10 @@ class LdapParser:
     def _process_connection(self, server) -> int:
         rc = 0
         with self._create_connection(server) as conn:
-            log_item('Connected with', self.host_port)
+            log_item('Connected with', self.ldap_host_port)
 
             if not conn.bind():
-                log_error("Can't bind to the LDAP server with provided credentials ({})'".format(self.bind_dn))
+                log_error("Can't bind to the LDAP server with the provided credentials ({})'".format(self.bind_dn))
                 return 1
 
             if self.verbose:
@@ -182,21 +187,19 @@ class LdapParser:
 
             # self.look_into_schema(conn)
 
-            skip_naming_contexts = ('cn=schema', 'cn=localhost', 'cn=ibmpolicies', 'cn=virtual access controls')
-
             try:
                 try:
                     #
                     # First try it with paging
                     #
-                    rc = self._process_all_naming_contexts(server, conn, skip_naming_contexts)
+                    rc = self._process_naming_contexts(server, conn)
                 except PagingNotSupported:
                     #
                     # If that fails, try without paging and hope for the best
                     #
                     log("Since paging is not supported by the server now retrying without paging")
                     self.paged_size = None
-                    rc = self._process_all_naming_contexts(server, conn, skip_naming_contexts)
+                    rc = self._process_naming_contexts(server, conn)
             except Exception as e:
                 log_error(f"Unknown exception: {e}")
 
@@ -208,7 +211,23 @@ class LdapParser:
             rc = 2
         return rc
 
-    def _process_all_naming_contexts(self, server, conn, skip_naming_contexts) -> int:
+    def _process_naming_contexts(self, server, conn):
+        if self.naming_context:
+            return self._process_one_naming_contexts(conn)
+        return self._process_all_naming_contexts(server, conn)
+
+    def _process_one_naming_contexts(self, conn) -> int:
+        rc = 0
+        try:
+            log_item('Naming Context', self.naming_context)
+            for entry in self._process_search(conn=conn, base=self.naming_context, scope=ldap3.SUBTREE):
+                self.process_entry(entry)
+        except CannotCapture:
+            log_error('Cannot capture LDAP data')
+            rc = 1
+        return rc
+
+    def _process_all_naming_contexts(self, server, conn) -> int:
         rc = 0
         try:
             for naming_context in _naming_contexts(server.info):
@@ -221,6 +240,7 @@ class LdapParser:
                 for entry in self._process_search(conn=conn, base=naming_context, scope=ldap3.SUBTREE):
                     self.process_entry(entry)
         except CannotCapture:
+            log_error('Cannot capture LDAP data')
             rc = 1
         return rc
 
@@ -299,9 +319,10 @@ class LdapParser:
                 return results
             return conn.entries
         except LDAPUnavailableCriticalExtensionResult as e:
+            log_exception(e)
             raise PagingNotSupported(e.message)
         except LDAPOperationResult as e:
-            raise CannotCapture(e)
+            raise CannotCapture(e.message)
 
     def _process_search(self, conn: Connection, base, scope):
 
@@ -316,6 +337,7 @@ class LdapParser:
                 self.returned_entries += 1
                 yield from self._process_entry(entry)
         except LDAPUnavailableCriticalExtensionResult as e:
+            log_exception(e)
             raise PagingNotSupported(e.message)
         except LDAPOperationResult as e:
             raise CannotCapture(e.message)

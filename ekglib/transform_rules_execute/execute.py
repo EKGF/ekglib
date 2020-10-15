@@ -50,6 +50,7 @@ class TransformRulesExecute:
             PREFIX owl: <http://www.w3.org/2002/07/owl#>
             PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
             PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+            PREFIX kggraph: <{EKG_NS['KGGRAPH']}>
             PREFIX transform: <https://ekgf.org/ontology/step-transform/>
 
             CONSTRUCT {{
@@ -57,7 +58,7 @@ class TransformRulesExecute:
                 ?rule transform:fromGraph ?g .
             }}
             WHERE {{
-                GRAPH ?g {{
+                GRAPH kggraph:{self.data_source_code} {{
                     ?rule a transform:Rule .
                     ?rule ?p ?s .
                     BIND(localname(?rule) AS ?key)

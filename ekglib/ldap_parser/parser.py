@@ -70,6 +70,7 @@ class LdapParser:
         self.ldap_host = args.ldap_host
         self.ldap_port = args.ldap_port
         self.ldap_host_port = f"{args.ldap_host}:{args.ldap_port}"
+        self.ldap_timeout = args.ldap_timeout
         #
         # TODO: Support ldaps as well
         #
@@ -99,13 +100,13 @@ class LdapParser:
             set_library_log_activation_level(EXTENDED)
             set_library_log_detail_level(EXTENDED)
 
-        set_config_parameter('RESPONSE_WAITING_TIMEOUT', 60)
+        set_config_parameter('RESPONSE_WAITING_TIMEOUT', self.ldap_timeout)
         set_config_parameter('IGNORE_MALFORMED_SCHEMA', True)
 
         server = ldap3.Server(
             self.ldap_host,
             port=self.ldap_port,
-            connect_timeout=60,
+            connect_timeout=self.ldap_timeout,
             get_info=ldap3.ALL,
             use_ssl=False,
             tls=None,

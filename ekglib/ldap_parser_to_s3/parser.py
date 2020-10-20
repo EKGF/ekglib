@@ -17,6 +17,7 @@ def main():
     args.add_argument('--ldap-naming-context', help="The root level domain", required=True)
     args.add_argument('--ldap-host', help='LDAP host', required=True)
     args.add_argument('--ldap-port', help='LDAP port', required=True)
+    args.add_argument('--ldap-timeout', help="Specify timeout in seconds", type=int, default=60)
     kgiri_set_cli_params(args)
     data_source_set_cli_params(args)
     s3_set_cli_params(args)

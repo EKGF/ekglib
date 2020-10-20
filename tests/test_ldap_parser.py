@@ -22,6 +22,7 @@ def test_export_from_ldapclient_dot_com(test_data_dir, tmpdir):
                     ldap_bind_dn=None,
                     ldap_bind_auth=None,
                     ldap_log=False,
+                    ldap_timeout=60,
                     data_source_code='ldap',
                     kgiri_base='https://kg.your-company.kom',
                     verbose=False
@@ -52,6 +53,7 @@ def test_export_from_d_trust_dot_de(test_data_dir):
                         ldap_bind_dn=None,
                         ldap_bind_auth=None,
                         ldap_log=False,
+                        ldap_timeout=60,
                         data_source_code='ldap',
                         kgiri_base='https://kg.your-company.kom',
                         verbose=False
@@ -83,6 +85,7 @@ def test_export_from_a_trust_dot_at(test_data_dir):
                         ldap_bind_dn=None,
                         ldap_bind_auth=None,
                         ldap_log=False,
+                        ldap_timeout=60,
                         data_source_code='ldap',
                         kgiri_base='https://kg.your-company.kom',
                         verbose=False
@@ -111,6 +114,7 @@ def test_export_from_forumsys_dot_com(test_data_dir):
                         ldap_bind_dn='uid=gauss,dc=example,dc=com',
                         ldap_bind_auth='password',
                         ldap_log=False,
+                        ldap_timeout=60,
                         data_source_code='ldap',
                         kgiri_base='https://kg.your-company.kom',
                         verbose=False
@@ -144,6 +148,7 @@ def test_export_from_local_ldap_mock_server_all_naming_contexts(
                     ldap_bind_dn=ldap_bind_dn,
                     ldap_bind_auth=ldap_bind_auth,
                     ldap_log=False,
+                    ldap_timeout=60,
                     data_source_code='ldap',
                     git_branch='test-branch',
                     kgiri_base=kgiri_base,
@@ -179,6 +184,7 @@ def test_export_from_local_ldap_mock_server_one_naming_context(
                     ldap_bind_dn=ldap_bind_dn,
                     ldap_bind_auth=ldap_bind_auth,
                     ldap_log=False,
+                    ldap_timeout=60,
                     data_source_code='ldap',
                     git_branch='test-branch',
                     kgiri_base=kgiri_base,

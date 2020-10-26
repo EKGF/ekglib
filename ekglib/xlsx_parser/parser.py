@@ -529,7 +529,7 @@ def main():
     args.add_argument(
         '--strip-any-prefix',
         help='Strip any prefix from any column if all cells in that column have the same prefix',
-        default=True
+        default=False
     )
     args.add_argument(
         '--ignored-values', help='A list of values to ignore',

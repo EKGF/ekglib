@@ -499,6 +499,9 @@ class LdapEntry:
             return
         elif key == 'entryUUID':
             self._parse_entry_uuid(values)
+        elif key == 'jpegPhoto':
+            print("jpegPhoto: " + str(values))
+            return
         else:
             for value in values:
                 self._add((self.entry_iri, LDAP.term(key), Literal(value)))

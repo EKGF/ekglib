@@ -2,7 +2,7 @@ import logging
 import sys
 import time
 from datetime import datetime
-
+import base64
 import ldap3
 import rdflib
 import stringcase
@@ -500,7 +500,9 @@ class LdapEntry:
         elif key == 'entryUUID':
             self._parse_entry_uuid(values)
         elif key == 'jpegPhoto':
-            print("jpegPhoto: " + str(values))
+            for v in values:
+                base64_bytes = base64.b64encode(v)
+                self._add((self.entry_iri, LDAP.term(key), base64_bytes))
             return
         else:
             for value in values:

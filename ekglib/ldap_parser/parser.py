@@ -500,14 +500,18 @@ class LdapEntry:
         elif key == 'entryUUID':
             self._parse_entry_uuid(values)
         elif key == 'jpegPhoto':
+
             log(f"found jpegPhoto {values}")
-            for v in values:
-                b = bytes(v, 'utf-8')
-                base64_bytes = base64.b64encode(b)
-                log(f"found jpegPhoto {base64_bytes}")
-                base64_url = "data:image/jpeg;charset=utf-8;base64," + base64_bytes
-                log(f"found jpegPhoto {base64_url}")
-                self._add((self.entry_iri, LDAP.term(key), base64_url))
+            try:
+                for v in values:
+                    b = bytes(v, 'utf-8')
+                    base64_bytes = base64.b64encode(b)
+                    log(f"found jpegPhoto {base64_bytes}")
+                    base64_url = "data:image/jpeg;charset=utf-8;base64," + base64_bytes
+                    log(f"found jpegPhoto {base64_url}")
+                    self._add((self.entry_iri, LDAP.term(key), base64_url))
+            except:
+                log_error("problem reading jpegPhoto")
             return
         else:
             for value in values:

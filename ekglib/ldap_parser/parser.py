@@ -502,7 +502,7 @@ class LdapEntry:
         elif key == 'jpegPhoto':
             log(f"found jpegPhoto {values}")
             for v in values:
-                b = bytes(v, 'ascii')
+                b = bytes(v, 'utf-8')
                 base64_bytes = base64.b64encode(b)
                 log(f"found jpegPhoto {base64_bytes}")
                 base64_url = "data:image/jpeg;charset=utf-8;base64," + base64_bytes

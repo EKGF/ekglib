@@ -504,8 +504,8 @@ class LdapEntry:
             for v in values:
                 base64_bytes = base64.b64encode(v)
                 log(f"found jpegPhoto {base64_bytes}")
-
-                self._add((self.entry_iri, LDAP.term(key), base64_bytes))
+                base64_url = "data:image/jpeg;charset=utf-8;base64," + base64_bytes
+                self._add((self.entry_iri, LDAP.term(key), base64_url))
             return
         else:
             for value in values:

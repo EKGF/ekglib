@@ -500,8 +500,11 @@ class LdapEntry:
         elif key == 'entryUUID':
             self._parse_entry_uuid(values)
         elif key == 'jpegPhoto':
+            log(f"found jpegPhoto {values}")
             for v in values:
                 base64_bytes = base64.b64encode(v)
+                log(f"found jpegPhoto {base64_bytes}")
+
                 self._add((self.entry_iri, LDAP.term(key), base64_bytes))
             return
         else:

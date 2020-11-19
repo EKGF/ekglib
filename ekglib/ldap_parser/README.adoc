@@ -15,6 +15,7 @@ python3 -m ekglib.ldap_parser_to_file --help
 [source]
 ----
 usage: python3 -m ekglib.ldap_parser_to_file [-h] --output OUTPUT [--verbose]
+               [--ldap-search-filter LDAP_SEARCH_FILTER]
                --ldap-bind-dn LDAP_BIND_DN --ldap-bind-auth LDAP_BIND_AUTH
                --ldap-host LDAP_HOST --ldap-port LDAP_PORT [--ldap-log]
                [--kgiri-base KGIRI_BASE] --data-source-code DATA_SOURCE_CODE
@@ -26,6 +27,8 @@ optional arguments:
   --output OUTPUT, -o OUTPUT
                         The name of the output RDF file (must be .ttl)
   --verbose, -v         verbose output
+  --ldap-search-filter LDAP_SEARCH_FILTER
+                        An optional search filter, defaults to '(objectClass=*)'
   --ldap-bind-dn LDAP_BIND_DN
                         The user that we bind with
   --ldap-bind-auth LDAP_BIND_AUTH
@@ -57,6 +60,7 @@ python3 -m ekglib.ldap_parser_to_s3 --help
 [source]
 ----
 usage: python3 -m ekglib.ldap_parser_to_s3 [-h] [--verbose]
+                [--ldap-search-filter LDAP_SEARCH_FILTER]
                 --ldap-naming-context LDAP_SEARCH_BASE --ldap-host LDAP_HOST
                 --ldap-port LDAP_PORT [--kgiri-base KGIRI_BASE]
                 --data-source-code DATA_SOURCE_CODE
@@ -72,6 +76,8 @@ optional arguments:
   --verbose, -v         verbose output
   --ldap-naming-context LDAP_SEARCH_BASE
                         The root level domain
+  --ldap-search-filter LDAP_SEARCH_FILTER
+                        An optional search filter, defaults to '(objectClass=*)'
   --ldap-host LDAP_HOST
                         LDAP host
   --ldap-port LDAP_PORT

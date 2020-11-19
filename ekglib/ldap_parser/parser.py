@@ -514,12 +514,18 @@ class LdapEntry:
     def parse_binary_content(self, key, values):
         """Binary content is transformed into a Literal with base64 encoding"""
         for value in values:
-            encoded = b64encode(str_to_binary(value))
+            base64_bytes = b64encode(str_to_binary(value)).decode('ascii')
+
+            # @LAP: assume this is handy in the UI?
+            base64_url = "data:image/jpeg;charset=utf-8;base64," + base64_bytes
+            self._add((self.entry_iri, LDAP.term(key + "Url"), URIRef(base64_url)))
+
             # NB: Can't use rdflib.Literal with the correct datatype xsd:base64Binary,
             # as it messes with the value (decodes it), using a placeholder xsd:base64BinaryString
             # which gets replaced in the output stream, see _substitute_iris
-            literal = Literal(encoded.decode('ascii'), datatype = XSD.term('base64BinaryString'))
-            self._add((self.entry_iri, LDAP.term(key), literal))
+            self._add((self.entry_iri,
+                       LDAP.term(key),
+                       Literal(base64_bytes, datatype=XSD.term('base64BinaryString'))))
 
     def parse_common_name(self, values):
         """Translate cn i.e. CommonName (in X.500 terms) to RDFS.label"""

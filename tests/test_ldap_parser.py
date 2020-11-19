@@ -17,6 +17,7 @@ def test_export_from_ldapclient_dot_com(test_data_dir, tmpdir):
                 return_value=argparse.Namespace(
                     output=output_file,
                     ldap_naming_context=None,
+                    ldap_search_filter='(objectClass=*)',
                     ldap_host="ldapclient.com",
                     ldap_port=389,
                     ldap_bind_dn=None,
@@ -48,6 +49,7 @@ def test_export_from_d_trust_dot_de(test_data_dir):
                     return_value=argparse.Namespace(
                         output=output_file,
                         ldap_naming_context=None,
+                        ldap_search_filter='(objectClass=*)',
                         ldap_host="directory.d-trust.de",
                         ldap_port=389,
                         ldap_bind_dn=None,
@@ -80,6 +82,7 @@ def test_export_from_a_trust_dot_at(test_data_dir):
                     return_value=argparse.Namespace(
                         output=output_file,
                         ldap_naming_context=None,
+                        ldap_search_filter='(objectClass=*)',
                         ldap_host="ldap.a-trust.at",
                         ldap_port=389,
                         ldap_bind_dn=None,
@@ -109,6 +112,7 @@ def test_export_from_forumsys_dot_com(test_data_dir):
                     return_value=argparse.Namespace(
                         output=output_file,
                         ldap_naming_context=None,
+                        ldap_search_filter='(objectClass=*)',
                         ldap_host="ldap.forumsys.com",
                         ldap_port=389,
                         ldap_bind_dn='uid=gauss,dc=example,dc=com',
@@ -143,6 +147,7 @@ def test_export_from_local_ldap_mock_server_all_naming_contexts(
                 return_value=argparse.Namespace(
                     output=output_file,
                     ldap_naming_context=None,
+                    ldap_search_filter='(objectClass=*)',
                     ldap_host="localhost",
                     ldap_port=local_ldap_port,
                     ldap_bind_dn=ldap_bind_dn,
@@ -179,6 +184,7 @@ def test_export_from_local_ldap_mock_server_one_naming_context(
                 return_value=argparse.Namespace(
                     output=output_file,
                     ldap_naming_context=ldap_naming_context,
+                    ldap_search_filter='(objectClass=*)',
                     ldap_host="localhost",
                     ldap_port=local_ldap_port,
                     ldap_bind_dn=ldap_bind_dn,

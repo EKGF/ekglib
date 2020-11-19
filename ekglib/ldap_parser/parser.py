@@ -2,6 +2,8 @@ import logging
 import sys
 import time
 from datetime import datetime
+from base64 import b64encode
+from io import BytesIO
 
 import ldap3
 import rdflib
@@ -12,7 +14,7 @@ from ldap3.core.exceptions import LDAPSocketOpenError, LDAPOperationResult, LDAP
     LDAPExtensionError, LDAPBindError, LDAPResponseTimeoutError, LDAPSocketReceiveError
 from ldap3.utils.log import set_library_log_activation_level, set_library_log_detail_level, EXTENDED
 from pyasn1.error import PyAsn1Error
-from rdflib import RDF, Literal, PROV, plugin, URIRef, RDFS, OWL
+from rdflib import RDF, Literal, PROV, plugin, URIRef, RDFS, OWL, XSD
 from typing.io import BinaryIO
 
 from ..dataset.various import export_graph
@@ -22,6 +24,7 @@ from ..log import log, warning, error, log_item, log_error, log_dump, log_except
 from ..main import dump_as_ttl_to_stdout
 from ..namespace import RAW, DATAOPS, LDAP
 from ..s3 import S3ObjectStore
+from ..string import str_to_binary
 
 # logging.basicConfig(filename='ldap.log', level=logging.DEBUG)
 # logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
@@ -66,6 +69,7 @@ class LdapParser:
         self.bind_dn = args.ldap_bind_dn
         self.bind_auth = args.ldap_bind_auth
         self.paged_size = 250
+        self.search_filter = args.ldap_search_filter
         self.stream = stream
         self.ldap_host = args.ldap_host
         self.ldap_port = args.ldap_port
@@ -203,6 +207,8 @@ class LdapParser:
                     rc = self._process_naming_contexts(server, conn)
             except Exception as e:
                 log_error(f"Unknown exception: {e}")
+                import traceback
+                traceback.print_exception(e)
 
         if conn.last_error:
             log_item("Last error", conn.last_error)
@@ -304,7 +310,7 @@ class LdapParser:
         try:
             results = conn.extend.standard.paged_search(
                 base,
-                '(objectClass=*)',
+                search_filter=self.search_filter,
                 search_scope=scope,
                 dereference_aliases=ldap3.DEREF_SEARCH,
                 attributes=ldap3.ALL_ATTRIBUTES,
@@ -499,9 +505,21 @@ class LdapEntry:
             return
         elif key == 'entryUUID':
             self._parse_entry_uuid(values)
+        elif key == 'jpegPhoto':
+            self.parse_binary_content(key, values)
         else:
             for value in values:
                 self._add((self.entry_iri, LDAP.term(key), Literal(value)))
+
+    def parse_binary_content(self, key, values):
+        """Binary content is transformed into a Literal with base64 encoding"""
+        for value in values:
+            encoded = b64encode(str_to_binary(value))
+            # NB: Can't use rdflib.Literal with the correct datatype xsd:base64Binary,
+            # as it messes with the value (decodes it), using a placeholder xsd:base64BinaryString
+            # which gets replaced in the output stream, see _substitute_iris
+            literal = Literal(encoded.decode('ascii'), datatype = XSD.term('base64BinaryString'))
+            self._add((self.entry_iri, LDAP.term(key), literal))
 
     def parse_common_name(self, values):
         """Translate cn i.e. CommonName (in X.500 terms) to RDFS.label"""
@@ -577,6 +595,21 @@ class LdapEntry:
         status = self.entry.entry_status
         self._add((self.entry_iri, LDAP.entryStatus, Literal(status)))
 
+    _substitution_iri_map = {
+        # replace the 'placeholder' IRI in the serialized stream with the desired one
+        XSD.term('base64BinaryString').toPython(): XSD.term('base64Binary').toPython()
+    }
+
+    def _substitute_iris(self, serialized_graph):
+        bts = BytesIO(b"")
+        for frm, to in self._substitution_iri_map.items():
+            bts.write(serialized_graph.getvalue().decode().replace(frm, to).encode())
+        return bts
+
     def _graph_to_stream(self):
+        str_stream = BytesIO(b"")
         serializer = plugin.get('ntriples', plugin.Serializer)(self.g)
-        serializer.serialize(self.stream)
+        serializer.serialize(str_stream)
+        self.stream.write(self._substitute_iris(str_stream).getvalue())
+
+

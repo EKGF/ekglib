@@ -110,10 +110,13 @@ def export_graph(
     chunk = bytearray(chunk_max_size)
     chunk_size = chunk_max_size
     buf.seek(0)
+
     while chunk_size == chunk_max_size:
         chunk_size = buf.readinto(chunk)
+        log_item(f"{s3_file_name} chunk_size", str(chunk_size))
         if chunk_size > 0:
             uploader.part(chunk[0:chunk_size])
+    log_item(f"{s3_file_name} completing with", str(chunk_size))
     return uploader.complete()
 
 

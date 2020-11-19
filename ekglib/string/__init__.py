@@ -6,7 +6,8 @@ __all__ = [
     'argv_list',
     'argv_check_list',
     'is_lower_camel_case',
-    'parse_column_name'
+    'parse_column_name',
+    'str_to_binary'
 ]
 
 from .prefix import common_prefix, common_suffix, remove_prefix, strip_end  # noqa: F401
@@ -16,3 +17,5 @@ from .list import argv_list, argv_check_list
 from .case import is_lower_camel_case
 
 from .predicate import parse_column_name
+
+from .str_util import str_to_binary

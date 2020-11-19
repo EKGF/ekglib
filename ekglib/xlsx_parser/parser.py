@@ -90,7 +90,7 @@ def strip_common_prefix_in_column(df, column_name):
         return df
     if some_prefix.startswith('http://') or some_prefix.startswith('https://'):
         return df
-    log_item('Strip prefix', some_prefix)
+    log_item(f'Strip prefix from \'{column_name}\'', some_prefix)
     #
     # Don't touch date columns
     #
@@ -529,7 +529,7 @@ def main():
     args.add_argument(
         '--strip-any-prefix',
         help='Strip any prefix from any column if all cells in that column have the same prefix',
-        default=True
+        default=False
     )
     args.add_argument(
         '--ignored-values', help='A list of values to ignore',

@@ -517,8 +517,8 @@ class LdapEntry:
             base64_bytes = b64encode(str_to_binary(value)).decode('ascii')
 
             # @LAP: assume this is handy in the UI?
-            base64_url = "data:image/jpeg;charset=utf-8;base64," + base64_bytes
-            self._add((self.entry_iri, LDAP.term(key + "Url"), URIRef(base64_url)))
+            base64_url = "data:image/jpeg;base64," + base64_bytes
+            self._add((self.entry_iri, LDAP.term(key + "IRI"), URIRef(base64_url)))
 
             # NB: Can't use rdflib.Literal with the correct datatype xsd:base64Binary,
             # as it messes with the value (decodes it), using a placeholder xsd:base64BinaryString

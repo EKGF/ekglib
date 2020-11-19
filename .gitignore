@@ -30,9 +30,7 @@ junit/
 *.whl
 .test/
 ldap.log
-*ldap*.nt
+test-ldap-*.nt
 README.html
 raw-data-*.ttl
 /xlsx-test3.ttl
-.idea
-*.iml

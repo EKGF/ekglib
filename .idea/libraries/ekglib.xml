@@ -1,0 +1,73 @@
+<component name="libraryTable">
+  <library name="ekglib" type="RDF">
+    <CLASSES />
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$" />
+      <root url="file://$PROJECT_DIR$/ontologies" />
+      <root url="file://$PROJECT_DIR$/ontologies/ekgf-concept.ttl" />
+      <root url="file://$PROJECT_DIR$/ontologies/ekgf-raw.ttl" />
+      <root url="file://$PROJECT_DIR$/ontologies/ekgf-step-transform.ttl" />
+      <root url="file://$PROJECT_DIR$/ontologies/fibo-annotation-vocabulary.ttl" />
+      <root url="file://$PROJECT_DIR$/ontologies/fibo-locations.ttl" />
+      <root url="file://$PROJECT_DIR$/ontologies/foaf.ttl" />
+      <root url="file://$PROJECT_DIR$/ontologies/gleif-base.ttl" />
+      <root url="file://$PROJECT_DIR$/ontologies/gleif-entity-legal-form.ttl" />
+      <root url="file://$PROJECT_DIR$/ontologies/gleif-registration-authority.ttl" />
+      <root url="file://$PROJECT_DIR$/ontologies/omg-country-representation.ttl" />
+      <root url="file://$PROJECT_DIR$/ontologies/omg-language-representation.ttl" />
+      <root url="file://$PROJECT_DIR$/ontologies/spdx-terms.ttl" />
+      <root url="file://$PROJECT_DIR$/ontologies/vocab-changeset.ttl" />
+      <root url="file://$PROJECT_DIR$/ontologies/vocab-void.ttl" />
+      <root url="file://$PROJECT_DIR$/ontologies/w3c-dcat.ttl" />
+      <root url="file://$PROJECT_DIR$/ontologies/w3c-entailment.ttl" />
+      <root url="file://$PROJECT_DIR$/ontologies/w3c-owl.ttl" />
+      <root url="file://$PROJECT_DIR$/ontologies/w3c-profile.ttl" />
+      <root url="file://$PROJECT_DIR$/ontologies/w3c-prov.ttl" />
+      <root url="file://$PROJECT_DIR$/ontologies/w3c-rdf.ttl" />
+      <root url="file://$PROJECT_DIR$/ontologies/w3c-sparql-service-description.ttl" />
+      <root url="file://$PROJECT_DIR$/ontologies/w3c-vcard.ttl" />
+      <root url="file://$PROJECT_DIR$/tests" />
+      <root url="file://$PROJECT_DIR$/tests/test_data" />
+      <root url="file://$PROJECT_DIR$/tests/test_data/static-datasets" />
+      <root url="file://$PROJECT_DIR$/tests/test_data/static-datasets/gleif" />
+      <root url="file://$PROJECT_DIR$/tests/test_data/static-datasets/gleif/entity-legal-forms.ttl" />
+      <root url="file://$PROJECT_DIR$/tests/test_data/static-datasets/gleif/registration-authorities.ttl" />
+      <root url="file://$PROJECT_DIR$/tests/test_data/test-concept-001.ttl" />
+      <root url="file://$PROJECT_DIR$/tests/test_data/test-persona-001.ttl" />
+      <root url="file://$PROJECT_DIR$/tests/test_data/test-use-case-001.ttl" />
+      <root url="file://$PROJECT_DIR$/tests/test_data/test-user-story-001.ttl" />
+      <root url="file://$PROJECT_DIR$/tests/test_data/transform" />
+      <root url="file://$PROJECT_DIR$/tests/test_data/transform/generic" />
+      <root url="file://$PROJECT_DIR$/tests/test_data/transform/generic-last" />
+      <root url="file://$PROJECT_DIR$/tests/test_data/transform/generic-last/90000-obfuscate-subjects" />
+      <root url="file://$PROJECT_DIR$/tests/test_data/transform/generic-last/90000-obfuscate-subjects/rule.ttl" />
+      <root url="file://$PROJECT_DIR$/tests/test_data/transform/generic-last/90001-obfuscate-objects" />
+      <root url="file://$PROJECT_DIR$/tests/test_data/transform/generic-last/90001-obfuscate-objects/rule.ttl" />
+      <root url="file://$PROJECT_DIR$/tests/test_data/transform/generic/00001-remove-empty-strings" />
+      <root url="file://$PROJECT_DIR$/tests/test_data/transform/generic/00001-remove-empty-strings/rule.ttl" />
+      <root url="file://$PROJECT_DIR$/tests/test_data/transform/generic/00003-make-true-false-strings-boolean" />
+      <root url="file://$PROJECT_DIR$/tests/test_data/transform/generic/00003-make-true-false-strings-boolean/rule.ttl" />
+      <root url="file://$PROJECT_DIR$/tests/test_data/transform/metadata" />
+      <root url="file://$PROJECT_DIR$/tests/test_data/transform/metadata/00000-drop-metadata-graph" />
+      <root url="file://$PROJECT_DIR$/tests/test_data/transform/metadata/00000-drop-metadata-graph/rule.ttl" />
+      <root url="file://$PROJECT_DIR$/tests/test_data/transform/metadata/00001-copy-all-concepts" />
+      <root url="file://$PROJECT_DIR$/tests/test_data/transform/metadata/00001-copy-all-concepts/rule.ttl" />
+      <root url="file://$PROJECT_DIR$/tests/test_data/transform/metadata/00002-copy-all-personas" />
+      <root url="file://$PROJECT_DIR$/tests/test_data/transform/metadata/00002-copy-all-personas/rule.ttl" />
+      <root url="file://$PROJECT_DIR$/tests/test_data/transform/metadata/00003-copy-all-use-cases" />
+      <root url="file://$PROJECT_DIR$/tests/test_data/transform/metadata/00003-copy-all-use-cases/rule.ttl" />
+      <root url="file://$PROJECT_DIR$/tests/test_data/transform/metadata/00004-copy-all-user-stories" />
+      <root url="file://$PROJECT_DIR$/tests/test_data/transform/metadata/00004-copy-all-user-stories/rule.ttl" />
+      <root url="file://$PROJECT_DIR$/tests/test_data/transform/metadata/00005-copy-all-transform-rules" />
+      <root url="file://$PROJECT_DIR$/tests/test_data/transform/metadata/00005-copy-all-transform-rules/rule.ttl" />
+      <root url="file://$PROJECT_DIR$/tests/test_data/transform/ontologies" />
+      <root url="file://$PROJECT_DIR$/tests/test_data/transform/ontologies/00000-drop-ontologies-graph" />
+      <root url="file://$PROJECT_DIR$/tests/test_data/transform/ontologies/00000-drop-ontologies-graph/rule.ttl" />
+      <root url="file://$PROJECT_DIR$/tests/test_data/transform/ontologies/00001-copy-all-ontologies" />
+      <root url="file://$PROJECT_DIR$/tests/test_data/transform/ontologies/00001-copy-all-ontologies/rule.ttl" />
+      <root url="file://$PROJECT_DIR$/tests/test_data/transform/ontologies/00900-mark-ontologies-as-static-dataset" />
+      <root url="file://$PROJECT_DIR$/tests/test_data/transform/ontologies/00900-mark-ontologies-as-static-dataset/rule.ttl" />
+    </SOURCES>
+  </library>
+</component>

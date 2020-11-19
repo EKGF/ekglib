@@ -438,6 +438,19 @@ def _naming_contexts(info):
             yield str(info.naming_contexts)
 
 
+_substitution_iri_map = {
+    # replace the 'placeholder' IRI in the serialized stream with the desired one
+    XSD.term('base64BinaryString').toPython(): XSD.term('base64Binary').toPython()
+}
+
+
+def _substitute_iris(serialized_graph):
+    bts = BytesIO(b"")
+    for frm, to in _substitution_iri_map.items():
+        bts.write(serialized_graph.getvalue().decode().replace(frm, to).encode())
+    return bts
+
+
 class LdapEntry:
     """ One LdapEntry represents, as the name suggests, one entry in LDAP, for which this class generates the
         RDF representation in one Graph that gets streamed to the given output stream.
@@ -601,21 +614,9 @@ class LdapEntry:
         status = self.entry.entry_status
         self._add((self.entry_iri, LDAP.entryStatus, Literal(status)))
 
-    _substitution_iri_map = {
-        # replace the 'placeholder' IRI in the serialized stream with the desired one
-        XSD.term('base64BinaryString').toPython(): XSD.term('base64Binary').toPython()
-    }
-
-    def _substitute_iris(self, serialized_graph):
-        bts = BytesIO(b"")
-        for frm, to in self._substitution_iri_map.items():
-            bts.write(serialized_graph.getvalue().decode().replace(frm, to).encode())
-        return bts
-
     def _graph_to_stream(self):
         str_stream = BytesIO(b"")
         serializer = plugin.get('ntriples', plugin.Serializer)(self.g)
         serializer.serialize(str_stream)
-        self.stream.write(self._substitute_iris(str_stream).getvalue())
-
+        self.stream.write(_substitute_iris(str_stream).getvalue())
 

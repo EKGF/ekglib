@@ -39,7 +39,7 @@ def parse_literal(cell) -> Optional[Literal]:
         date_time: datetime = cell
         if date_time.hour == 0 and date_time.minute == 0 and date_time.second < 2 and date_time.microsecond < 32:
             return Literal(date_time.date(), datatype=XSD.date)
-        return Literal(cell, datatype=XSD.datetime)
+        return Literal(cell, datatype=XSD.dateTime)
     elif isinstance(cell, date):
         return Literal(cell, datatype=XSD.date)
     elif isinstance(cell, datetime):
@@ -66,13 +66,13 @@ def numpy_type_2_xsd_type(value: Any) -> (Any, URIRef):
         date_time: datetime = value
         if date_time.hour == 0 and date_time.minute == 0 and date_time.second < 2 and date_time.microsecond < 32:
             return date_time.date(), XSD.date
-        return value, XSD.datetime
+        return value, XSD.dateTime
     if isinstance(value, date):
         return value, XSD.date
     if is_datetime(value):
-        return value, XSD.datetime
+        return value, XSD.dateTime
     elif isinstance(value, Timestamp):
-        return value, XSD.datetime
+        return value, XSD.dateTime
     warning(f"Unknown type in numpy_type_2_xsd_type: {type(value)}")
     return value, None
 

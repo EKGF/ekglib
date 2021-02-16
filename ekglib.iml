@@ -9,8 +9,9 @@
       <excludeFolder url="file://$MODULE_DIR$/env" />
       <excludeFolder url="file://$MODULE_DIR$/junit" />
       <excludeFolder url="file://$MODULE_DIR$/tests/test_data" />
+      <excludeFolder url="file://$MODULE_DIR$/venv" />
     </content>
-    <orderEntry type="jdk" jdkName="Pipenv (ekglib)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.8 (ekglib)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="ekglib" level="project" />
   </component>

@@ -12,7 +12,7 @@ if [ -d ./venv38 ] ; then
   source venv38/bin/activate || exit $?
   echo "Inside Python 3.8 Virtual Environment"
 else
-  echo "WARNING: Cannot run tests, no Virtual Environment was found. Will create one NOW!" >&2
+  echo "WARNING: No Virtual Environment was found. Will create one NOW!" >&2
   python3 -m venv venv38 || exit $?
   source venv38/bin/activate || exit $?
   python3 -m pip install --upgrade pip wheel setuptools \
@@ -20,8 +20,7 @@ else
     && python3 -m pip install -r requirements.txt --no-cache-dir --use-feature=2020-resolver \
     && python3 -m pip wheel -r requirements.txt \
     || exit $?
-  echo "Virtual Enviroment has been initialised successfully, please re-run this script to run tests now"
-  exit 2
+  echo "Virtual Enviroment has been initialised successfully, will run the tests now"
 fi
 
 echo "========================== tests"

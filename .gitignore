@@ -34,3 +34,4 @@ test-ldap-*.nt
 README.html
 raw-data-*.ttl
 /xlsx-test3.ttl
+venv*/

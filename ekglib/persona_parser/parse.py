@@ -19,6 +19,7 @@ class PersonaParser:
         if not self.personaFile.exists():
             error("%s does not exist" % input_file_name)
         self.g = rdflib.Graph()
+        # TODO: Replace KGIRIs here
         self.g.parse(location=input_file_name, format='turtle')
         log_item("Number of triples", len(self.g))
         if self.verbose:

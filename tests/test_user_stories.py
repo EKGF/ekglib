@@ -15,6 +15,7 @@ class TestUserStoryParser:
             '--input', f'{test_data_dir}/test-user-story-001.ttl',
             '--output', test_output,
             '--kgiri-base', 'https://kg.your-company.kom',
+            '--kgiri-base-replace', 'https://placeholder.kg',
             '--verbose'
         ]
         main()

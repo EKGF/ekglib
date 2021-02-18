@@ -1,4 +1,4 @@
-@base              <https://kg.your-company.kom/id/> .
+@base              <https://placeholder.kg/id/> .
 @prefix story-svc: <https://ekgf.org/ontology/ekg-platform-story-service/> .
 @prefix owl:       <http://www.w3.org/2002/07/owl#> .
 @prefix persona:   <https://ekgf.org/ontology/persona/> .

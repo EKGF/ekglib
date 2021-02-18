@@ -33,7 +33,7 @@ def set_ekg_namespace_with_base(key: str, base: str, suffix: str):
 def set_kgiri_base(ekg_kgiri_base: URIRef):
     global kgiri_base
 
-    kgiri_base = ekg_kgiri_base
+    kgiri_base =  complete_ns_iri_ending(ekg_kgiri_base)
 
     set_ekg_namespace('KGIRI_BASE', kgiri_base)
     set_ekg_namespace_with_base('KGIRI', kgiri_base, kgiri_id_suffix)
@@ -45,7 +45,7 @@ def set_kgiri_base(ekg_kgiri_base: URIRef):
 def set_kgiri_base_replace(ekg_kgiri_base_replace: URIRef):
     global kgiri_base_replace
 
-    kgiri_base_replace = ekg_kgiri_base_replace
+    kgiri_base_replace =  complete_ns_iri_ending(ekg_kgiri_base_replace)
 
     set_ekg_namespace('KGIRI_BASE_REPLACE', kgiri_base_replace)
 

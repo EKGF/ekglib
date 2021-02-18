@@ -13,7 +13,8 @@ class TestConceptParser:
             'pytest',
             '--input', f'{test_data_dir}/test-concept-001.ttl',
             '--output', output_file,
-            '--kgiri-base', 'https://kg.your-company.kom'
+            '--kgiri-base', 'https://kg.your-company.kom',
+            '--kgiri-base-replace', 'https://placeholder.kg'
         ]
         ekglib.concept_parser.parse.main()
         with open(output_file) as f:

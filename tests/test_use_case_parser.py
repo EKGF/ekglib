@@ -14,6 +14,7 @@ class TestUseCaseParser:
             '--input', f'{test_data_dir}/test-use-case-001.ttl',
             '--output', output_file,
             '--kgiri-base', 'https://kg.your-company.kom',
+            '--kgiri-base-replace', 'https://placeholder.kg',
             '--verbose'
         ]
         ekglib.use_case_parser.parse.main()

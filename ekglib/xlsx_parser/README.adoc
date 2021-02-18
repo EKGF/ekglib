@@ -42,6 +42,9 @@ KGIRI:
                         company.kom/)
   --kgiri-prefix KGIRI_PREFIX
                         The prefix to be used to construct KGIRIs
+  --kgiri-base-replace KGIRI_BASE_REPLACE
+                        The KGIRI base fragment that is to be replaced with the EKG_KGIRI_BASE
+                        (default is EKG_KGIRI_BASE_REPLACE=https://placeholder.kg)
 
 Data Source:
   --data-source-code DATA_SOURCE_CODE

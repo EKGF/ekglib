@@ -19,6 +19,7 @@ usage: python3 -m ekglib.transform_rules_capture [-h] [--verbose]
         --data-source-code          DATA_SOURCE_CODE
         --git-branch                GIT_BRANCH
         --kgiri-base                KGIRI_BASE
+        --kgiri-base-replace        KGIRI_BASE_REPLACE
         --s3-endpoint               S3_ENDPOINT
         --s3-bucket                 S3_BUCKET
         --s3-create-bucket
@@ -52,6 +53,9 @@ KGIRI:
                         A root level URL to be used for all KGIRI types
                         (default is EKG_KGIRI_BASE=https://kg.your-
                         company.kom/) (default: https://kg.your-company.kom/)
+  --kgiri-base-replace KGIRI_BASE_REPLACE
+                        The KGIRI base fragment that is to be replaced with the EKG_KGIRI_BASE
+                        (default is EKG_KGIRI_BASE_REPLACE=https://placeholder.kg)
 
 Object Store:
   --s3-endpoint S3_ENDPOINT

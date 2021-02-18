@@ -14,6 +14,7 @@ class TestPersonaParser:
             '--input', f'{test_data_dir}/test-persona-001.ttl',
             '--output', output_file,
             '--kgiri-base', 'https://kg.your-company.kom',
+            '--kgiri-base-replace', 'https://placeholder.kg',
         ]
         ekglib.persona_parser.parse.main()
         with open(output_file) as f:

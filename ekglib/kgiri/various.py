@@ -8,12 +8,13 @@ import inflection
 from pandas._libs.tslibs.timestamps import Timestamp  # noqa
 from rdflib import URIRef, Literal
 
-from .namespace import EKG_NS, set_kgiri_base
+from .namespace import EKG_NS, set_kgiri_base, set_kgiri_base_replace
 from ..string import strip_end
 
 
 def set_cli_params(parser):
     ekg_kgiri_base = URIRef(os.getenv('EKG_KGIRI_BASE', EKG_NS['KGIRI_BASE']))
+    ekg_kgiri_base_replace = URIRef(os.getenv('EKG_KGIRI_BASE_REPLACE', EKG_NS['KGIRI_BASE_REPLACE']))
     group = parser.add_argument_group('KGIRI')
     group.add_argument(
         '--kgiri-base',
@@ -21,6 +22,12 @@ def set_cli_params(parser):
         default=ekg_kgiri_base
     )
     set_kgiri_base(ekg_kgiri_base)  # should call this again after 'parse_args'
+    group.add_argument(
+        '--kgiri-base-replace',
+        help=f'The KGIRI base fragment that is to be replaced with the EKG_KGIRI_BASE (default is EKG_KGIRI_BASE_REPLACE={ekg_kgiri_base_replace})',
+        default=ekg_kgiri_base_replace
+    )
+    set_kgiri_base_replace(ekg_kgiri_base_replace)  # should call this again after 'parse_args'
     return group
 
 

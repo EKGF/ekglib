@@ -1,4 +1,4 @@
-PREFIX kggraph: <https://kg.your-company.kom/graph/>
+PREFIX kggraph: <https://placeholder.kg/graph/>
 #
 # This is sort of a conditional DROP GRAPH statement:
 # only delete the target graph if the raw graph exists.

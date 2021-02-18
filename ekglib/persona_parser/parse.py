@@ -4,7 +4,7 @@ from pathlib import Path
 import rdflib
 from rdflib.namespace import RDF, RDFS
 
-from ..kgiri import set_kgiri_base, set_cli_params as kgiri_set_cli_params
+from ..kgiri import set_kgiri_base, set_kgiri_base_replace, set_cli_params as kgiri_set_cli_params, kgiri_replace_iri_in_graph
 from ..log import error, warning, log_item
 from ..namespace import PERSONA
 
@@ -19,8 +19,8 @@ class PersonaParser:
         if not self.personaFile.exists():
             error("%s does not exist" % input_file_name)
         self.g = rdflib.Graph()
-        # TODO: Replace KGIRIs here
         self.g.parse(location=input_file_name, format='turtle')
+        kgiri_replace_iri_in_graph(self.g)
         log_item("Number of triples", len(self.g))
         if self.verbose:
             for s, p, o in self.g:
@@ -56,6 +56,7 @@ def main():
     kgiri_set_cli_params(parser)
     args = parser.parse_args()
     set_kgiri_base(args.kgiri_base)
+    set_kgiri_base_replace(args.kgiri_base_replace)
 
     processor = PersonaParser(args.input, args.verbose)
     processor.check()

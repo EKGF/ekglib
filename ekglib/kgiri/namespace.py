@@ -1,9 +1,11 @@
-from rdflib import Namespace, URIRef
+from rdflib import Namespace, URIRef, Literal, Graph
 from six import string_types
 
 kgiri_base = None
 kgiri_id_suffix = 'id/'
 kgiri_graph_suffix = 'graph/'
+
+kgiri_base_replace = None
 
 EKG_NS = {}
 
@@ -37,5 +39,41 @@ def set_kgiri_base(ekg_kgiri_base: URIRef):
     set_ekg_namespace_with_base('KGIRI', kgiri_base, kgiri_id_suffix)
     set_ekg_namespace_with_base('KGGRAPH', kgiri_base, kgiri_graph_suffix)
 
+    print(f"SET kgiri_base to '{kgiri_base}'")
+
+
+def set_kgiri_base_replace(ekg_kgiri_base_replace: URIRef):
+    global kgiri_base_replace
+
+    kgiri_base_replace = ekg_kgiri_base_replace
+
+    set_ekg_namespace('KGIRI_BASE_REPLACE', kgiri_base_replace)
+
+    print(f"SET kgiri_base_replace to '{kgiri_base_replace}'")
+
+def kgiri_replace(value):
+    if kgiri_base_replace == kgiri_base:
+        print(f"Replace not active: {value}")
+        return value
+    elif isinstance(value, URIRef):
+        print(f"kgiri_base_replace={kgiri_base_replace} kgiri_base={kgiri_base}")
+        replaced = URIRef(value.replace(kgiri_base_replace, kgiri_base))
+        if replaced != value:
+            print(f"Replacing IRI: {value} with: {replaced}")
+        else:
+            print(f"Keeping IRI: {replaced}")
+        return replaced
+    else:
+        print(f"Keeping Literal: {value}")
+        return value
+
+def kgiri_replace_iri_in_graph(g: Graph):
+    for s, p, o in g:
+        g.remove((s, p, o))
+        g.add((kgiri_replace(s), kgiri_replace(p), kgiri_replace(o)))
+
+def kgiri_replace_iri_in_literal(value: Literal):
+    return Literal(value.replace(kgiri_base_replace, kgiri_base))
 
 set_kgiri_base(URIRef('https://kg.your-company.kom'))
+set_kgiri_base_replace(URIRef('https://placeholder.kg'))

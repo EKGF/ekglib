@@ -5,6 +5,7 @@ import rdflib
 from rdflib import Graph, plugin
 
 from ..log import error, log_item
+from ..kgiri import kgiri_replace_iri_in_graph
 
 
 def load_rdf_file_into_graph(graph: rdflib.Graph, rdf_file: pathlib.Path):
@@ -12,6 +13,8 @@ def load_rdf_file_into_graph(graph: rdflib.Graph, rdf_file: pathlib.Path):
         error(f"File does not exist: {rdf_file}")
     with rdf_file.open() as f:
         graph.parse(source=f, format='turtle')  # TODO: Detect format so that we can support any RDF file
+        kgiri_replace_iri_in_graph(graph)
+
 
 
 def dump_as_ttl_to_stdout(graph: Graph):

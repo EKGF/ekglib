@@ -14,7 +14,8 @@ class TestTransformRuleParser:
             '--ontologies-root', f'{test_data_dir}/../../ontologies/',
             '--output', output,
             '--data-source-code', 'abc',
-            '--kgiri-base', 'https://kg.your-company.kom'
+            '--kgiri-base', 'https://kg.your-company.kom',
+            '--kgiri-base-replace', 'https://placeholder.kg'
         ]
         ekglib.transform_rule_parser.parse.main()
         with open(output) as f:
@@ -65,4 +66,4 @@ class TestTransformRuleParser:
         ''')  # noqa: W293
         print(actual)
         self.maxDiff = None
-        assert expected == actual
+        assert actual == expected

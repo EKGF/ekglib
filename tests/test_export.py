@@ -13,7 +13,7 @@ class TestExport:
     #     f"Can only run when SPARQL and S3 endpoints are available on {os.uname()[1]}"
     # )
     @pytest.mark.xfail
-    def test_export(self, local_sparql_port, local_s3_port):
+    def test_export(self, kgiri_base, local_sparql_port, local_s3_port):
         sys.argv = [
             'pytest',
             '--data-source-code', 'test-data-source',
@@ -28,7 +28,7 @@ class TestExport:
             '--sparql-endpoint-database', 'test',
             '--sparql-endpoint-userid', 'admin',
             '--sparql-endpoint-passwd', 'admin',
-            '--kgiri-base', 'https://kg.your-company.kom',
+            '--kgiri-base', kgiri_base,
             '--verbose'
         ]
         assert 0 == ekglib.step_export.main()

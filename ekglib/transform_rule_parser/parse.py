@@ -9,7 +9,8 @@ from rdflib import Graph, Literal, URIRef
 from rdflib.namespace import RDF, RDFS, OWL, XSD
 
 from ..data_source import set_cli_params as data_source_set_cli_params
-from ..kgiri import EKG_NS, set_kgiri_base, set_kgiri_base_replace, set_cli_params as kgiri_set_cli_params, kgiri_replace_iri_in_literal
+from ..kgiri import EKG_NS, set_kgiri_base, set_kgiri_base_replace, set_cli_params as kgiri_set_cli_params, \
+                    kgiri_replace_iri_in_literal
 from ..log import error, warning, log_error, log_list, log_item, log_iri
 from ..main import load_rdf_file_into_graph
 from ..namespace import TRANSFORM, PROV, RAW, DATAOPS, DATASET
@@ -275,8 +276,8 @@ def main():
     kgiri_set_cli_params(parser)
     data_source_set_cli_params(parser)
     args = parser.parse_args()
-    set_kgiri_base(URIRef(args.kgiri_base))
-    set_kgiri_base_replace(URIRef(args.kgiri_base_replace))
+    set_kgiri_base(args.kgiri_base)
+    set_kgiri_base_replace(args.kgiri_base_replace)
 
     if args.output is None:
         log_item("Streaming output to", "stdout")

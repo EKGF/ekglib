@@ -14,8 +14,8 @@ kgiri_replace_enabled: bool = False
 EKG_NS = {}
 
 # NB: Using a private logger, we can't use the log library as it would introduce a cyclic dependency
-def _log(msg):
-    print(f"\r{msg}")
+def _log_item(item, msg):
+    print("\r - {:<26}: [{:}]".format(item, msg))
 
 def complete_ns_iri_ending(iri):
     if isinstance(iri, string_types):
@@ -41,7 +41,7 @@ def set_kgiri_base(ekg_kgiri_base: Optional[str]):
     global kgiri_base
 
     if not ekg_kgiri_base:
-        raise(PrefixException("kgiri_base prefix missing"))
+        raise PrefixException("kgiri_base prefix missing")
 
     iri = complete_ns_iri_ending(ekg_kgiri_base)
     if kgiri_base is iri:
@@ -52,7 +52,7 @@ def set_kgiri_base(ekg_kgiri_base: Optional[str]):
     set_ekg_namespace_with_base('KGIRI', kgiri_base, kgiri_id_suffix)
     set_ekg_namespace_with_base('KGGRAPH', kgiri_base, kgiri_graph_suffix)
 
-    _log(f"SET kgiri_base to '{kgiri_base}'")
+    _log_item("kgiri_base", kgiri_base)
 
 
 def set_kgiri_base_replace(ekg_kgiri_base_replace: Optional[str]):
@@ -66,16 +66,12 @@ def set_kgiri_base_replace(ekg_kgiri_base_replace: Optional[str]):
     if kgiri_base_replace is iri:
         return
     kgiri_base_replace = iri
-
-    _log(f"SET kgiri_base_replace to '{kgiri_base_replace}'")
-
     set_ekg_namespace('KGIRI_BASE_REPLACE', kgiri_base_replace)
 
     kgiri_replace_enabled = (kgiri_base_replace and kgiri_base_replace != kgiri_base)
-    if kgiri_replace_enabled:
-        _log(f"Replacing base IRI prefixes: {kgiri_base_replace} with: {kgiri_base}")
-    else:
-        _log(f"Keeping base IRI prefixes: {kgiri_base}. IRI replacement is not active.")
+
+    _log_item("kgiri_base_replace", kgiri_base_replace)
+    _log_item("kgiri replacement", "enabled" if kgiri_replace_enabled else "diabled")
 
 
 def kgiri_replace(value):

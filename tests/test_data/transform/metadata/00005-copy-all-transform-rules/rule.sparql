@@ -1,4 +1,4 @@
-PREFIX kggraph: <https://kg.your-company.kom/graph/>
+PREFIX kggraph: <https://placeholder.kg/graph/>
 PREFIX afn: <http://jena.hpl.hp.com/ARQ/function#>
 #
 # Copy all transform rules from the raw datasets to the target graph,

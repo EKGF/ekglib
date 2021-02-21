@@ -7,7 +7,7 @@ from ekglib.ldap_parser_to_file import main as ldap_parser_to_file
 from ekglib.log import log_item
 
 
-def test_export_from_ldapclient_dot_com(test_data_dir, tmpdir):
+def test_export_from_ldapclient_dot_com(test_data_dir, kgiri_base, tmpdir):
     """Generic test that should always work since ldapclient.com is always up and running
     """
     output_file_name = f'{tmpdir}/test-ldap-1.nt'
@@ -25,7 +25,7 @@ def test_export_from_ldapclient_dot_com(test_data_dir, tmpdir):
                     ldap_log=False,
                     ldap_timeout=60,
                     data_source_code='ldap',
-                    kgiri_base='https://kg.your-company.kom',
+                    kgiri_base=kgiri_base,
                     verbose=False
                 )
         ):
@@ -36,7 +36,7 @@ def test_export_from_ldapclient_dot_com(test_data_dir, tmpdir):
             print(line, end='')
 
 
-def test_export_from_d_trust_dot_de(test_data_dir):
+def test_export_from_d_trust_dot_de(test_data_dir, kgiri_base):
     """Generic test that should always work since directory.d-trust.de is always up and running.
        This is the LDAP server of the "Bundesdruckerei" (government printer/publisher), see
        https://www.bundesdruckerei.de/en/LDAP-Request
@@ -57,7 +57,7 @@ def test_export_from_d_trust_dot_de(test_data_dir):
                         ldap_log=False,
                         ldap_timeout=60,
                         data_source_code='ldap',
-                        kgiri_base='https://kg.your-company.kom',
+                        kgiri_base=kgiri_base,
                         verbose=False
                     )
             ):
@@ -69,7 +69,7 @@ def test_export_from_d_trust_dot_de(test_data_dir):
 
 
 @unittest.skip
-def test_export_from_a_trust_dot_at(test_data_dir):
+def test_export_from_a_trust_dot_at(test_data_dir, kgiri_base):
     """Generic test that should always work since ldap.a-trust.at is always up and running.
 
        Running IBM Directory 6.3
@@ -90,7 +90,7 @@ def test_export_from_a_trust_dot_at(test_data_dir):
                         ldap_log=False,
                         ldap_timeout=60,
                         data_source_code='ldap',
-                        kgiri_base='https://kg.your-company.kom',
+                        kgiri_base=kgiri_base,
                         verbose=False
                     )
             ):
@@ -101,7 +101,7 @@ def test_export_from_a_trust_dot_at(test_data_dir):
                 print(line, end='')
 
 
-def test_export_from_forumsys_dot_com(test_data_dir):
+def test_export_from_forumsys_dot_com(test_data_dir, kgiri_base):
     """Generic test that should always work since ldap.forumsys.com is always up and running
     """
     with TemporaryDirectory() as output_dir:
@@ -120,7 +120,7 @@ def test_export_from_forumsys_dot_com(test_data_dir):
                         ldap_log=False,
                         ldap_timeout=60,
                         data_source_code='ldap',
-                        kgiri_base='https://kg.your-company.kom',
+                        kgiri_base=kgiri_base,
                         verbose=False
                     )
             ):

@@ -18,7 +18,8 @@ usage: python3 -m ekglib.ldap_parser_to_file [-h] --output OUTPUT [--verbose]
                [--ldap-search-filter LDAP_SEARCH_FILTER]
                --ldap-bind-dn LDAP_BIND_DN --ldap-bind-auth LDAP_BIND_AUTH
                --ldap-host LDAP_HOST --ldap-port LDAP_PORT [--ldap-log]
-               [--kgiri-base KGIRI_BASE] --data-source-code DATA_SOURCE_CODE
+               [--kgiri-base KGIRI_BASE]  [--kgiri-base-replace KGIRI_BASE_REPLACE]
+               --data-source-code DATA_SOURCE_CODE
 
 Capture all information from the given LDAP endpoint and store it as RDF "raw data" file
 
@@ -42,6 +43,9 @@ optional arguments:
 KGIRI:
   --kgiri-base KGIRI_BASE
                         A root level URL to be used for all KGIRI types (default is EKG_KGIRI_BASE=https://kg.your-company.kom/)
+  --kgiri-base-replace KGIRI_BASE_REPLACE
+                        The KGIRI base fragment that is to be replaced with the EKG_KGIRI_BASE
+                        (default is EKG_KGIRI_BASE_REPLACE=https://placeholder.kg)
 
 Data Source:
   --data-source-code DATA_SOURCE_CODE

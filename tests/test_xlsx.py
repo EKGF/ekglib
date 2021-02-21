@@ -8,6 +8,7 @@ from rdflib import RDF, term, Literal, XSD
 
 import ekglib
 from ekglib.string import argv_list
+from ekglib.kgiri import set_kgiri_base
 from ekglib.xlsx_parser.parser import convert_to_date, main, parse_literal
 
 
@@ -28,8 +29,7 @@ class TestXlsxProcessor:
         expected = 'referenceId'
         assert expected == actual
 
-    def test_single_column_sheet_generates_string_value_triple(self, test_data_dir):
-        kgiri_base = "https://kg.your-company.kom"  # Don't use fixture for this since the .xslx file uses this one
+    def test_single_column_sheet_generates_string_value_triple(self, kgiri_base, test_data_dir):
         args = argparse.Namespace(
             input=f'{test_data_dir}/single_sheet_single_column.xlsx',
             verbose=True,
@@ -43,6 +43,7 @@ class TestXlsxProcessor:
             strip_any_prefix=False,
             output=None
         )
+        set_kgiri_base(kgiri_base)
         parser = ekglib.XlsxParser(args)
 
         rdf_string_value = ekglib.RAW.StringValue
@@ -58,9 +59,12 @@ class TestXlsxProcessor:
         }
 
     def test_xlsx_test1_dot_xlsx(self, kgiri_base, test_data_dir):
+        test_xlsx_file = f'{test_data_dir}/xlsx-test1.xlsx'
+        if not os.path.isfile(test_xlsx_file):
+            pytest.skip(f'Missing {test_xlsx_file}')
         sys.argv = [
             'pytest',
-            '--input', f'{test_data_dir}/xlsx-test1.xlsx',
+            '--input', test_xlsx_file,
             '--verbose',
             '--kgiri-base', kgiri_base,
             '--kgiri-prefix', 'abc',
@@ -70,26 +74,28 @@ class TestXlsxProcessor:
         assert 0 == main()
 
     def test_xlsx_test2_dot_xlsx(self, kgiri_base, test_data_dir):
-        if not os.path.isfile(f'{test_data_dir}/xlsx-test2.xlsx'):
-            pytest.skip('Missing test_data/xlsx-test2.xlsx')
+        test_xlsx_file = f'{test_data_dir}/xlsx-test2.xlsx'
+        if not os.path.isfile(test_xlsx_file):
+            pytest.skip(f'Missing {test_xlsx_file}')
         sys.argv = [
             'pytest',
-            '--input', f'{test_data_dir}/xlsx-test2.xlsx',
+            '--input', test_xlsx_file,
             '--kgiri-base', kgiri_base,
             '--kgiri-prefix', 'abc',
             '--data-source-code', 'def',
-            '--key-column-number', 1
+            '--key-column-number', '1'
         ]
         assert 0 == main()
 
     def test_xlsx_test3_dot_xlsx(
             self, kgiri_base, test_data_dir, xlsx_ignored_values, xlsx_ignored_prefixes, xlsx_skip_sheets
     ):
-        if not os.path.isfile(f'{test_data_dir}/xlsx-test3.xlsx'):
-            pytest.skip('Missing test_data/xlsx-test3.xlsx')
+        test_xlsx_file = f'{test_data_dir}/xlsx-test3.xlsx'
+        if not os.path.isfile(test_xlsx_file):
+            pytest.skip(f'Missing {test_xlsx_file}')
         sys.argv = [
             'pytest',
-            '--input', f'{test_data_dir}/xlsx-test3.xlsx',
+            '--input', test_xlsx_file,
             '--ignored-values', argv_list(xlsx_ignored_values),
             '--ignored-prefixes', argv_list(xlsx_ignored_prefixes),
             '--skip-sheets', argv_list(xlsx_skip_sheets),
@@ -103,11 +109,12 @@ class TestXlsxProcessor:
     def test_xlsx_test3_dot_xlsx_to_file(
             self, kgiri_base, test_data_dir, xlsx_ignored_values, xlsx_ignored_prefixes, xlsx_skip_sheets
     ):
-        if not os.path.isfile(f'{test_data_dir}/xlsx-test3.xlsx'):
-            pytest.skip('Missing test_data/xlsx-test3.xlsx')
+        test_xlsx_file = f'{test_data_dir}/xlsx-test3.xlsx'
+        if not os.path.isfile(test_xlsx_file):
+            pytest.skip(f'Missing {test_xlsx_file}')
         sys.argv = [
             'pytest',
-            '--input', f'{test_data_dir}/xlsx-test3.xlsx',
+            '--input', test_xlsx_file,
             '--output', f'{test_data_dir}/../../xlsx-test3.ttl',
             '--ignored-values', argv_list(xlsx_ignored_values),
             '--ignored-prefixes', argv_list(xlsx_ignored_prefixes),

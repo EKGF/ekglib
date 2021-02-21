@@ -44,28 +44,44 @@ def local_s3_port():
     return require_port(9000, 'S3')
 
 
-def value_for_test(directory, name):
-    """Get a value from the given .test/<nane> file.
+def value_for_test(directory, name, default = None):
+    """Get a value from the given .test/<name> file.
     :param directory:
     :param name: the name of the single-line file that contains the value we're looking for
+    :param default: a default value
     :return: the value from the given file in the .test directory
     """
-    value_file = f'{directory}/../../.test/{name}'
+    value_file = f'{directory}/.test/{name}'
     if not os.path.isfile(value_file):
-        raise SkipTest(f'Missing {value_file}')
+        if default == None:
+            raise SkipTest(f'Missing {value_file} and no default has been specified')
+        dirFs = os.path.dirname(value_file)
+        try:
+            os.stat(dirFs)
+        except:
+            os.mkdir(dirFs)
+        with open(value_file, 'w') as f:
+            f.write("{}\n".format(default))
     with open(value_file, 'r') as f:
         return f.readline().strip('\n')
 
 
-def value_list_for_test(directory, name, defaults):
+def value_list_for_test(directory, name, defaults = None):
     """Get the values from the given .test/<nane> file as a list.
     :param directory:
     :param name: the name of the file that contains the values, one per row, we're looking for
     :param defaults: a list of default values
     :return: the list with the values from the given file in the .test directory
     """
-    value_file = f'{directory}/../../.test/{name}'
+    value_file = f'{directory}/.test/{name}'
     if not os.path.isfile(value_file):
+        if defaults == None:
+            raise SkipTest(f'Missing {value_file} and no default has been specified')
+        dirFs = os.path.dirname(value_file)
+        try:
+            os.stat(dirFs)
+        except:
+            os.mkdir(dirFs)
         with open(value_file, 'w') as f:
             for item in defaults:
                 f.write("{}\n".format(item))
@@ -75,7 +91,7 @@ def value_list_for_test(directory, name, defaults):
 
 @pytest.fixture
 def kgiri_base(test_data_dir):
-    return value_for_test(test_data_dir, 'kgiri-base')
+    return value_for_test(test_data_dir, 'kgiri-base', 'https://kg.your-company.kom')
 
 
 @pytest.fixture

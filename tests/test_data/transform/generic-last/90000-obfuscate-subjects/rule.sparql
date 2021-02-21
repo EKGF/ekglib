@@ -2,7 +2,7 @@
 # Obfuscate all subject IRIs in all graphs except the *-raw graphs
 #
 PREFIX afn: <http://jena.hpl.hp.com/ARQ/function#>
-PREFIX kgiri: <https://kg.your-company.kom/id/>
+PREFIX kgiri: <https://placeholder.kg/id/>
 
 DELETE {
      GRAPH ?g {

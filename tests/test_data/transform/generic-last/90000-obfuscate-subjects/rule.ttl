@@ -4,7 +4,7 @@
 @prefix transform: <https://ekgf.org/ontology/step-transform/> .
 @prefix xs:        <http://www.w3.org/2001/XMLSchema#> .
 
-<https://kg.your-company.kom/id/rule-90000-obfuscate-subjects>
+<https://placeholder.kg/id/rule-90000-obfuscate-subjects>
     a                            transform:SPARQLRule ;
     rdfs:label                   "Obfuscate the subject IRIs" ;
     transform:createsProvenance  "false"^^xs:boolean ;

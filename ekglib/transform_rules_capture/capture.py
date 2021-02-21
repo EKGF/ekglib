@@ -9,7 +9,7 @@ from rdflib.namespace import RDF
 from ..data_source import set_cli_params as data_source_set_cli_params
 from ..dataset.various import export_graph
 from ..git import set_cli_params as git_set_cli_params
-from ..kgiri import set_kgiri_base, EKG_NS, set_cli_params as kgiri_set_cli_params
+from ..kgiri import set_kgiri_base, set_kgiri_base_replace, EKG_NS, set_cli_params as kgiri_set_cli_params
 from ..log import error, warning, log, log_item, log_iri, log_error
 from ..namespace import RAW
 from ..s3 import S3ObjectStore, set_cli_params as s3_set_cli_params
@@ -122,6 +122,7 @@ def main():
     s3_set_cli_params(parser)
     args = parser.parse_args()
     set_kgiri_base(args.kgiri_base)
+    set_kgiri_base_replace(args.kgiri_base_replace)
 
     processor = TransformRulesCapture(args)
     processor.capture()

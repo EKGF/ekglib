@@ -1,4 +1,4 @@
-@base              <https://placeholder.kg/id/> .
+@base              <https://ekg.acme.com/id/> .
 @prefix story-svc: <https://ekgf.org/ontology/ekg-platform-story-service/> .
 @prefix owl:       <http://www.w3.org/2002/07/owl#> .
 @prefix persona:   <https://ekgf.org/ontology/persona/> .
@@ -32,7 +32,7 @@
     a                                 story:UserStory ;
     story:key                         "new-thing" ;
     rdfs:label                        "Create a new Thing" ;
-    story-svc:sparqlStatementFileName "test-user-story-001.sparql" ;
+    story-svc:sparqlStatementFileName "test-user-story-002.sparql" ;
     story-svc:shouldBeSuppliedBy      <ekg-platform-story-service> ;
     use-case:usedIn                   <use-case-new-things> ;
     story:hasPersona                  <persona-professional> ;

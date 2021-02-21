@@ -8,7 +8,7 @@ import ekglib
 class TestTransformRulesCapture:
 
     @pytest.mark.xfail
-    def test_transform_rule_capture(self, test_data_dir, local_s3_port):
+    def test_transform_rule_capture(self, kgiri_base, test_data_dir, local_s3_port):
         sys.argv = [
             'pytest',
             '--transform-root', f'{test_data_dir}/transform',
@@ -21,7 +21,8 @@ class TestTransformRulesCapture:
             '--aws-secret-access-key', 'NCMBGHIGM5SH0P531B80D8P53LHP5R2ZAXCGHEOF',
             '--git-branch', 'test-branch',
             '--s3-create-bucket',
-            '--kgiri-base', 'https://kg.your-company.kom',
+            '--kgiri-base', kgiri_base,
+            '--kgiri-base-replace', 'https://placeholder.kg',
             '--verbose'
         ]
         assert 0 == ekglib.transform_rules_capture.main()

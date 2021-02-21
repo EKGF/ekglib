@@ -1,2 +1,2 @@
-PREFIX kggraph: <https://placeholder.kg/graph/>
+PREFIX kggraph: <https://ekg.acme.com/graph/>
 SELECT * WHERE { GRAPH kggraph:foo { ?s ?p ?o }}

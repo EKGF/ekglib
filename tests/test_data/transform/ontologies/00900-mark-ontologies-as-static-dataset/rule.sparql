@@ -1,6 +1,6 @@
 PREFIX dcat: <http://www.w3.org/ns/dcat#>
-PREFIX kgiri: <https://kg.your-company.kom/id/>
-PREFIX kggraph: <https://kg.your-company.kom/graph/>
+PREFIX kgiri: <https://placeholder.kg/id/>
+PREFIX kggraph: <https://placeholder.kg/graph/>
 PREFIX dataset: <https://ekgf.org/ontology/dataset/>
 
 INSERT DATA {

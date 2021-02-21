@@ -4,7 +4,7 @@ from pathlib import Path
 import rdflib
 from rdflib.namespace import RDF, RDFS
 
-from ..kgiri import set_kgiri_base, set_cli_params as kgiri_set_cli_params
+from ..kgiri import set_kgiri_base, set_kgiri_base_replace, set_cli_params as kgiri_set_cli_params, kgiri_replace_iri_in_graph, kgiri_replace_iri_in_literal
 from ..log import log_item, log_error, warning
 from ..namespace import USERSTORY, EKGPSS
 
@@ -23,6 +23,7 @@ class UserStoryParser:
             return 1
         with self.userStoryFile.open('r') as file:
             self.g.parse(source=file, format='turtle')
+            kgiri_replace_iri_in_graph(self.g)
         log_item("Number of triples", len(self.g))
         for user_story in self.g.subjects(RDF.type, USERSTORY.UserStory):
             log_item("User Story", user_story)
@@ -77,7 +78,7 @@ class UserStoryParser:
             user_story,
             EKGPSS.sparqlStatementFileName,
             EKGPSS.hasNamedSparqlStatement,
-            sparql_literal
+            kgiri_replace_iri_in_literal(sparql_literal)
         )
         self.g.add((user_story, RDF.type, EKGPSS.SPARQLStatement))
         self.g.namespace_manager.bind("ekgp-uss", EKGPSS)
@@ -113,6 +114,7 @@ def main():
     kgiri_set_cli_params(parser)
     args = parser.parse_args()
     set_kgiri_base(args.kgiri_base)
+    set_kgiri_base_replace(args.kgiri_base_replace)
 
     processor = UserStoryParser(args.input, args.verbose)
     rc = processor.check()

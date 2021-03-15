@@ -23,7 +23,7 @@ def error(msg):
 
 
 def log_error(msg):
-    eprint("\rERROR: x {0}".format(msg))
+    eprint("\rERROR: {0}".format(msg))
 
 
 def log(msg):

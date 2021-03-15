@@ -229,8 +229,8 @@ class LdapParser:
             log_item('Naming Context', self.naming_context)
             for entry in self._process_search(conn=conn, base=self.naming_context, scope=ldap3.SUBTREE):
                 self.process_entry(entry)
-        except CannotCapture:
-            log_error('Cannot capture LDAP data')
+        except CannotCapture as err:
+            log_error('Process one, Cannot capture LDAP data {0}'.format(err))
             rc = 1
         return rc
 
@@ -246,8 +246,8 @@ class LdapParser:
                     continue
                 for entry in self._process_search(conn=conn, base=naming_context, scope=ldap3.SUBTREE):
                     self.process_entry(entry)
-        except CannotCapture:
-            log_error('Cannot capture LDAP data')
+        except CannotCapture as err:
+            log_error('Processing all, Cannot capture LDAP data {0}'.format(err))
             rc = 1
         return rc
 

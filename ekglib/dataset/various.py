@@ -134,7 +134,7 @@ def datasets_produced_by_pipeline(sparql_endpoint: SPARQLEndpoint, data_source_c
     if data_source_code == "backup":
         graphs = ("lgt-ekg", "ekgaudit")
         for graph in graphs:
-            graph_iri = {EKG_NS['KGGRAPH']}+graph
+            graph_iri = EKG_NS["KGGRAPH"] + graph
             yield graph_iri, data_source_code
     else:
         def _query() -> str:

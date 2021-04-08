@@ -131,52 +131,57 @@ def datasets_produced_by_pipeline(sparql_endpoint: SPARQLEndpoint, data_source_c
 
     TODO: Also return size
     """
-
-    def _query() -> str:
-        return textwrap.dedent(f"""
-            PREFIX dataops: <{DATAOPS}>
-            PREFIX dataset: <{DATASET}>
-            PREFIX kgiri:   <{EKG_NS['KGIRI']}>
-            PREFIX kggraph: <{EKG_NS['KGGRAPH']}>
-            
-            CONSTRUCT {{
-                ?pipeline a dataops:Pipeline ;
-                    dataset:dataSourceCode ?dataSourceCode
-                .
-                ?dataset
-                    dataops:createdByPipeline ?pipeline ;
-                    dataset:inGraph ?graphIRI ;
-                    dataset:datasetCode ?datasetCode ;
-                    # dataset:numberOfTriples ?numberOfTriples
-                .
-            }}
-            WHERE {{
-                GRAPH ?g {{
-                    BIND("{data_source_code}" as ?dataSourceCode)
+    if data_source_code == "backup":
+        graphs = ("lgt-ekg", "ekgaudit")
+        for graph in graphs:
+            graph_iri = {EKG_NS['KGGRAPH']}+graph
+            yield graph_iri, data_source_code
+    else:
+        def _query() -> str:
+            return textwrap.dedent(f"""
+                PREFIX dataops: <{DATAOPS}>
+                PREFIX dataset: <{DATASET}>
+                PREFIX kgiri:   <{EKG_NS['KGIRI']}>
+                PREFIX kggraph: <{EKG_NS['KGGRAPH']}>
+                
+                CONSTRUCT {{
                     ?pipeline a dataops:Pipeline ;
                         dataset:dataSourceCode ?dataSourceCode
                     .
                     ?dataset
                         dataops:createdByPipeline ?pipeline ;
                         dataset:inGraph ?graphIRI ;
-                        dataset:datasetCode ?datasetCode
+                        dataset:datasetCode ?datasetCode ;
+                        # dataset:numberOfTriples ?numberOfTriples
                     .
                 }}
-                # GRAPH ?graph_iri {{
-                    # ?s ?p ?o .
-                    # BIND(COUNT(?s) AS ?numberOfTriples)
-                # }}
-            }}
-        """)  # noqa: W293
+                WHERE {{
+                    GRAPH ?g {{
+                        BIND("{data_source_code}" as ?dataSourceCode)
+                        ?pipeline a dataops:Pipeline ;
+                            dataset:dataSourceCode ?dataSourceCode
+                        .
+                        ?dataset
+                            dataops:createdByPipeline ?pipeline ;
+                            dataset:inGraph ?graphIRI ;
+                            dataset:datasetCode ?datasetCode
+                        .
+                    }}
+                    # GRAPH ?graph_iri {{
+                        # ?s ?p ?o .
+                        # BIND(COUNT(?s) AS ?numberOfTriples)
+                    # }}
+                }}
+            """)  # noqa: W293
 
-    log_item('Query', _query())
-    g = sparql_endpoint.construct_and_convert(_query())
-    for dataset_iri, graph_iri in g.subject_objects(DATASET.inGraph):
-        log_item('Dataset IRI', dataset_iri)
-        log_item('Graph IRI', graph_iri)
-        for dataset_code in g.objects(dataset_iri, DATASET.datasetCode):
-            log_item('Dataset Code', dataset_code)
-            yield graph_iri, dataset_code
+        log_item('Query', _query())
+        g = sparql_endpoint.construct_and_convert(_query())
+        for dataset_iri, graph_iri in g.subject_objects(DATASET.inGraph):
+            log_item('Dataset IRI', dataset_iri)
+            log_item('Graph IRI', graph_iri)
+            for dataset_code in g.objects(dataset_iri, DATASET.datasetCode):
+                log_item('Dataset Code', dataset_code)
+                yield graph_iri, dataset_code
     # exit(1)
     # results = sparql_endpoint.execute_csv_query(query).iter_lines()
     # for graph_iri, dataset_code in [(row['graph_iri'], row['data_source_code']) for row in results]:

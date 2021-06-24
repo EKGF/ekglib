@@ -23,6 +23,9 @@ View the Project on Github https://github.com/EKGF/ekglib[here].
 - link:ekglib/transform_rule_parser/[Transform Rule Parser]
 - link:ekglib/transform_rules_capture/[Transform Rules Capture]
 - link:ekglib/transform_rules_execute/[Transform Rules Executor]
+- link:ekglib/story_validate_rule_parser/[Story Validate Rule Parser]
+- link:ekglib/story_validate_rules_capture/[Story Vaidate Rules Capture]
+- link:ekglib/story_validate_rules_execute/[Story Validate Rules Executor]
 - link:ekglib/use_case_parser/[Use Case Parser]
 - link:ekglib/user_story_parser/[User Story Parser]
 

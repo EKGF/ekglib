@@ -24,7 +24,7 @@ the given SPARQL endpoint
 optional arguments:
   -h, --help            show this help message and exit
   --verbose, -v         verbose output
-  --transform-root STORY_VALIDATE_ROOT
+  --story-validate-root STORY_VALIDATE_ROOT
                         The root directory where all rule subdirectories can
                         be found
   --static-datasets-root STATIC_DATASETS_ROOT

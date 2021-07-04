@@ -4,7 +4,7 @@
 #
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 
-python_version=3.8.3
+python_version=3.8.4
 # python_version=3.9.0rc1  # Does not work yet, pandas binary compile (C code) gives errors
 
 flag_file="/tmp/ekglib-last-checked-environment.flag"

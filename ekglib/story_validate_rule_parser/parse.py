@@ -41,7 +41,7 @@ def add_story_validate_rule_namespaces(rule_graph: Graph):
     rule_graph.namespace_manager.bind('story-validate', VALIDATE)
 
 
-class TransformRuleParser:
+class StoryValidateRuleParser:
     """Checks each `rule.ttl` file in each subdirectory of `/metadata/story-validate` to
     see if it refers to `.sparql_endpoint` files that are meant to be used by the "Story Validate Step".
     Each of these `.sparql_endpoint` files is then imported (its contents) into a new version of
@@ -257,7 +257,7 @@ class TransformRuleParser:
 
 
 def runit(args, stream) -> int:
-    processor = StroyValidateRuleParser(args, input_file_name=args.input)
+    processor = StoryValidateRuleParser(args, input_file_name=args.input)
     processor.check()
     return processor.dump(stream)
 

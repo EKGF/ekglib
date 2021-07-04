@@ -35,7 +35,7 @@ class StoryValidateRulesExecute:
         self.list_rules()
 
     def _filter_out_unused(self):  # TODO: Finish this
-        for rule in self.g.subjects(RDF.type, VALDATE.Rule):
+        for rule in self.g.subjects(RDF.type, VALIDATE.Rule):
             log_item('Rule', rule)
 
     def list_rules(self):

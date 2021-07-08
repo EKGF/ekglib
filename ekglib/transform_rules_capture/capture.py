@@ -13,11 +13,11 @@ from ..kgiri import set_kgiri_base, set_kgiri_base_replace, EKG_NS, set_cli_para
 from ..log import error, warning, log, log_item, log_iri, log_error
 from ..namespace import RAW
 from ..s3 import S3ObjectStore, set_cli_params as s3_set_cli_params
-from ..story_validate_rule_parser import StoryValidateRuleParser, add_story_validate_rule_namespaces
+from ..transform_rule_parser import TransformRuleParser, add_transform_rule_namespaces
 
 
-class StoryValidateRulesCapture:
-    """Captures all story validate rule files from a given directory and uploads the resulting file to S3
+class TransformRulesCapture:
+    """Captures all transform rule files from a given directory and uploads the resulting file to S3
     """
     g: rdflib.Graph
 
@@ -28,12 +28,12 @@ class StoryValidateRulesCapture:
         self.data_source_code = args.data_source_code
         self.graph_iri = EKG_NS['KGGRAPH'].term(self.data_source_code)
         log_iri('Graph IRI', self.graph_iri)
-        self.story_validate_root = Path(args.story_validate_root)
-        if not self.story_validate_root.exists():
-            error(f"The provided story validate root directory does not exist: {self.story_validate_root}")
+        self.transform_root = Path(args.transform_root)
+        if not self.transform_root.exists():
+            error(f"The provided transform root directory does not exist: {self.transform_root}")
         log_item('Git Branch', self.args.git_branch)
         self.g = Graph()
-        add_story_validate_rule_namespaces(self.g)
+        add_transform_rule_namespaces(self.g)
 
     def capture(self):
         rules_directories = self.rules_directories_to_capture()
@@ -44,7 +44,7 @@ class StoryValidateRulesCapture:
         log('Finished Capture Phase')
 
     def rules_directories_to_capture(self):
-        all_rules_directories = [x for x in self.story_validate_root.iterdir() if x.is_dir()]
+        all_rules_directories = [x for x in self.transform_root.iterdir() if x.is_dir()]
         return list(filter(self.filter_rule_directory, all_rules_directories))
 
     def filter_rule_directory(self, rule_directory):
@@ -52,8 +52,8 @@ class StoryValidateRulesCapture:
         return stem == 'generic' or stem == 'generic-last' or stem == 'obfuscate' or stem == self.data_source_code
 
     def capture_rules_directory(self, rules_directory: Path):
-        rules_directory_iri = EKG_NS['KGIRI'].term("story-validate-rules-root-directory")
-        self.g.add((rules_directory_iri, RDF.type, RAW.term('StoryValidateRulesRoot')))
+        rules_directory_iri = EKG_NS['KGIRI'].term("transform-rules-root-directory")
+        self.g.add((rules_directory_iri, RDF.type, RAW.term('TransformRulesRoot')))
         log(f'Capturing {rules_directory.stem}-rules:')
         rule_directories = sorted([x for x in rules_directory.iterdir() if x.is_dir()])
         for directory in rule_directories:
@@ -61,8 +61,8 @@ class StoryValidateRulesCapture:
 
     def capture_rule_directory(self, rule_directory: Path, rules_directory_iri: URIRef):
         log_item('Rule Directory', rule_directory.stem)
-        rule_directory_iri = EKG_NS['KGIRI'].term("story-validate-rule-directory")
-        self.g.add((rule_directory_iri, RDF.type, RAW.term('StoryValidateRuleDirectory')))
+        rule_directory_iri = EKG_NS['KGIRI'].term("transform-rule-directory")
+        self.g.add((rule_directory_iri, RDF.type, RAW.term('TransformRuleDirectory')))
         self.g.add((rule_directory_iri, RAW.term('inRulesRootDirectory'), rules_directory_iri))
         rule_files = sorted([x for x in rule_directory.iterdir() if x.is_file() and x.suffix == '.ttl'])
         if len(rule_files) == 0:
@@ -73,10 +73,10 @@ class StoryValidateRulesCapture:
 
     def capture_rule_file(self, rule_file: Path, rule_directory_iri: URIRef):
         log_item('Rule File', f"{rule_file.parent.name}/{rule_file.name}")
-        rule_file_iri = EKG_NS['KGIRI'].term("story-validate-rule-file")
-        self.g.add((rule_file_iri, RDF.type, RAW.term('StoryValidateRuleFille')))
+        rule_file_iri = EKG_NS['KGIRI'].term("transform-rule-file")
+        self.g.add((rule_file_iri, RDF.type, RAW.term('TransformRuleFile')))
         self.g.add((rule_file_iri, RAW.term('inRuleDirectory'), rule_directory_iri))
-        processor = StoryValidateRuleParser(
+        processor = TransformRuleParser(
             self.args,
             input_file_name=rule_file,
             rule_file_iri=rule_file_iri
@@ -86,7 +86,7 @@ class StoryValidateRulesCapture:
             self.g.add(triple)
 
     def s3_file_name(self):
-        return f"story-validate-rules-{self.data_source_code}.ttl.gz"
+        return f"raw-data-transform-rules-{self.data_source_code}.ttl.gz"
 
     def export(self) -> int:
         try:
@@ -106,14 +106,14 @@ class StoryValidateRulesCapture:
 
 def main():
     parser = argparse.ArgumentParser(
-        prog='python3 -m ekglib.story_validate_rules_capture',
+        prog='python3 -m ekglib.transform_rules_capture',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-        description='Captures all story validate rule files from a given directory and uploads the resulting file to S3',
+        description='Captures all transform rule files from a given directory and uploads the resulting file to S3',
         epilog='Currently only supports turtle.',
         allow_abbrev=False
     )
     parser.add_argument('--verbose', '-v', help='verbose output', default=False, action='store_true')
-    parser.add_argument('--story-validate-root', help='The root directory where all rule subdirectories can be found',
+    parser.add_argument('--transform-root', help='The root directory where all rule subdirectories can be found',
                         required=True)
     parser.add_argument('--ontologies-root', help='The root directory where ontologies can be found', required=True)
     git_set_cli_params(parser)
@@ -124,7 +124,7 @@ def main():
     set_kgiri_base(args.kgiri_base)
     set_kgiri_base_replace(args.kgiri_base_replace)
 
-    processor = StoryValidateRulesCapture(args)
+    processor = TransformRulesCapture(args)
     processor.capture()
     return processor.export()
 

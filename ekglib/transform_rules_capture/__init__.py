@@ -1,6 +1,6 @@
 __all__ = [
-    'StoryValidateRulesCapture',
+    'TransformRulesCapture',
     'main',
 ]
 
-from .capture import StoryValidateRulesCapture, main
+from .capture import TransformRulesCapture, main

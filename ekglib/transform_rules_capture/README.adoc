@@ -1,4 +1,4 @@
-= Story Validate Rules Capture
+= Transform Rules Capture
 :icons: font
 
 WARNING: TODO
@@ -8,13 +8,13 @@ the resulting file to S3 (i.e. "the object store").
 
 [source]
 ----
-python3 -m ekglib.story_validate_rules_capture --help
+python3 -m ekglib.transform_rules_capture --help
 ----
 
 [source]
 ----
-usage: python3 -m ekglib.story_validate_rules_capture [-h] [--verbose]
-        --story-validate-root       STORY_VALIDATE_ROOT
+usage: python3 -m ekglib.transform_rules_capture [-h] [--verbose]
+        --transform-root            TRANSFORM_ROOT
         --ontologies-root           ONTOLOGIES_ROOT
         --data-source-code          DATA_SOURCE_CODE
         --git-branch                GIT_BRANCH
@@ -27,13 +27,13 @@ usage: python3 -m ekglib.story_validate_rules_capture [-h] [--verbose]
         --aws-access-key-id         AWS_ACCESS_KEY_ID
         --aws-secret-access-key     AWS_SECRET_ACCESS_KEY
 
-Captures all story validate rule files from a given directory and uploads the
+Captures all transform rule files from a given directory and uploads the
 resulting file to S3
 
 optional arguments:
   -h, --help            show this help message and exit
   --verbose, -v         verbose output (default: False)
-  --story_validate-root STORY_VALDATE_ROOT
+  --transform-root TRANSFORM_ROOT
                         The root directory where all rule subdirectories can
                         be found (default: None)
   --ontologies-root ONTOLOGIES_ROOT

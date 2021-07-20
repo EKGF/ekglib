@@ -7,7 +7,7 @@ from ..data_source import set_cli_params as data_source_set_cli_params
 from ..git import set_cli_params as git_set_cli_params
 from ..kgiri import EKG_NS, set_kgiri_base, set_cli_params as kgiri_set_cli_params
 from ..log import log, log_item, warning, log_iri, log_rule
-from ..namespace import DATASET, TRANSFORM, DATAOPS
+from ..namespace import DATASET, VALIDATE, DATAOPS
 from ..sparql import SPARQLEndpoint, set_cli_params as sparql_set_cli_params
 
 
@@ -17,7 +17,7 @@ from ..sparql import SPARQLEndpoint, set_cli_params as sparql_set_cli_params
 # TODO: Specify per rule whether its generic or dataset-specific.
 #
 class TransformRulesExecute:
-    """Finds each `rule.ttl` file in each subdirectory of `/metadata/transform` and executes the rule it describes
+    """Finds each `rule.ttl` file in each subdirectory of `/metadata/story-validate` and executes the rule it describes
     against the given SPARQL s3_endpoint.
     """
 
@@ -30,28 +30,28 @@ class TransformRulesExecute:
         self.g = self._query_all_rules()
         log_item('Found # rules', len(self.g))
         self._filter_out_unused()
-        log_rule('Executing Transform Rules')
+        log_rule('Executing Story Validation Rules')
         log_item('Number of triples', len(self.g))
         self.list_rules()
 
     def _filter_out_unused(self):  # TODO: Finish this
-        for rule in self.g.subjects(RDF.type, TRANSFORM.Rule):
+        for rule in self.g.subjects(RDF.type, VALIDATE.Rule):
             log_item('Rule', rule)
 
     def list_rules(self):
         log('Rules in execution order:')
-        for index, key in enumerate(sorted(self.g.objects(None, TRANSFORM.term('sortKey')))):
+        for index, key in enumerate(sorted(self.g.objects(None, VALIDATE.term('sortKey')))):
             log_item(f'Rule {index + 1}', key)
 
     def _query_all_rules(self) -> Graph:
-        log_item("Get Transform Rules", self.data_source_code)
+        log_item("Get Story Validation Rules", self.data_source_code)
         return self.sparql_endpoint.construct_and_convert(
             f"""\
             PREFIX owl: <http://www.w3.org/2002/07/owl#>
             PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
             PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
             PREFIX kggraph: <{EKG_NS['KGGRAPH']}>
-            PREFIX transform: <https://ekgf.org/ontology/step-transform/>
+            PREFIX validate: <https://ekgf.org/ontology/validation/>
 
             CONSTRUCT {{
                 ?rule ?p ?s .
@@ -75,10 +75,10 @@ class TransformRulesExecute:
         # - ensure that regardless of the actual IRI (which may be obfuscated even) we'll find
         #   the rule anyway.
         #
-        rule_iris = list(self.g.objects(None, TRANSFORM.sortKey))
+        rule_iris = list(self.g.objects(None, VALIDATE.sortKey))
         max_rules = len(rule_iris)
         for index, key in enumerate(sorted(rule_iris)):
-            for rule_iri in self.g.subjects(TRANSFORM.sortKey, key):
+            for rule_iri in self.g.subjects(VALIDATE.sortKey, key):
                 self.execute_rule(rule_iri, index, max_rules, key)
         return 0
 
@@ -86,7 +86,7 @@ class TransformRulesExecute:
         log_rule(f"Executing rule {index + 1}/{max_}: {key}")
         log_iri("Executing Rule", rule_iri)
         count = 0
-        for sparql_rule in self.g.objects(rule_iri, TRANSFORM.hasSPARQLRule):
+        for sparql_rule in self.g.objects(rule_iri, VALIDATE.hasSPARQLRule):
             count += 1
             self.sparql_endpoint.execute_sparql_statement(
                 self.add_detail_to_sparql_statement(self.data_source_code, rule_iri, sparql_rule)
@@ -94,7 +94,7 @@ class TransformRulesExecute:
         if count > 0:
             log_item("# SPARQL Rules", count)
         else:
-            warning(f"Transform rule has no SPARQL rule: {rule_iri}")
+            warning(f"Story validation rule has no SPARQL rule: {rule_iri}")
 
     def add_detail_to_sparql_statement(self, dataset_code: str, rule_iri: URIRef, sparql_rule: str):
         #
@@ -108,7 +108,7 @@ class TransformRulesExecute:
         dataset_code_p_iri = f"{DATASET}datasetCode"
         dataset_in_graph_p_iri = f"{DATASET}inGraph"
         data_source_code_p_iri = f"{DATASET}dataSourceCode"
-        executed_rule_p_iri = f"{TRANSFORM}executedRule"
+        executed_rule_p_iri = f"{VALIDATE}executedRule"
         created_by_pipeline_p_iri = f"{DATAOPS}createdByPipeline"
         #
         # need to use self.data_source_code here, don't "fix" because
@@ -145,7 +145,7 @@ class TransformRulesExecute:
 
 def main():
     parser = argparse.ArgumentParser(
-        prog='python3 -m ekglib.transform_rules_execute',
+        prog='python3 -m ekglib.story_validate_rules_execute',
         description='Processes each rule.ttl file in the given directory and executes it against the given SPARQL '
                     's3_endpoint',
         epilog='Currently only supports turtle.',

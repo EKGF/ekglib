@@ -7,7 +7,7 @@ from ..data_source import set_cli_params as data_source_set_cli_params
 from ..git import set_cli_params as git_set_cli_params
 from ..kgiri import EKG_NS, set_kgiri_base, set_cli_params as kgiri_set_cli_params
 from ..log import log, log_item, warning, log_iri, log_rule
-from ..namespace import DATASET, VALIDATE, DATAOPS
+from ..namespace import DATASET, TRANSFORM, DATAOPS
 from ..sparql import SPARQLEndpoint, set_cli_params as sparql_set_cli_params
 
 
@@ -16,8 +16,8 @@ from ..sparql import SPARQLEndpoint, set_cli_params as sparql_set_cli_params
 #       execution order.
 # TODO: Specify per rule whether its generic or dataset-specific.
 #
-class StoryValidateRulesExecute:
-    """Finds each `rule.ttl` file in each subdirectory of `/metadata/story-validate` and executes the rule it describes
+class TransformRulesExecute:
+    """Finds each `rule.ttl` file in each subdirectory of `/metadata/transform` and executes the rule it describes
     against the given SPARQL s3_endpoint.
     """
 
@@ -30,36 +30,36 @@ class StoryValidateRulesExecute:
         self.g = self._query_all_rules()
         log_item('Found # rules', len(self.g))
         self._filter_out_unused()
-        log_rule('Executing Story Validate Rules')
+        log_rule('Executing Transform Rules')
         log_item('Number of triples', len(self.g))
         self.list_rules()
 
     def _filter_out_unused(self):  # TODO: Finish this
-        for rule in self.g.subjects(RDF.type, VALIDATE.Rule):
+        for rule in self.g.subjects(RDF.type, TRANSFORM.Rule):
             log_item('Rule', rule)
 
     def list_rules(self):
         log('Rules in execution order:')
-        for index, key in enumerate(sorted(self.g.objects(None, VALIDATE.term('sortKey')))):
+        for index, key in enumerate(sorted(self.g.objects(None, TRANSFORM.term('sortKey')))):
             log_item(f'Rule {index + 1}', key)
 
     def _query_all_rules(self) -> Graph:
-        log_item("Get Story Validate Rules", self.data_source_code)
+        log_item("Get Transform Rules", self.data_source_code)
         return self.sparql_endpoint.construct_and_convert(
             f"""\
             PREFIX owl: <http://www.w3.org/2002/07/owl#>
             PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
             PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
             PREFIX kggraph: <{EKG_NS['KGGRAPH']}>
-            PREFIX validate: <https://ekgf.org/ontology/step-story-validate/>
+            PREFIX transform: <https://ekgf.org/ontology/step-transform/>
 
             CONSTRUCT {{
                 ?rule ?p ?s .
-                ?rule validate:fromGraph ?g .
+                ?rule transform:fromGraph ?g .
             }}
             WHERE {{
                 GRAPH kggraph:{self.data_source_code} {{
-                    ?rule a validate:Rule .
+                    ?rule a transform:Rule .
                     ?rule ?p ?s .
                     BIND(localname(?rule) AS ?key)
                 }}
@@ -75,10 +75,10 @@ class StoryValidateRulesExecute:
         # - ensure that regardless of the actual IRI (which may be obfuscated even) we'll find
         #   the rule anyway.
         #
-        rule_iris = list(self.g.objects(None, VALIDATE.sortKey))
+        rule_iris = list(self.g.objects(None, TRANSFORM.sortKey))
         max_rules = len(rule_iris)
         for index, key in enumerate(sorted(rule_iris)):
-            for rule_iri in self.g.subjects(VALIDATE.sortKey, key):
+            for rule_iri in self.g.subjects(TRANSFORM.sortKey, key):
                 self.execute_rule(rule_iri, index, max_rules, key)
         return 0
 
@@ -86,7 +86,7 @@ class StoryValidateRulesExecute:
         log_rule(f"Executing rule {index + 1}/{max_}: {key}")
         log_iri("Executing Rule", rule_iri)
         count = 0
-        for sparql_rule in self.g.objects(rule_iri, VALIDATE.hasSPARQLRule):
+        for sparql_rule in self.g.objects(rule_iri, TRANSFORM.hasSPARQLRule):
             count += 1
             self.sparql_endpoint.execute_sparql_statement(
                 self.add_detail_to_sparql_statement(self.data_source_code, rule_iri, sparql_rule)
@@ -94,7 +94,7 @@ class StoryValidateRulesExecute:
         if count > 0:
             log_item("# SPARQL Rules", count)
         else:
-            warning(f"Story validate rule has no SPARQL rule: {rule_iri}")
+            warning(f"Transform rule has no SPARQL rule: {rule_iri}")
 
     def add_detail_to_sparql_statement(self, dataset_code: str, rule_iri: URIRef, sparql_rule: str):
         #
@@ -108,7 +108,7 @@ class StoryValidateRulesExecute:
         dataset_code_p_iri = f"{DATASET}datasetCode"
         dataset_in_graph_p_iri = f"{DATASET}inGraph"
         data_source_code_p_iri = f"{DATASET}dataSourceCode"
-        executed_rule_p_iri = f"{VALIDATE}executedRule"
+        executed_rule_p_iri = f"{TRANSFORM}executedRule"
         created_by_pipeline_p_iri = f"{DATAOPS}createdByPipeline"
         #
         # need to use self.data_source_code here, don't "fix" because
@@ -145,7 +145,7 @@ class StoryValidateRulesExecute:
 
 def main():
     parser = argparse.ArgumentParser(
-        prog='python3 -m ekglib.story_validate_rules_execute',
+        prog='python3 -m ekglib.transform_rules_execute',
         description='Processes each rule.ttl file in the given directory and executes it against the given SPARQL '
                     's3_endpoint',
         epilog='Currently only supports turtle.',
@@ -162,7 +162,7 @@ def main():
     args = parser.parse_args()
     set_kgiri_base(args.kgiri_base)
 
-    processor = StoryValidateRulesExecute(args, sparql_endpoint=SPARQLEndpoint(args))
+    processor = TransformRulesExecute(args, sparql_endpoint=SPARQLEndpoint(args))
     return processor.execute()
 
 

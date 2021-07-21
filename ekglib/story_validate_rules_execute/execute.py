@@ -16,7 +16,7 @@ from ..sparql import SPARQLEndpoint, set_cli_params as sparql_set_cli_params
 #       execution order.
 # TODO: Specify per rule whether its generic or dataset-specific.
 #
-class TransformRulesExecute:
+class StoryValidateRulesExecute:
     """Finds each `rule.ttl` file in each subdirectory of `/metadata/story-validate` and executes the rule it describes
     against the given SPARQL s3_endpoint.
     """
@@ -162,7 +162,7 @@ def main():
     args = parser.parse_args()
     set_kgiri_base(args.kgiri_base)
 
-    processor = TransformRulesExecute(args, sparql_endpoint=SPARQLEndpoint(args))
+    processor = StoryValidateRulesExecute(args, sparql_endpoint=SPARQLEndpoint(args))
     return processor.execute()
 
 

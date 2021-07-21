@@ -86,7 +86,7 @@ class StoryValidateRulesCapture:
             self.g.add(triple)
 
     def s3_file_name(self):
-        return f"story-validate-rules-{self.data_source_code}.ttl.gz"
+        return f"raw-data-story-validate-rules-{self.data_source_code}.ttl.gz"
 
     def export(self) -> int:
         try:

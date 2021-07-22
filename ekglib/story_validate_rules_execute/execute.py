@@ -121,20 +121,6 @@ class StoryValidateRulesExecute:
         pipeline_class_iri = f"{DATAOPS}Pipeline"
         pipeline_produced_dataset_p_iri = f"{DATAOPS}hasProducedDataset"
         detail = f"""\
-            INSERT DATA {{
-                GRAPH <{graph_iri}> {{
-                    <{dataset_iri}> a <{dataset_class_iri}> ;
-                        <{dataset_code_p_iri}> "{dataset_code}" ;
-                        <{executed_rule_p_iri}> <{rule_iri}> ;
-                        <{dataset_in_graph_p_iri}> <{graph_iri}> ;
-                        <{created_by_pipeline_p_iri}> <{pipeline_iri}> .
-                    <{pipeline_iri}> a <{pipeline_class_iri}> ;
-                        rdfs:label "Pipeline for Data Source \\"{self.data_source_code}\\"" ;
-                        <{data_source_code_p_iri}> "{self.data_source_code}" ;
-                        <{pipeline_produced_dataset_p_iri}> <{dataset_iri}> .
-                }}
-            }}
-            ;
             """
         #
         # We have to execute the INSERT DATA rule first because some rules (the obfuscation rules)

@@ -38,7 +38,7 @@ def add_transform_rule_namespaces(rule_graph: Graph):
     rule_graph.namespace_manager.bind('raw', RAW)
     rule_graph.namespace_manager.bind('dataops', DATAOPS)
     rule_graph.namespace_manager.bind('dataset', DATASET)
-    rule_graph.namespace_manager.bind('transform', RULE)
+    rule_graph.namespace_manager.bind('rule', RULE)
 
 
 class TransformRuleParser:
@@ -233,7 +233,7 @@ class TransformRuleParser:
         )
         self.g.add((transform_rule, RDF.type, RULE.Rule))
         self.g.add((transform_rule, RDF.type, RULE.SPARQLRule))
-        self.g.namespace_manager.bind("transform", RULE)
+        self.g.namespace_manager.bind("rule", RULE)
 
     #
     # Add a triple to the graph with the given sparql_endpoint literal.

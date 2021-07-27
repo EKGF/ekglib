@@ -1,11 +1,11 @@
-@base              <https://placeholder.kg/id/> .
+@base <https://placeholder.kg/id/> .
 @prefix rdf:       <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs:      <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix transform: <https://ekgf.org/ontology/step-transform/> .
+@prefix rule:      <https://ekgf.org/ontology/dataops-rule/> .
 
 <rule-00001-remove-emtpy-strings>
-    a                            transform:SPARQLRule ;
-    rdfs:label                   "Remove all empty strings" ;
-    transform:sparqlRuleFileName "rule.sparql" ;
-    transform:createsProvenance  false ;
+    a                       rule:SPARQLRule ;
+    rdfs:label              "Remove all empty strings" ;
+    rule:sparqlRuleFileName "rule.sparql" ;
+    rule:createsProvenance  false ;
 .

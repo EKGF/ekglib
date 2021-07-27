@@ -23,7 +23,7 @@ class TestTransformRuleParser:
         os.remove(output)
         expected = textwrap.dedent(f'''\
             @base <{kgiri_base}/id/> .
-            @prefix : <https://ekgf.org/ontology/step-transform/> .
+            @prefix : <https://ekgf.org/ontology/dataops-rule/> .
             @prefix dataset: <https://ekgf.org/ontology/dataset/> .
             @prefix kgiri: <{kgiri_base}/id/> .
             @prefix owl: <http://www.w3.org/2002/07/owl#> .
@@ -34,12 +34,11 @@ class TestTransformRuleParser:
                     :Rule,
                     :SPARQLRule ;
                 rdfs:label "Remove all empty strings" ;
-                dataset:dataSourceCode "abc" ;
                 :createsProvenance false ;
                 :hasSPARQLRule """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
             PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
             PREFIX prov: <http://www.w3.org/ns/prov#>
-            PREFIX transform: <https://ekgf.org/ontology/step-transform/>
+            PREFIX rule: <https://ekgf.org/ontology/dataops-rule/>
             
             DELETE {{
             
@@ -58,7 +57,8 @@ class TestTransformRuleParser:
             """ ;
                 :inSet <rule-set-generic> ;
                 :key "generic-00001-remove-empty-strings" ;
-                :sortKey "01-generic-00001-remove-empty-strings" .
+                :sortKey "01-generic-00001-remove-empty-strings" ;
+                dataset:dataSourceCode "abc" .
             
             <rule-set-generic> a :RuleSet ;
                 rdfs:label "generic" .

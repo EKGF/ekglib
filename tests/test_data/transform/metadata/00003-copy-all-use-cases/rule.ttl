@@ -1,11 +1,11 @@
 @base              <https://placeholder.kg/id/> .
 @prefix rdf:       <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs:      <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix transform: <https://ekgf.org/ontology/step-transform/> .
+@prefix rule: <https://ekgf.org/ontology/dataops-rule/> .
 
 <rule-00003-copy-all-use-cases>
-    a                            transform:SPARQLRule ;
+    a                            rule:SPARQLRule ;
     rdfs:label                   "Copy all use cases from the raw dataset to the target graph" ;
-    transform:sparqlRuleFileName "rule.sparql" ;
-    transform:createsProvenance  false ;
+    rule:sparqlRuleFileName "rule.sparql" ;
+    rule:createsProvenance  false ;
 .

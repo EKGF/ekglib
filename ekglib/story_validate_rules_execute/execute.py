@@ -51,15 +51,15 @@ class StoryValidateRulesExecute:
             PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
             PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
             PREFIX kggraph: <{EKG_NS['KGGRAPH']}>
-            PREFIX validate: <https://ekgf.org/ontology/validation/>
+            PREFIX rule: <https://ekgf.org/ontology/dataops-rule/>
 
             CONSTRUCT {{
                 ?rule ?p ?s .
-                ?rule transform:fromGraph ?g .
+                ?rule rule:fromGraph ?g .
             }}
             WHERE {{
                 GRAPH kggraph:{self.data_source_code} {{
-                    ?rule a transform:Rule .
+                    ?rule a rule:Rule .
                     ?rule ?p ?s .
                     BIND(localname(?rule) AS ?key)
                 }}

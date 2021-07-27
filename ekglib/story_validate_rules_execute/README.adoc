@@ -9,7 +9,7 @@ python3 -m ekglib.story_validate_rules_executor --help
 [source]
 ----
 usage: python3 -m ekglib.story_validate_rules_executor [-h] [--verbose]
-                                                  [--story-validate-root STORY_VALIDATE_ROOT]
+                                                  [--story-validate-root STORY_RULE_ROOT]
                                                   [--static-datasets-root STATIC_DATASETS_ROOT]
                                                   [--dataset-code DATASET_CODE]
                                                   [--branch BRANCH]
@@ -24,7 +24,7 @@ the given SPARQL endpoint
 optional arguments:
   -h, --help            show this help message and exit
   --verbose, -v         verbose output
-  --story-validate-root STORY_VALIDATE_ROOT
+  --story-validate-root STORY_RULE_ROOT
                         The root directory where all rule subdirectories can
                         be found
   --static-datasets-root STATIC_DATASETS_ROOT

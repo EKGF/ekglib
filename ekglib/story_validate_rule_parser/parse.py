@@ -13,10 +13,10 @@ from ..kgiri import EKG_NS, set_kgiri_base, set_kgiri_base_replace, set_cli_para
                     kgiri_replace_iri_in_literal
 from ..log import error, warning, log_error, log_list, log_item, log_iri
 from ..main import load_rdf_file_into_graph
-from ..namespace import VALIDATE, PROV, RAW, DATAOPS, DATASET
+from ..namespace import RULE, PROV, RAW, DATAOPS, DATASET
 
 ontology_file_names = [
-    'ekgf-step-story-validate.ttl'
+    'ekgf-dataops-rule.ttl'
 ]
 
 
@@ -38,7 +38,7 @@ def add_story_validate_rule_namespaces(rule_graph: Graph):
     rule_graph.namespace_manager.bind('raw', RAW)
     rule_graph.namespace_manager.bind('dataops', DATAOPS)
     rule_graph.namespace_manager.bind('dataset', DATASET)
-    rule_graph.namespace_manager.bind('story-validate', VALIDATE)
+    rule_graph.namespace_manager.bind('story-validate', RULE)
 
 
 class StoryValidateRuleParser:
@@ -125,17 +125,17 @@ class StoryValidateRuleParser:
         self.g.remove((None, RDF.type, XSD.string))
 
         self.g.remove((None, OWL.disjointWith, XSD.dateTime))
-        self.g.remove((VALIDATE, None, None))
+        self.g.remove((RULE, None, None))
         for subject in self.g.subjects(predicate=OWL.equivalentProperty, object=None):
             self.g.remove((subject, None, None))
         for subject in self.g.subjects(predicate=None, object=None):
-            if subject.startswith(VALIDATE):
+            if subject.startswith(RULE):
                 self.g.remove((subject, None, None))
 
     def get_rule_iris(self):
         return chain(
-            self.g.subjects(RDF.type, VALIDATE.Rule),
-            self.g.subjects(RDF.type, VALIDATE.SPARQLRule)
+            self.g.subjects(RDF.type, RULE.Rule),
+            self.g.subjects(RDF.type, RULE.SPARQLRule)
         )
 
     def read_rule_file(self):
@@ -174,7 +174,7 @@ class StoryValidateRuleParser:
 
     def create_rule_set(self):
         set_iri = self.set_iri()
-        self.g.add((set_iri, RDF.type, VALIDATE.term('RuleSet')))
+        self.g.add((set_iri, RDF.type, RULE.term('RuleSet')))
         self.g.add((set_iri, RDFS.label, Literal(self.set_key())))
         return set_iri
 
@@ -182,19 +182,19 @@ class StoryValidateRuleParser:
         log_iri("Story Validate Rule IRI", story_validate_rule_iri)
         log_item("Story Validate Rule Sort-key", self.sort_key())
         set_iri = self.create_rule_set()
-        self.g.add((story_validate_rule_iri, VALIDATE.term('inSet'), set_iri))
-        self.g.add((story_validate_rule_iri, VALIDATE.term('key'), Literal(self.key())))
-        self.g.add((story_validate_rule_iri, VALIDATE.sortKey, Literal(self.sort_key())))
+        self.g.add((story_validate_rule_iri, RULE.term('inSet'), set_iri))
+        self.g.add((story_validate_rule_iri, RULE.term('key'), Literal(self.key())))
+        self.g.add((story_validate_rule_iri, RULE.sortKey, Literal(self.sort_key())))
         if self.args.data_source_code:
             self.g.add((story_validate_rule_iri, DATASET.dataSourceCode, Literal(self.args.data_source_code)))
         if self.rule_file_iri:
-            self.g.add((story_validate_rule_iri, VALIDATE.definedIn, self.rule_file_iri))
+            self.g.add((story_validate_rule_iri, RULE.definedIn, self.rule_file_iri))
         for rdfs_label in self.g.objects(story_validate_rule_iri, RDFS.label):
             log_item("Story Validate Rule Title", rdfs_label)
         if self.verbose:
-            print("Looking for %s" % VALIDATE.sparqlRuleFileName)
+            print("Looking for %s" % RULE.sparqlRuleFileName)
         sparql_rule_file_names = [x for x in self.g.objects(
-            story_validate_rule_iri, VALIDATE.sparqlRuleFileName
+            story_validate_rule_iri, RULE.sparqlRuleFileName
         )]
         if len(sparql_rule_file_names) == 0:
             warning(f"Story validate rule {self.key()} does not have a SPARQL statement")
@@ -227,13 +227,13 @@ class StoryValidateRuleParser:
             return
         self.replace_literal_triple(
             story_validate_rule,
-            VALIDATE.sparqlRuleFileName,
-            VALIDATE.hasSPARQLRule,
+            RULE.sparqlRuleFileName,
+            RULE.hasSPARQLRule,
             kgiri_replace_iri_in_literal(sparql_literal)
         )
-        self.g.add((story_validate_rule, RDF.type, VALIDATE.Rule))
-        self.g.add((story_validate_rule, RDF.type, VALIDATE.SPARQLRule))
-        self.g.namespace_manager.bind("story-validate", VALIDATE)
+        self.g.add((story_validate_rule, RDF.type, RULE.Rule))
+        self.g.add((story_validate_rule, RDF.type, RULE.SPARQLRule))
+        self.g.namespace_manager.bind("story-validate", RULE)
 
     #
     # Add a triple to the graph with the given sparql_endpoint literal.

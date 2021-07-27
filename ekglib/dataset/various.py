@@ -11,7 +11,7 @@ from six import BytesIO
 from ..kgiri import EKG_NS
 from ..log import log_item, log_rule
 from ..mime import MIME_NTRIPLES, MIME_TURTLE
-from ..namespace import DATAOPS, DATASET
+from ..namespace import DATASET
 from ..s3 import S3ObjectStore
 from ..sparql import SPARQLEndpoint, iter_raw
 

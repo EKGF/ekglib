@@ -7,7 +7,7 @@
       <root url="file://$PROJECT_DIR$/ontologies" />
       <root url="file://$PROJECT_DIR$/ontologies/ekgf-concept.ttl" />
       <root url="file://$PROJECT_DIR$/ontologies/ekgf-raw.ttl" />
-      <root url="file://$PROJECT_DIR$/ontologies/ekgf-step-transform.ttl" />
+      <root url="file://$PROJECT_DIR$/ontologies/ekgf-dataops-rule.ttl" />
       <root url="file://$PROJECT_DIR$/ontologies/fibo-annotation-vocabulary.ttl" />
       <root url="file://$PROJECT_DIR$/ontologies/fibo-locations.ttl" />
       <root url="file://$PROJECT_DIR$/ontologies/foaf.ttl" />

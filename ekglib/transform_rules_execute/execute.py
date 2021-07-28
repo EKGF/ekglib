@@ -59,7 +59,7 @@ class TransformRulesExecute:
             }}
             WHERE {{
                 GRAPH kggraph:{self.data_source_code} {{
-                    ?rule a rule:Rule .
+                    ?rule a rule:TransformationRule .
                     ?rule ?p ?s .
                     BIND(localname(?rule) AS ?key)
                 }}

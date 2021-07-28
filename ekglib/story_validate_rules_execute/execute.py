@@ -88,45 +88,11 @@ class StoryValidateRulesExecute:
         count = 0
         for sparql_rule in self.g.objects(rule_iri, RULE.hasSPARQLRule):
             count += 1
-            self.sparql_endpoint.execute_sparql_statement(
-                self.add_detail_to_sparql_statement(self.data_source_code, rule_iri, sparql_rule)
-            )
+            self.sparql_endpoint.execute_sparql_statement(sparql_rule)
         if count > 0:
             log_item("# SPARQL Rules", count)
         else:
             warning(f"Story validation rule has no SPARQL rule: {rule_iri}")
-
-    def add_detail_to_sparql_statement(self, dataset_code: str, rule_iri: URIRef, sparql_rule: str):
-        #
-        # We cannot use prefixes here because they might clash with the prefixes in sparql_rule
-        #
-        # TODO: Register provenance
-        #
-        graph_iri = f"{EKG_NS['KGGRAPH']}{dataset_code}"
-        dataset_iri = f"{EKG_NS['KGIRI']}dataset-{dataset_code}"
-        dataset_class_iri = f"{DATASET}Dataset"
-        dataset_code_p_iri = f"{DATASET}datasetCode"
-        dataset_in_graph_p_iri = f"{DATASET}inGraph"
-        data_source_code_p_iri = f"{DATASET}dataSourceCode"
-        executed_rule_p_iri = f"{RULE}executedRule"
-        created_by_pipeline_p_iri = f"{DATAOPS}createdByPipeline"
-        #
-        # need to use self.data_source_code here, don't "fix" because
-        # self.data_source_code is the code for the whole pipeline,
-        # such as "metadata" whereas data_source_code can be "gleif" or "edmcouncil" etc
-        #
-        # TODO: Change data_source_code to data source
-        #
-        pipeline_iri = f"{EKG_NS['KGIRI']}dataops-pipeline-{self.data_source_code}"
-        pipeline_class_iri = f"{DATAOPS}Pipeline"
-        pipeline_produced_dataset_p_iri = f"{DATAOPS}hasProducedDataset"
-        detail = f"""\
-            """
-        #
-        # We have to execute the INSERT DATA rule first because some rules (the obfuscation rules)
-        # even update the content that this INSERT DATA statement inserted.
-        #
-        return textwrap.dedent(detail) + sparql_rule
 
 
 def main():

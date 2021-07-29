@@ -233,7 +233,7 @@ class StoryValidateRuleParser:
         )
         self.g.add((story_validate_rule, RDF.type, RULE.Rule))
         self.g.add((story_validate_rule, RDF.type, RULE.SPARQLRule))
-        self.g.namespace_manager.bind("story-validate", RULE)
+        self.g.namespace_manager.bind("rule", RULE)
 
     #
     # Add a triple to the graph with the given sparql_endpoint literal.

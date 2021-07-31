@@ -38,7 +38,7 @@ def add_story_validate_rule_namespaces(rule_graph: Graph):
     rule_graph.namespace_manager.bind('raw', RAW)
     rule_graph.namespace_manager.bind('dataops', DATAOPS)
     rule_graph.namespace_manager.bind('dataset', DATASET)
-    rule_graph.namespace_manager.bind('story-validate', RULE)
+    rule_graph.namespace_manager.bind('rule', RULE)
 
 
 class StoryValidateRuleParser:

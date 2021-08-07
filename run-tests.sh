@@ -4,7 +4,7 @@
 #
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 
-python_version=3.8.3
+python_version=3.8.10
 # python_version=3.9.0rc1  # Does not work yet, pandas binary compile (C code) gives errors
 
 flag_file="/tmp/ekglib-last-checked-environment.flag"
@@ -26,7 +26,7 @@ function shouldCheckEnvironment() {
   #
   # If you added new dependencies then return true
   #
-  [[ "${SCRIPT_DIR}/requirements.text" -nt "${flag_file}" ]] && return 0
+  [[ "${SCRIPT_DIR}/requirements.txt" -nt "${flag_file}" ]] && return 0
   #
   # Add whatever check here that you think should trigger a recheck of the environment
   #
@@ -89,8 +89,8 @@ function checkEnvironment() {
   fi
 
   ~/.asdf/shims/python3 -m pip install --upgrade pip wheel setuptools
-  ~/.asdf/shims/python3 -m pip install flake8 pytest pytest-cov --use-feature=2020-resolver
-  ~/.asdf/shims/python3 -m pip install -r requirements.txt --no-cache-dir --use-feature=2020-resolver
+  ~/.asdf/shims/python3 -m pip install flake8 pytest pytest-cov
+  ~/.asdf/shims/python3 -m pip install -r requirements.txt --no-cache-dir
   ~/.asdf/shims/python3 -m pip wheel -r requirements.txt
 
   # shellcheck disable=SC2035

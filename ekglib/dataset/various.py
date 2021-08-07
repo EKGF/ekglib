@@ -171,12 +171,19 @@ def datasets_produced_by_pipeline(sparql_endpoint: SPARQLEndpoint, data_source_c
 
     log_item('Query', _query())
     g = sparql_endpoint.construct_and_convert(_query())
-    for dataset_iri, graph_iri in g.subject_objects(DATASET.inGraph):
-        log_item('Dataset IRI', dataset_iri)
-        log_item('Graph IRI', graph_iri)
-        for dataset_code in g.objects(dataset_iri, DATASET.datasetCode):
-            log_item('Dataset Code', dataset_code)
-            yield graph_iri, dataset_code
+
+    def datasets():
+        for dataset_iri, graph_iri in g.subject_objects(DATASET.inGraph):
+            log_item('Dataset IRI', dataset_iri)
+            log_item('Graph IRI', graph_iri)
+            for dataset_code in g.objects(dataset_iri, DATASET.datasetCode):
+                log_item('Dataset Code', dataset_code)
+                yield graph_iri, dataset_code
+
+    # make these unique as the same graph and dataset may be returned for multiple dataset_iris
+    for _ in set(datasets()):
+        yield _
+
     # exit(1)
     # results = sparql_endpoint.execute_csv_query(query).iter_lines()
     # for graph_iri, dataset_code in [(row['graph_iri'], row['data_source_code']) for row in results]:

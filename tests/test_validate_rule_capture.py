@@ -7,10 +7,11 @@ import ekglib
 
 class TestTransformRulesCapture:
 
-    def test_transform_rule_capture(self, kgiri_base, test_data_dir, local_s3_port):
+    @pytest.mark.focus
+    def test_story_validate_rule_capture(self, kgiri_base, test_data_dir, local_s3_port):
         sys.argv = [
             'pytest',
-            '--transform-root', f'{test_data_dir}/transform',
+            '--story-validate-root', f'{test_data_dir}/story-validate',
             '--ontologies-root', '../ontologies',
             '--data-source-code', 'test-data-source',
             '--s3-endpoint', f'http://localhost:{local_s3_port}',
@@ -24,4 +25,5 @@ class TestTransformRulesCapture:
             '--kgiri-base-replace', 'https://placeholder.kg',
             '--verbose'
         ]
-        assert 0 == ekglib.transform_rules_capture.main()
+        actual = ekglib.story_validate_rules_capture.main()
+        print(actual)

@@ -165,11 +165,7 @@ class SPARQLEndpoint:
 
         check_sparql_mime_type(mime_type)
 
-        if self.verbose:
-            log_item("Executing", sparql_statement)
-        # noinspection PyProtectedMember
-        log_item("Statement Type", self.sparql_endpoint._parseQueryType(sparql_statement))
-
+        self.sparql_endpoint.clearCustomHttpHeader("Accept")
         self.sparql_endpoint.setRequestMethod(URLENCODED)
         self.sparql_endpoint.setMethod(GET)
         self.sparql_endpoint.addCustomHttpHeader("Accept", mime_type)
@@ -187,20 +183,13 @@ class SPARQLEndpoint:
             result = self.sparql_endpoint.query()
             response = result.response
             log_item("Response Code", result.response.code)
-            for (key, value) in result.response.info():
+            for (key, value) in result.response.info().items():
                 log_item(key, value)
             # log_item("Response Headers", result.response.info())
 
-            print("Response: {}".format(response.read().decode('utf-8')))
-            for (key, value) in result.info():
+            # print("Response: {}".format(response.read().decode('utf-8')))
+            for (key, value) in result.info().items():
                 log_item(key, value)
-            # print("xxx")
-            # result.print_results()
-            # print(result)
-            if result.response.code == 200:
-                return True
-            if result.response.code == 201:
-                return True
         except urllib.error.HTTPError as err:
             error("{} code={}".format(err, err.code))
         except urllib.error.URLError as err:
@@ -214,7 +203,7 @@ class SPARQLEndpoint:
             error("Unauthorized to access {}".format(self.sparql_endpoint.endpoint))
         except ConnectionRefusedError:
             error("Could not connect to {}".format(self.sparql_endpoint.endpoint))
-        return False
+        return result
 
     def execute_csv_query(self, sparql_statement: str):
         return self.execute_sparql_query2(sparql_statement)
@@ -270,63 +259,51 @@ class SPARQLEndpoint:
     def execute_sparql_statement(self, sparql_statement):
         if self.verbose:
             log_item("Executing", sparql_statement)
-        # noinspection PyProtectedMember
-        log_item("Statement Type", self.sparql_endpoint._parseQueryType(sparql_statement))
-
-        self.sparql_endpoint.setMethod(POST)
-        self.sparql_endpoint.setRequestMethod(URLENCODED)
-        self.sparql_endpoint.addCustomHttpHeader("Accept", "text/boolean")
-        self.sparql_endpoint.addParameter("reasoner", "true")
-        log_item("Query", sparql_statement)
-        self.sparql_endpoint.setQuery(sparql_statement)
-        # noinspection PyProtectedMember
-        request = self.sparql_endpoint._createRequest()
-        for (header_name, header_value) in request.header_items():
-            log_item(header_name, header_value)
-        log_item("Is Update", self.sparql_endpoint.isSparqlUpdateRequest())
-        log_item("Full URL", request.full_url)
-        # with urllib.request.urlopen(request) as f:
-        #     print(f.read().decode('utf-8'))
-        try:
-            result = self.sparql_endpoint.query()
-            # response = result.response
-            log_item("Response Code", result.response.code)
-            for key, value in result.info().items():
-                if key == "connection":
-                    continue
-                if key == "content-length":
-                    continue
-                log_item(key, value)
-
-            # print("Response: {}".format(response.read().decode('utf-8')))
-            # print("xxx")
-            # result.print_results()
-            # print(result)
-            if result.response.code == 200:
-                return True
-            if result.response.code == 201:
-                return True
-        except urllib.error.HTTPError as err:
-            error("{} code={}".format(err, err.code))
-        except urllib.error.URLError as err:
-            error("{} reason={}".format(err, err.reason))
-        except EndPointNotFound as err:
-            error("{}".format(err))
-            dump(err)
-        except QueryBadFormed:
-            error(f"Bad formed SPARQL statement: {sparql_statement}")
-        except Unauthorized:
-            error("Unauthorized to access {}".format(self.sparql_endpoint.endpoint))
-        except ConnectionRefusedError:
-            error("Could not connect to {}".format(self.sparql_endpoint.endpoint))
-        return False
+        statement_type = self.sparql_endpoint._parseQueryType(sparql_statement)
+        log_item("Statement Type", statement_type)
+        if statement_type == "SELECT":
+            return (self.execute_sparql_select_query(sparql_statement))
+        elif statement_type == "CONSTRUCT":
+            return (self.construct_and_convert(sparql_statement))
+        else:
+            self.sparql_endpoint.clearCustomHttpHeader("Accept")
+            self.sparql_endpoint.setMethod(POST)
+            self.sparql_endpoint.setRequestMethod(URLENCODED)
+            self.sparql_endpoint.addCustomHttpHeader("Accept", "text/boolean")
+            self.sparql_endpoint.addParameter("reasoner", "true")
+            log_item("Query", sparql_statement)
+            self.sparql_endpoint.setQuery(sparql_statement)
+            request = self.sparql_endpoint._createRequest()
+            for (header_name, header_value) in request.header_items():
+                log_item(header_name, header_value)
+            log_item("Is Update", self.sparql_endpoint.isSparqlUpdateRequest())
+            log_item("Full URL", request.full_url)
+            # with urllib.request.urlopen(request) as f:
+            #     print(f.read().decode('utf-8'))
+            try:
+                result = self.sparql_endpoint.query()
+                response = result.response
+                log_item("Response Code", result.response.code)
+                for key, value in result.info().items():
+                    log_item(key, value)
+            except urllib.error.HTTPError as err:
+                error("{} code={}".format(err, err.code))
+            except urllib.error.URLError as err:
+                error("{} reason={}".format(err, err.reason))
+            except EndPointNotFound as err:
+                error("{}".format(err))
+                dump(err)
+            except QueryBadFormed:
+                error(f"Bad formed SPARQL statement: {sparql_statement}")
+            except Unauthorized:
+                error("Unauthorized to access {}".format(self.sparql_endpoint.endpoint))
+            except ConnectionRefusedError:
+                error("Could not connect to {}".format(self.sparql_endpoint.endpoint))
+            return result
 
     def construct_and_convert(self, sparql_construct_statement: str) -> Optional[Graph]:
-        # noinspection PyProtectedMember
-        statement_type = self.sparql_endpoint._parseQueryType(sparql_construct_statement)
-        log_item("Statement Type", statement_type)
-        if statement_type != CONSTRUCT:
-            error("The given SPARQL statement is not a CONSTRUCT statement")
+
+        self.sparql_endpoint.clearCustomHttpHeader("Accept")
         self.sparql_endpoint.setMethod(GET)
         self.sparql_endpoint.setReturnFormat(RDFXML)  # the call to convert() below depends on this being RDFXML
         self.sparql_endpoint.setRequestMethod(URLENCODED)
@@ -337,6 +314,7 @@ class SPARQLEndpoint:
         #
         # millisecs. let triple store fail first so timeout earlier than HTTP
         # self.sparql_endpoint.addParameter("timeout", "2000")
+        log_item("Query", sparql_construct_statement)
         self.sparql_endpoint.setQuery(sparql_construct_statement)
         # noinspection PyProtectedMember
         request = self.sparql_endpoint._createRequest()
@@ -375,7 +353,7 @@ class SPARQLEndpoint:
             error("Unauthorized to access {}".format(self.sparql_endpoint.endpoint))
         except ConnectionRefusedError:
             error("Could not connect to {}".format(self.sparql_endpoint.endpoint))
-        return None
+        return result
 
     def handle_error(self, r: requests.Response) -> bool:
         log_item("URL", r.url)

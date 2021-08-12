@@ -1,7 +1,8 @@
 import argparse
 import textwrap
 
-from rdflib import Graph, URIRef, RDF
+from rdflib import Graph, ConjunctiveGraph, URIRef, RDF
+from SPARQLWrapper.Wrapper import QueryResult
 
 from ..data_source import set_cli_params as data_source_set_cli_params
 from ..git import set_cli_params as git_set_cli_params
@@ -26,9 +27,13 @@ class StoryValidateRulesExecute:
         self.args = args
         self.verbose = args.verbose
         self.data_source_code = args.data_source_code
+        self.rules_file = args.rules_file
         self.sparql_endpoint = sparql_endpoint
-        self.g = self._query_all_rules()
-        log_item('Found # rules', len(self.g))
+        if self.rules_file is None:
+            self.g = self._query_all_rules()
+        else:
+            self.g = Graph().parse(self.rules_file, format='ttl')
+        log_item('Found # rules', len(list(self.g.subjects( RDF.type, RULE.ValidationRule))))
         self._filter_out_unused()
         log_rule('Executing Story Validation Rules')
         log_item('Number of triples', len(self.g))
@@ -67,6 +72,22 @@ class StoryValidateRulesExecute:
             ORDER BY ?key
             """  # noqa: F541
         )
+    def _evaluate_query_result(self):
+
+        for item in self.result:
+            print(type(item))
+            if isinstance(item, QueryResult):
+                formatted_response = format(item.response.read().decode('utf-8'))
+                print(formatted_response)
+            elif isinstance(item, ConjunctiveGraph):
+                print(list(item))
+            else:
+                print(item)
+
+            # evaluate code
+            # evaluate formatted_response
+            # insert result info
+
 
     def execute(self) -> int:
         #
@@ -79,20 +100,23 @@ class StoryValidateRulesExecute:
         max_rules = len(rule_iris)
         for index, key in enumerate(sorted(rule_iris)):
             for rule_iri in self.g.subjects(RULE.sortKey, key):
-                self.execute_rule(rule_iri, index, max_rules, key)
+                self.result=self.execute_rule(rule_iri, index, max_rules, key)
+                self._evaluate_query_result()
         return 0
 
     def execute_rule(self, rule_iri, index, max_, key):
         log_rule(f"Executing rule {index + 1}/{max_}: {key}")
         log_iri("Executing Rule", rule_iri)
         count = 0
+        result=[]
         for sparql_rule in self.g.objects(rule_iri, RULE.hasSPARQLRule):
             count += 1
-            self.sparql_endpoint.execute_sparql_statement(sparql_rule)
+            result.append(self.sparql_endpoint.execute_sparql_statement(sparql_rule))
         if count > 0:
             log_item("# SPARQL Rules", count)
         else:
             warning(f"Story validation rule has no SPARQL rule: {rule_iri}")
+        return result
 
 
 def main():
@@ -106,6 +130,7 @@ def main():
 
     parser.add_argument('--verbose', '-v', help='verbose output', default=False, action='store_true')
     parser.add_argument('--static-datasets-root', help='The static datasets root, relevant when dataset-code=metadata')
+    parser.add_argument('--rules-file', help='Optional aternative source of rules', default=None )
     git_set_cli_params(parser)
     kgiri_set_cli_params(parser)
     data_source_set_cli_params(parser)

@@ -12,14 +12,14 @@ class TestExport:
     #     os.uname()[1] == 'agnosmac01.local',
     #     f"Can only run when SPARQL and S3 endpoints are available on {os.uname()[1]}"
     # )
-    @pytest.mark.xfail
+
     def test_export(self, kgiri_base, local_sparql_port, local_s3_port):
         sys.argv = [
             'pytest',
             '--data-source-code', 'test-data-source',
             '--s3-endpoint', f'http://localhost:{local_s3_port}',
             '--s3-bucket', 'test-bucket',
-            '--aws-region', 'us - east - 1',
+            '--aws-region', 'us-east-1',
             '--aws-access-key-id', 'R6PV57ZD740Q76FXLSV8',
             '--aws-secret-access-key', 'NCMBGHIGM5SH0P531B80D8P53LHP5R2ZAXCGHEOF',
             '--git-branch', 'test - branch',
@@ -31,4 +31,5 @@ class TestExport:
             '--kgiri-base', kgiri_base,
             '--verbose'
         ]
-        assert 0 == ekglib.step_export.main()
+        actual = ekglib.step_export.main()
+        print(actual)

@@ -1,0 +1,11 @@
+@base <https://placeholder.kg/id/> .
+@prefix rdf:        <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:       <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rule:       <https://ekgf.org/ontology/dataops-rule/> .
+
+<rule-00001-remove-emtpy-strings>
+  a                       rule:SPARQLRule, rule:ValidationRule ;
+  rdfs:label              "Check dataset is not empty" ;
+  rule:sparqlRuleFileName "rule.sparql" ;
+  rule:createsProvenance  false ;
+.

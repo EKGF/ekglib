@@ -5,9 +5,9 @@ import pytest
 import ekglib
 
 
-class TestTransformRulesExecutor:
+class TestStoryValidationRulesExecutor:
 
-    def test_transform_rule_executor(self, kgiri_base, test_data_dir, local_sparql_port):
+    def test_story_validate_rules_execute(self, kgiri_base, test_data_dir, local_sparql_port):
         sys.argv = [
             'pytest',
             '--static-datasets-root', f'{test_data_dir}/static-datasets',
@@ -16,6 +16,7 @@ class TestTransformRulesExecutor:
             '--sparql-endpoint-database', 'test',
             '--sparql-endpoint-userid', 'admin',
             '--sparql-endpoint-passwd', 'admin',
-            '--kgiri-base', kgiri_base
+            '--kgiri-base', kgiri_base,
+            '--rules-file', f'{test_data_dir}/story-validate/00001-check-dataset-not-empty.ttl'
         ]
-        assert 0 == ekglib.transform_rules_execute.main()  # TODO: make more meaningful assertions here
+        assert 0 == ekglib.story_validate_rules_execute.main()  # TODO: make more meaningful assertions here

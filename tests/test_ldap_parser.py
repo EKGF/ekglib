@@ -68,38 +68,37 @@ def test_export_from_d_trust_dot_de(test_data_dir, kgiri_base):
                 print(line, end='')
 
 
-@unittest.skip
-def test_export_from_a_trust_dot_at(test_data_dir, kgiri_base):
-    """Generic test that should always work since ldap.a-trust.at is always up and running.
-
-       Running IBM Directory 6.3
-    """
-    with TemporaryDirectory() as output_dir:
-        output_file_name = f'{output_dir}/test-ldap-3.nt'
-        with open(output_file_name, 'xb') as output_file:
-            with mock.patch(
-                    'argparse.ArgumentParser.parse_args',
-                    return_value=argparse.Namespace(
-                        output=output_file,
-                        ldap_naming_context=None,
-                        ldap_search_filter='(objectClass=*)',
-                        ldap_host="ldap.a-trust.at",
-                        ldap_port=389,
-                        ldap_bind_dn=None,
-                        ldap_bind_auth=None,
-                        ldap_log=False,
-                        ldap_timeout=60,
-                        data_source_code='ldap',
-                        kgiri_base=kgiri_base,
-                        verbose=False
-                    )
-            ):
-                assert 0 == ldap_parser_to_file()
-        print('Last 8 lines of output:')
-        with open(output_file_name, 'r') as file:
-            for line in (file.readlines()[-8:]):
-                print(line, end='')
-
+# def test_export_from_a_trust_dot_at(test_data_dir, kgiri_base):
+#     """Generic test that should always work since ldap.a-trust.at is always up and running.
+#
+#        Running IBM Directory 6.3
+#     """
+#     with TemporaryDirectory() as output_dir:
+#         output_file_name = f'{output_dir}/test-ldap-3.nt'
+#         with open(output_file_name, 'xb') as output_file:
+#             with mock.patch(
+#                     'argparse.ArgumentParser.parse_args',
+#                     return_value=argparse.Namespace(
+#                         output=output_file,
+#                         ldap_naming_context=None,
+#                         ldap_search_filter='(objectClass=*)',
+#                         ldap_host="ldap.a-trust.at",
+#                         ldap_port=389,
+#                         ldap_bind_dn=None,
+#                         ldap_bind_auth=None,
+#                         ldap_log=False,
+#                         ldap_timeout=60,
+#                         data_source_code='ldap',
+#                         kgiri_base=kgiri_base,
+#                         verbose=False
+#                     )
+#             ):
+#                 assert 0 == ldap_parser_to_file()
+#         print('Last 8 lines of output:')
+#         with open(output_file_name, 'r') as file:
+#             for line in (file.readlines()[-8:]):
+#                 print(line, end='')
+#
 
 def test_export_from_forumsys_dot_com(test_data_dir, kgiri_base):
     """Generic test that should always work since ldap.forumsys.com is always up and running

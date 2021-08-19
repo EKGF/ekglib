@@ -17,7 +17,7 @@ from ..dataops_rule_parser import DataopsRuleParser, add_dataops_rule_namespaces
 
 
 class DataopsRulesCapture:
-    """Captures all story validate rule files from a given directory and uploads the resulting file to S3
+    """Captures all rule files from a given directory and uploads the resulting file to S3
     """
     g: rdflib.Graph
 
@@ -86,7 +86,7 @@ class DataopsRulesCapture:
             self.g.add(triple)
 
     def s3_file_name(self):
-        return f"raw-data-dataops-rules-{self.data_source_code}.ttl.gz"
+        return f"raw-data-{os.path.basename(self.dataops_root)}-rules-{self.data_source_code}.ttl.gz"
 
     def export(self) -> int:
         try:

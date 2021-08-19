@@ -1,4 +1,4 @@
-import argparse
+import argparse, os
 from pathlib import Path
 
 import rdflib

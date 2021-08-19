@@ -6,6 +6,8 @@ from datetime import date
 import pytest
 from rdflib import RDF, term, Literal, XSD
 
+import openpyxl
+
 import ekglib
 from ekglib.string import argv_list
 from ekglib.kgiri import set_kgiri_base

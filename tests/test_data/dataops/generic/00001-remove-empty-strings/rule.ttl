@@ -4,7 +4,7 @@
 @prefix rule:      <https://ekgf.org/ontology/dataops-rule/> .
 
 <rule-00001-remove-emtpy-strings>
-    a                       rule:SPARQLRule ;
+    a                       rule:SPARQLRule, rule:TransformationRule ;
     rdfs:label              "Remove all empty strings" ;
     rule:sparqlRuleFileName "rule.sparql" ;
     rule:createsProvenance  false ;

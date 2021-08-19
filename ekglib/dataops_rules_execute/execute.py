@@ -17,8 +17,8 @@ from ..sparql import SPARQLEndpoint, set_cli_params as sparql_set_cli_params
 #       execution order.
 # TODO: Specify per rule whether its generic or dataset-specific.
 #
-class StoryValidateRulesExecute:
-    """Finds each `rule.ttl` file in each subdirectory of `/metadata/story-validate` and executes the rule it describes
+class DataopsRulesExecute:
+    """Finds each `rule.ttl` file in each subdirectory of `/metadata` and executes the rule it describes
     against the given SPARQL s3_endpoint.
     """
 
@@ -28,6 +28,7 @@ class StoryValidateRulesExecute:
         self.verbose = args.verbose
         self.data_source_code = args.data_source_code
         self.rules_file = args.rules_file
+        self.rule_type = args.rule_type
         self.sparql_endpoint = sparql_endpoint
         if self.rules_file is None:
             self.g = self._query_all_rules()
@@ -35,7 +36,7 @@ class StoryValidateRulesExecute:
             self.g = Graph().parse(self.rules_file, format='ttl')
         log_item('Found # rules', len(list(self.g.subjects( RDF.type, RULE.ValidationRule))))
         self._filter_out_unused()
-        log_rule('Executing Story Validation Rules')
+        log_rule('Executing Dataops Rules')
         log_item('Number of triples', len(self.g))
         self.list_rules()
 
@@ -49,7 +50,7 @@ class StoryValidateRulesExecute:
             log_item(f'Rule {index + 1}', key)
 
     def _query_all_rules(self) -> Graph:
-        log_item("Get Story Validation Rules", self.data_source_code)
+        log_item("Get Dataops Rules", self.data_source_code)
         return self.sparql_endpoint.construct_and_convert(
             f"""\
             PREFIX owl: <http://www.w3.org/2002/07/owl#>
@@ -64,7 +65,7 @@ class StoryValidateRulesExecute:
             }}
             WHERE {{
                 GRAPH kggraph:{self.data_source_code} {{
-                    ?rule a rule:ValidationRule .
+                    ?rule a rule:{self.rule_type} .
                     ?rule ?p ?s .
                     BIND(localname(?rule) AS ?key)
                 }}
@@ -78,10 +79,13 @@ class StoryValidateRulesExecute:
             print(type(item))
             if isinstance(item, QueryResult):
                 formatted_response = format(item.response.read().decode('utf-8'))
+                print("It's a query result")
                 print(formatted_response)
             elif isinstance(item, ConjunctiveGraph):
+                print("It's a graph")
                 print(list(item))
             else:
+                print("Not sure what it is")
                 print(item)
 
             # evaluate code
@@ -121,7 +125,7 @@ class StoryValidateRulesExecute:
 
 def main():
     parser = argparse.ArgumentParser(
-        prog='python3 -m ekglib.story_validate_rules_execute',
+        prog='python3 -m ekglib.dataops_rules_execute',
         description='Processes each rule.ttl file in the given directory and executes it against the given SPARQL '
                     's3_endpoint',
         epilog='Currently only supports turtle.',
@@ -131,6 +135,7 @@ def main():
     parser.add_argument('--verbose', '-v', help='verbose output', default=False, action='store_true')
     parser.add_argument('--static-datasets-root', help='The static datasets root, relevant when dataset-code=metadata')
     parser.add_argument('--rules-file', help='Optional aternative source of rules', default=None )
+    parser.add_argument('--rule-type', help='Type of rules to be executed', default=None )
     git_set_cli_params(parser)
     kgiri_set_cli_params(parser)
     data_source_set_cli_params(parser)
@@ -139,7 +144,7 @@ def main():
     args = parser.parse_args()
     set_kgiri_base(args.kgiri_base)
 
-    processor = StoryValidateRulesExecute(args, sparql_endpoint=SPARQLEndpoint(args))
+    processor = DataopsRulesExecute(args, sparql_endpoint=SPARQLEndpoint(args))
     return processor.execute()
 
 

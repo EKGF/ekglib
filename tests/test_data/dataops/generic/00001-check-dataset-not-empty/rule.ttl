@@ -3,9 +3,11 @@
 @prefix rdfs:       <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix rule:       <https://ekgf.org/ontology/dataops-rule/> .
 
-<rule-00001-remove-emtpy-strings>
+<rule-00001-check-dataset-not-empty>
   a                       rule:SPARQLRule, rule:ValidationRule ;
   rdfs:label              "Check dataset is not empty" ;
   rule:sparqlRuleFileName "rule.sparql" ;
   rule:createsProvenance  false ;
+  rule:sparqlQueryType     rule:SPARQLAskQuery ;
+  rule:expectedResult      rule:BooleanResultTrue ;
 .

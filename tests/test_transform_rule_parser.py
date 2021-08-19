@@ -10,7 +10,7 @@ class TestTransformRuleParser:
         output = 'test-transform-rule.ttl.txt'
         sys.argv = [
             'pytest',
-            '--input', f'{test_data_dir}/transform/generic/00001-remove-empty-strings/rule.ttl',
+            '--input', f'{test_data_dir}/dataops/generic/00001-remove-empty-strings/rule.ttl',
             '--ontologies-root', f'{test_data_dir}/../../ontologies/',
             '--output', output,
             '--data-source-code', 'abc',
@@ -32,7 +32,8 @@ class TestTransformRuleParser:
             
             <rule-00001-remove-emtpy-strings> a owl:Thing,
                     :Rule,
-                    :SPARQLRule ;
+                    :SPARQLRule,
+                    :TransformationRule ;
                 rdfs:label "Remove all empty strings" ;
                 :createsProvenance false ;
                 :hasSPARQLRule """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>

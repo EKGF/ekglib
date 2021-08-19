@@ -29,7 +29,7 @@ def check_ontologies(ontologies_root: Path):
     return ontologies_root
 
 
-def add_story_validate_rule_namespaces(rule_graph: Graph):
+def add_dataops_rule_namespaces(rule_graph: Graph):
     rule_graph.base = EKG_NS['KGIRI']
     rule_graph.bind("kgiri", EKG_NS['KGIRI'])
     rule_graph.bind("kggraph", EKG_NS['KGGRAPH'])
@@ -41,11 +41,11 @@ def add_story_validate_rule_namespaces(rule_graph: Graph):
     rule_graph.namespace_manager.bind('rule', RULE)
 
 
-class StoryValidateRuleParser:
-    """Checks each `rule.ttl` file in each subdirectory of `/metadata/story-validate` to
-    see if it refers to `.sparql_endpoint` files that are meant to be used by the "Story Validate Step".
+class DataopsRuleParser:
+    """Checks each `rule.ttl` file in each subdirectory of `/metadata` to
+    see if it refers to `.sparql_endpoint` files that are meant to be used by the relevant.
     Each of these `.sparql_endpoint` files is then imported (its contents) into a new version of
-    the `rule.ttl` file.
+    the `rule.ttl` file
     """
     g: rdflib.Graph
 
@@ -53,25 +53,25 @@ class StoryValidateRuleParser:
 
         self.args = args
         self.verbose = args.verbose
-        self.story_validate_rule_file = Path(input_file_name)
-        if not self.story_validate_rule_file.exists():
+        self.rule_file = Path(input_file_name)
+        if not self.rule_file.exists():
             error(f"{input_file_name} does not exist")
         self.rule_file_iri = rule_file_iri
         if args.data_source_code is None:
             error("No data source code specified")
         self.data_source_code = args.data_source_code
         if self.args.ontologies_root is None:
-            error("Story Validate Rule Parser requires --ontologies-root to be specified")
+            error(" Rule Parser requires --ontologies-root to be specified")
         self.ontologies_root = check_ontologies(Path(self.args.ontologies_root))
 
     def check(self) -> int:
         self.g = self.read_rule_file()
         count = 0
-        for story_validate_rule in self.get_rule_iris():
-            if self.check_rule(story_validate_rule):
+        for rule in self.get_rule_iris():
+            if self.check_rule(rule):
                 count += 1
         if not count:
-            log_error("Could not find any executable rules in {}".format(self.story_validate_rule_file))
+            log_error("Could not find any executable rules in {}".format(self.rule_file))
             return 1
         self.load_ontologies()
         self.rdfs_infer()
@@ -141,12 +141,12 @@ class StoryValidateRuleParser:
     def read_rule_file(self):
         """Parse the content of the given turtle file (which should be a Path object) and return an RDF graph"""
         rule_graph = rdflib.Graph()
-        add_story_validate_rule_namespaces(rule_graph)
-        load_rdf_file_into_graph(rule_graph, self.story_validate_rule_file)
+        add_dataops_rule_namespaces(rule_graph)
+        load_rdf_file_into_graph(rule_graph, self.rule_file)
         return rule_graph
 
     def set_key(self):
-        return self.story_validate_rule_file.parent.parent.stem
+        return self.rule_file.parent.parent.stem
 
     def set_iri(self):
         return EKG_NS['KGIRI'].term(f"rule-set-{self.set_key()}")
@@ -167,10 +167,10 @@ class StoryValidateRuleParser:
         return f"10-{set_key}"
 
     def key(self):
-        return f"{self.set_key()}-{self.story_validate_rule_file.parent.stem}"
+        return f"{self.set_key()}-{self.rule_file.parent.stem}"
 
     def sort_key(self):
-        return f"{self.set_sort_key()}-{self.story_validate_rule_file.parent.stem}"
+        return f"{self.set_sort_key()}-{self.rule_file.parent.stem}"
 
     def create_rule_set(self):
         set_iri = self.set_iri()
@@ -178,23 +178,23 @@ class StoryValidateRuleParser:
         self.g.add((set_iri, RDFS.label, Literal(self.set_key())))
         return set_iri
 
-    def check_rule(self, story_validate_rule_iri) -> bool:
-        log_iri("Story Validate Rule IRI", story_validate_rule_iri)
+    def check_rule(self, rule_iri) -> bool:
+        log_iri("Story Validate Rule IRI", rule_iri)
         log_item("Story Validate Rule Sort-key", self.sort_key())
         set_iri = self.create_rule_set()
-        self.g.add((story_validate_rule_iri, RULE.term('inSet'), set_iri))
-        self.g.add((story_validate_rule_iri, RULE.term('key'), Literal(self.key())))
-        self.g.add((story_validate_rule_iri, RULE.sortKey, Literal(self.sort_key())))
+        self.g.add((rule_iri, RULE.term('inSet'), set_iri))
+        self.g.add((rule_iri, RULE.term('key'), Literal(self.key())))
+        self.g.add((rule_iri, RULE.sortKey, Literal(self.sort_key())))
         if self.args.data_source_code:
-            self.g.add((story_validate_rule_iri, DATASET.dataSourceCode, Literal(self.args.data_source_code)))
+            self.g.add((rule_iri, DATASET.dataSourceCode, Literal(self.args.data_source_code)))
         if self.rule_file_iri:
-            self.g.add((story_validate_rule_iri, RULE.definedIn, self.rule_file_iri))
-        for rdfs_label in self.g.objects(story_validate_rule_iri, RDFS.label):
+            self.g.add((rule_iri, RULE.definedIn, self.rule_file_iri))
+        for rdfs_label in self.g.objects(rule_iri, RDFS.label):
             log_item("Story Validate Rule Title", rdfs_label)
         if self.verbose:
             print("Looking for %s" % RULE.sparqlRuleFileName)
         sparql_rule_file_names = [x for x in self.g.objects(
-            story_validate_rule_iri, RULE.sparqlRuleFileName
+            rule_iri, RULE.sparqlRuleFileName
         )]
         if len(sparql_rule_file_names) == 0:
             warning(f"Story validate rule {self.key()} does not have a SPARQL statement")
@@ -203,7 +203,7 @@ class StoryValidateRuleParser:
             log_list('SPARQL Files', sparql_rule_file_names)
         for sparql_rule_file_name in sparql_rule_file_names:
             self.process_sparql_literal(
-                story_validate_rule_iri,
+                rule_iri,
                 self.check_sparql_file_name(sparql_rule_file_name)
             )
         return True
@@ -214,25 +214,25 @@ class StoryValidateRuleParser:
     #
     def check_sparql_file_name(self, sparql_file_name):
         if self.verbose:
-            log_item("Checking", self.story_validate_rule_file.parent / sparql_file_name)
-        sparql_file_name_full_path = self.story_validate_rule_file.parent / sparql_file_name
+            log_item("Checking", self.rule_file.parent / sparql_file_name)
+        sparql_file_name_full_path = self.rule_file.parent / sparql_file_name
         if not sparql_file_name_full_path.exists():
             warning(f"Could not find {sparql_file_name_full_path}")
             return None
-        log_item("Found SPARQL file", f"{self.story_validate_rule_file.parent.name}/{sparql_file_name}")
+        log_item("Found SPARQL file", f"{self.rule_file.parent.name}/{sparql_file_name}")
         return rdflib.Literal(sparql_file_name_full_path.read_text())
 
-    def process_sparql_literal(self, story_validate_rule, sparql_literal):
+    def process_sparql_literal(self, rule, sparql_literal):
         if not sparql_literal:
             return
         self.replace_literal_triple(
-            story_validate_rule,
+            rule,
             RULE.sparqlRuleFileName,
             RULE.hasSPARQLRule,
             kgiri_replace_iri_in_literal(sparql_literal)
         )
-        self.g.add((story_validate_rule, RDF.type, RULE.Rule))
-        self.g.add((story_validate_rule, RDF.type, RULE.SPARQLRule))
+        self.g.add((rule, RDF.type, RULE.Rule))
+        self.g.add((rule, RDF.type, RULE.SPARQLRule))
         self.g.namespace_manager.bind("rule", RULE)
 
     #
@@ -257,14 +257,15 @@ class StoryValidateRuleParser:
 
 
 def runit(args, stream) -> int:
-    processor = StoryValidateRuleParser(args, input_file_name=args.input)
+    processor = DataopsRuleParser(args, input_file_name=args.input)
+    processor.check()
     processor.check()
     return processor.dump(stream)
 
 
 def main():
     parser = argparse.ArgumentParser(
-        prog='python3 -m ekglib.transform_rule_parser',
+        prog='python3 -m ekglib.dataops_rule_parser',
         description='Adds any referenced SPARQL file to the graph as text and writes a new Turtle file',
         epilog='Currently only supports turtle.',
         allow_abbrev=False

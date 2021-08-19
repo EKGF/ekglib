@@ -10,7 +10,7 @@ class TestTransformRulesCapture:
     def test_transform_rule_capture(self, kgiri_base, test_data_dir, local_s3_port):
         sys.argv = [
             'pytest',
-            '--transform-root', f'{test_data_dir}/transform',
+            '--transform-root', f'{test_data_dir}/dataops',
             '--ontologies-root', '../ontologies',
             '--data-source-code', 'test-data-source',
             '--s3-endpoint', f'http://localhost:{local_s3_port}',

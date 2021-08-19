@@ -1,0 +1,49 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rule: <https://ekgf.org/ontology/dataops-rule/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix kggraph: <http://localhost/graph/> .
+
+
+<http://localhost/id/rule-00001-check-dataset-not-empty> a owl:Thing , rule:Rule , rule:SPARQLRule , rule:ValidationRule ;
+                                                         rdfs:label "Check dataset is not empty" ;
+                                                         <https://ekgf.org/ontology/dataset/dataSourceCode> "ldap" ;
+                                                         rule:createsProvenance false ;
+                                                             rule:sparqlQueryType     rule:SPARQLAskQuery ;
+                                                             rule:expectedResult      rule:BooleanResultTrue ;
+                                                         rule:definedIn <http://localhost/id/story-validate-rule-file> ;
+                                                         rule:hasSPARQLRule """PREFIX legal-entity:  <https://ekgf.org/ontology/legal-entity/>
+ASK {
+    ?s ?p ?o .
+}
+""" ;
+                                                         rule:hasSPARQLRule """PREFIX legal-entity:  <https://ekgf.org/ontology/legal-entity/>
+SELECT *  {
+    ?s ?p ?o .
+}
+""" ;
+                                                         rule:inSet <http://localhost/id/rule-set-generic> ;
+                                                         rule:key "generic-00001-check-dataset-is-empty" ;
+                                                         rule:sortKey "01-generic-00001-check-dataset-is-empty" .
+<http://localhost/id/sha256:4f12340264f4b135b48c3572fe275d48885e9b9bb6e8ce82bf6ac7813eb77e19> a owl:Thing , rule:Rule , rule:SPARQLRule , rule:ValidationRule ;
+                                                                                              rdfs:label "Check dataset is not empty" ;
+                                                                                              <https://ekgf.org/ontology/dataset/dataSourceCode> "ldap" ;
+                                                                                              rule:createsProvenance false ;
+                                                                                              rule:definedIn <http://localhost/id/sha256:b8d8bf3f99515add820eab0d75837753ab8a35fc33c3990a1e1c520982c04fe5> ;
+                                                                                              rule:hasSPARQLRule """PREFIX le:  <https://ekgf.org/ontology/legal-entity/>
+  INSERT DATA  {
+    le:subject le:predicate le:object;
+        le:predicate2 le:object2.
+  }
+""" ;
+                                                                                              rule:hasSPARQLRule """PREFIX legal-entity:  <https://ekgf.org/ontology/legal-entity/>
+  CONSTRUCT  {
+    ?s ?p ?o .
+  }
+WHERE {
+    ?s ?p ?o .
+  }
+""" ;
+                                                                                              rule:inSet <http://localhost/id/sha256:89cd38d57a3d0ead90f59ae8ea91cbebf3e00a04a92122a4914fe5f5857c81c7> ;
+                                                                                              rule:key "generic-00001-check-dataset-not-empty" ;
+                                                                                              rule:sortKey "01-generic-00001-check-dataset-not-empty" .

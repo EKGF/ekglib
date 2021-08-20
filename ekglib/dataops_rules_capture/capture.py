@@ -30,7 +30,7 @@ class DataopsRulesCapture:
         log_iri('Graph IRI', self.graph_iri)
         self.dataops_root = Path(args.dataops_root)
         if not self.dataops_root.exists():
-            error(f"The provided story validate root directory does not exist: {self.dataops_root}")
+            error(f"The provided rules root directory does not exist: {self.dataops_root}")
         log_item('Git Branch', self.args.git_branch)
         self.g = Graph()
         add_dataops_rule_namespaces(self.g)
@@ -74,7 +74,7 @@ class DataopsRulesCapture:
     def capture_rule_file(self, rule_file: Path, rule_directory_iri: URIRef):
         log_item('Rule File', f"{rule_file.parent.name}/{rule_file.name}")
         rule_file_iri = EKG_NS['KGIRI'].term("dataops-rule-file")
-        self.g.add((rule_file_iri, RDF.type, RAW.term('DataopsRuleFille')))
+        self.g.add((rule_file_iri, RDF.type, RAW.term('DataopsRuleFile')))
         self.g.add((rule_file_iri, RAW.term('inRuleDirectory'), rule_directory_iri))
         processor = DataopsRuleParser(
             self.args,

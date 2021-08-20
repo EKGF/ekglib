@@ -179,8 +179,8 @@ class DataopsRuleParser:
         return set_iri
 
     def check_rule(self, rule_iri) -> bool:
-        log_iri("Story Validate Rule IRI", rule_iri)
-        log_item("Story Validate Rule Sort-key", self.sort_key())
+        log_iri("Rule IRI", rule_iri)
+        log_item("Rule Sort-key", self.sort_key())
         set_iri = self.create_rule_set()
         self.g.add((rule_iri, RULE.term('inSet'), set_iri))
         self.g.add((rule_iri, RULE.term('key'), Literal(self.key())))
@@ -190,14 +190,14 @@ class DataopsRuleParser:
         if self.rule_file_iri:
             self.g.add((rule_iri, RULE.definedIn, self.rule_file_iri))
         for rdfs_label in self.g.objects(rule_iri, RDFS.label):
-            log_item("Story Validate Rule Title", rdfs_label)
+            log_item("Rule Title", rdfs_label)
         if self.verbose:
             print("Looking for %s" % RULE.sparqlRuleFileName)
         sparql_rule_file_names = [x for x in self.g.objects(
             rule_iri, RULE.sparqlRuleFileName
         )]
         if len(sparql_rule_file_names) == 0:
-            warning(f"Story validate rule {self.key()} does not have a SPARQL statement")
+            warning(f"Rule {self.key()} does not have a SPARQL statement")
             return False
         if self.verbose:
             log_list('SPARQL Files', sparql_rule_file_names)

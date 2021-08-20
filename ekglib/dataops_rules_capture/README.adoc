@@ -1,20 +1,20 @@
-= Transform Rules Capture
+= Rules Capture
 :icons: font
 
 WARNING: TODO
 
-Captures all transform rule files from a given directory and uploads
+Captures all rule files from a given directory and uploads
 the resulting file to S3 (i.e. "the object store").
 
 [source]
 ----
-python3 -m ekglib.transform_rules_capture --help
+python3 -m ekglib.dataops_rules_capture --help
 ----
 
 [source]
 ----
-usage: python3 -m ekglib.transform_rules_capture [-h] [--verbose]
-        --transform-root            RULE_ROOT
+usage: python3 -m ekglib.dataops_rules_capture [-h] [--verbose]
+        --dataops-root              RULE_ROOT
         --ontologies-root           ONTOLOGIES_ROOT
         --data-source-code          DATA_SOURCE_CODE
         --git-branch                GIT_BRANCH
@@ -27,13 +27,13 @@ usage: python3 -m ekglib.transform_rules_capture [-h] [--verbose]
         --aws-access-key-id         AWS_ACCESS_KEY_ID
         --aws-secret-access-key     AWS_SECRET_ACCESS_KEY
 
-Captures all transform rule files from a given directory and uploads the
+Captures all rule files from a given directory and uploads the
 resulting file to S3
 
 optional arguments:
   -h, --help            show this help message and exit
   --verbose, -v         verbose output (default: False)
-  --transform-root RULE_ROOT
+  --dataops-root RULE_ROOT
                         The root directory where all rule subdirectories can
                         be found (default: None)
   --ontologies-root ONTOLOGIES_ROOT

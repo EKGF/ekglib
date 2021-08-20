@@ -32,7 +32,7 @@ optional arguments:
                         code=metadata
   --dataset-code DATASET_CODE
                         The code of the dataset that we're going to run the
-                        transform on
+                        dataops rules against
   --branch BRANCH       The branch name we're working on, default master
   --sparql-endpoint SPARQL_ENDPOINT
                         The SPARQL endpoint

@@ -5,9 +5,9 @@ import pytest
 import ekglib
 
 
-class TestTransformRulesExecutor:
+class TestDataopsRulesExecutor:
 
-    def test_transform_rule_executor(self, kgiri_base, test_data_dir, local_sparql_port):
+    def test_dataops_rule_executor(self, kgiri_base, test_data_dir, local_sparql_port):
         sys.argv = [
             'pytest',
             '--static-datasets-root', f'{test_data_dir}/static-datasets',
@@ -18,4 +18,4 @@ class TestTransformRulesExecutor:
             '--sparql-endpoint-passwd', 'admin',
             '--kgiri-base', kgiri_base
         ]
-        assert 0 == ekglib.transform_rules_execute.main()  # TODO: make more meaningful assertions here
+        assert 0 == ekglib.dataops_rules_execute.main()  # TODO: make more meaningful assertions here

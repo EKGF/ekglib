@@ -1,4 +1,4 @@
-= Transform Rule Parser
+= Rule Parser
 :icons: font
 
 WARNING: TODO

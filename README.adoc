@@ -20,9 +20,6 @@ View the Project on Github https://github.com/EKGF/ekglib[here].
 
 - link:ekglib/concept_parser/[Concept Parser]
 - link:ekglib/persona_parser/[Persona Parser]
-- link:ekglib/transform_rule_parser/[Transform Rule Parser]
-- link:ekglib/transform_rules_capture/[Transform Rules Capture]
-- link:ekglib/transform_rules_execute/[Transform Rules Executor]
 - link:ekglib/dataops_rule_parser/[Story Validate Rule Parser]
 - link:ekglib/dataops_rules_capture/[Story Vaidate Rules Capture]
 - link:ekglib/dataops_rules_execute/[Story Validate Rules Executor]

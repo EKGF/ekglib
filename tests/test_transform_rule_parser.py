@@ -4,9 +4,9 @@ import textwrap
 import ekglib
 
 
-class TestTransformRuleParser:
+class TestDataopsRuleParser:
 
-    def test_transform_rule_parser(self, kgiri_base, test_data_dir):
+    def test_dataops_rule_parser(self, kgiri_base, test_data_dir):
         output = 'test-transform-rule.ttl.txt'
         sys.argv = [
             'pytest',
@@ -17,7 +17,7 @@ class TestTransformRuleParser:
             '--kgiri-base', kgiri_base,
             '--kgiri-base-replace', 'https://placeholder.kg'
         ]
-        ekglib.transform_rule_parser.parse.main()
+        ekglib.dataops_rule_parser.parse.main()
         with open(output) as f:
             actual = textwrap.dedent(f.read())
         os.remove(output)

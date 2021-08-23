@@ -116,7 +116,7 @@ class DataopsRulesExecute:
         for sparql_rule in self.g.objects(rule_iri, RULE.hasSPARQLRule):
             count += 1
         #todo: this should really be done after the preceding step to ensure it only occurs if rule execution successful
-        self.sparql_endpoint.execute_sparql_statement(add_detail_about_sparql_statement(dataset_code, rule_iri))
+        self.sparql_endpoint.execute_sparql_statement(add_detail_about_sparql_statement(self.data_source_code, rule_iri))
             result.append(self.sparql_endpoint.execute_sparql_statement(sparql_rule))
         if count > 0:
             log_item("# SPARQL Rules", count)

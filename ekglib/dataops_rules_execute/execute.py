@@ -115,12 +115,60 @@ class DataopsRulesExecute:
         result=[]
         for sparql_rule in self.g.objects(rule_iri, RULE.hasSPARQLRule):
             count += 1
+        #todo: this should really be done after the preceding step to ensure it only occurs if rule execution successful
+        self.sparql_endpoint.execute_sparql_statement(add_detail_about_sparql_statement(dataset_code, rule_iri))
             result.append(self.sparql_endpoint.execute_sparql_statement(sparql_rule))
         if count > 0:
             log_item("# SPARQL Rules", count)
         else:
             warning(f"Story validation rule has no SPARQL rule: {rule_iri}")
         return result
+
+        def add_detail_about_sparql_statement(self, dataset_code: str, rule_iri: URIRef):
+        #
+        # We cannot use prefixes here because they might clash with the prefixes in sparql_rule
+        #
+        # TODO: Register provenance
+        #
+        graph_iri = f"{EKG_NS['KGGRAPH']}{dataset_code}"
+        dataset_iri = f"{EKG_NS['KGIRI']}dataset-{dataset_code}"
+        dataset_class_iri = f"{DATASET}Dataset"
+        dataset_code_p_iri = f"{DATASET}datasetCode"
+        dataset_in_graph_p_iri = f"{DATASET}inGraph"
+        data_source_code_p_iri = f"{DATASET}dataSourceCode"
+        executed_rule_p_iri = f"{RULE}executedRule"
+        created_by_pipeline_p_iri = f"{DATAOPS}createdByPipeline"
+        #
+        # need to use self.data_source_code here, don't "fix" because
+        # self.data_source_code is the code for the whole pipeline,
+        # such as "metadata" whereas data_source_code can be "gleif" or "edmcouncil" etc
+        #
+        # TODO: Change data_source_code to data source
+        #
+        pipeline_iri = f"{EKG_NS['KGIRI']}dataops-pipeline-{self.data_source_code}"
+        pipeline_class_iri = f"{DATAOPS}Pipeline"
+        pipeline_produced_dataset_p_iri = f"{DATAOPS}hasProducedDataset"
+        detail = f"""\
+            INSERT DATA {{
+                GRAPH <{graph_iri}> {{
+                    <{dataset_iri}> a <{dataset_class_iri}> ;
+                        <{dataset_code_p_iri}> "{dataset_code}" ;
+                        <{executed_rule_p_iri}> <{rule_iri}> ;
+                        <{dataset_in_graph_p_iri}> <{graph_iri}> ;
+                        <{created_by_pipeline_p_iri}> <{pipeline_iri}> .
+                    <{pipeline_iri}> a <{pipeline_class_iri}> ;
+                        rdfs:label "Pipeline for Data Source \\"{self.data_source_code}\\"" ;
+                        <{data_source_code_p_iri}> "{self.data_source_code}" ;
+                        <{pipeline_produced_dataset_p_iri}> <{dataset_iri}> .
+                }}
+            }}
+            
+            """
+        #
+        # We have to execute the INSERT DATA rule first because some rules (the obfuscation rules)
+        # even update the content that this INSERT DATA statement inserted.
+        #
+        return textwrap.dedent(detail)
 
 
 def main():

@@ -116,7 +116,7 @@ class DataopsRulesExecute:
         for sparql_rule in self.g.objects(rule_iri, RULE.hasSPARQLRule):
             count += 1
         #todo: this should really be done after the preceding step to ensure it only occurs if rule execution successful
-            self.sparql_endpoint.execute_sparql_statement(self.add_detail_about_sparql_statement(self.data_source_code, rule_iri))
+            self.sparql_endpoint.execute_sparql_statement(self.insert_detail_about_sparql_statement(self.data_source_code, rule_iri))
             result.append(self.sparql_endpoint.execute_sparql_statement(sparql_rule))
         if count > 0:
             log_item("# SPARQL Rules", count)
@@ -124,7 +124,7 @@ class DataopsRulesExecute:
             warning(f"Story validation rule has no SPARQL rule: {rule_iri}")
         return result
 
-    def add_detail_about_sparql_statement(self, dataset_code: str, rule_iri: URIRef):
+    def insert_detail_about_sparql_statement(self, dataset_code: str, rule_iri: URIRef):
         #
         # We cannot use prefixes here because they might clash with the prefixes in sparql_rule
         #

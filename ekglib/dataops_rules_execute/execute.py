@@ -34,7 +34,7 @@ class DataopsRulesExecute:
             self.g = self._query_all_rules()
         else:
             self.g = Graph().parse(self.rules_file, format='ttl')
-        log_item('Found # rules', len(list(self.g.subjects( RDF.type, RULE.ValidationRule))))
+        log_item('Found # rules', len(list(self.g.subjects( RDF.type, RULE.term(self.rule_type)))))
         self._filter_out_unused()
         log_rule('Executing Dataops Rules')
         log_item('Number of triples', len(self.g))
@@ -75,18 +75,17 @@ class DataopsRulesExecute:
         )
     def _evaluate_query_result(self):
 
-        for item in self.result:
-            print(type(item))
-            if isinstance(item, QueryResult):
-                formatted_response = format(item.response.read().decode('utf-8'))
-                print("It's a query result")
-                print(formatted_response)
-            elif isinstance(item, ConjunctiveGraph):
-                print("It's a graph")
-                print(list(item))
-            else:
-                print("Not sure what it is")
-                print(item)
+        print(type(self.result))
+        if isinstance(self.result, QueryResult):
+            formatted_response = format(self.result.response.read().decode('utf-8'))
+            print("It's a query result")
+            print(formatted_response)
+        elif isinstance(self.result, ConjunctiveGraph):
+            print("It's a graph")
+            print(list(self.result))
+        else:
+            print("Not sure what it is")
+            print(self.result)
 
             # evaluate code
             # evaluate formatted_response
@@ -104,27 +103,66 @@ class DataopsRulesExecute:
         max_rules = len(rule_iris)
         for index, key in enumerate(sorted(rule_iris)):
             for rule_iri in self.g.subjects(RULE.sortKey, key):
-                self.result=self.execute_rule(rule_iri, index, max_rules, key)
-                self._evaluate_query_result()
+                self.execute_rule(rule_iri, index, max_rules, key)
         return 0
 
     def execute_rule(self, rule_iri, index, max_, key):
         log_rule(f"Executing rule {index + 1}/{max_}: {key}")
         log_iri("Executing Rule", rule_iri)
         count = 0
-        result=[]
         for sparql_rule in self.g.objects(rule_iri, RULE.hasSPARQLRule):
+            #get expected result type(rule_iri
+            #get queryType
             count += 1
-        #todo: this should really be done after the preceding step to ensure it only occurs if rule execution successful
-            self.sparql_endpoint.execute_sparql_statement(self.insert_detail_about_sparql_statement(self.data_source_code, rule_iri))
-            result.append(self.sparql_endpoint.execute_sparql_statement(sparql_rule))
+            validation_result = None
+            for statement_type in self.g.objects(rule_iri, RULE.sparqlQueryType):
+
+                if statement_type == RULE.SPARQLSelectQuery:
+                    result=self.sparql_endpoint.execute_sparql_select_query(sparql_rule)
+                    if result is not None:
+                        formatted_response = format(result.response.read().decode('utf-8'))
+                        print("It's a result set in csv format")
+                        print(formatted_response)
+                elif statement_type == RULE.SPARQLConstructQuery:
+                    result=self.sparql_endpoint.construct_and_convert(sparql_rule)
+                    if result is not None:
+                        graph = result.convert()
+                        print("It's a graph")
+                        print(graph.serialize(format="turtle").decode('utf-8'))
+                elif statement_type == RULE.SPARQLAskQuery:
+                    result=self.sparql_endpoint.execute_sparql_statement(sparql_rule)
+                    if result is not None:
+                        actual_result = format(result.response.read().decode('utf-8'))
+                        for expected_result in self.g.objects(rule_iri, RULE.expectedResult):
+
+                            if expected_result == RULE.BooleanResultTrue and actual_result == 'true':
+                                validation_result=RULE.ValidationRulePass
+                            elif expected_result == RULE.BooleanResultFalse and actual_result == 'false':
+                                validation_result=RULE.ValidationRulePass
+                elif statement_type == RULE.SPARQLUpdateStatement:
+                    result=self.sparql_endpoint.execute_sparql_statement(sparql_rule)
+                    if result is not None:
+                        formatted_response = format(result.response.read().decode('utf-8'))
+                        print("It's an insert")
+                        print(formatted_response)
+
+                else:
+                    continue
+                if validation_result is None:
+                    self.sparql_endpoint.execute_sparql_statement(self.insert_detail_about_sparql_statement(self.data_source_code, rule_iri ))
+                else:
+                    self.sparql_endpoint.execute_sparql_statement(self.insert_detail_about_sparql_statement(self.data_source_code, rule_iri, validation_result))
+
+
+
+
+
         if count > 0:
             log_item("# SPARQL Rules", count)
         else:
             warning(f"Story validation rule has no SPARQL rule: {rule_iri}")
-        return result
 
-    def insert_detail_about_sparql_statement(self, dataset_code: str, rule_iri: URIRef):
+    def insert_detail_about_sparql_statement(self, dataset_code: str, rule_iri: URIRef, result=None):
         #
         # We cannot use prefixes here because they might clash with the prefixes in sparql_rule
         #
@@ -148,7 +186,7 @@ class DataopsRulesExecute:
         pipeline_iri = f"{EKG_NS['KGIRI']}dataops-pipeline-{self.data_source_code}"
         pipeline_class_iri = f"{DATAOPS}Pipeline"
         pipeline_produced_dataset_p_iri = f"{DATAOPS}hasProducedDataset"
-        detail = f"""\
+        core_detail = f"""\
             INSERT DATA {{
                 GRAPH <{graph_iri}> {{
                     <{dataset_iri}> a <{dataset_class_iri}> ;
@@ -160,15 +198,20 @@ class DataopsRulesExecute:
                         rdfs:label "Pipeline for Data Source \\"{self.data_source_code}\\"" ;
                         <{data_source_code_p_iri}> "{self.data_source_code}" ;
                         <{pipeline_produced_dataset_p_iri}> <{dataset_iri}> .
+            """
+        tail_detail = f"""\
                 }}
             }}
             
-            """
-        #
-        # We have to execute the INSERT DATA rule first because some rules (the obfuscation rules)
-        # even update the content that this INSERT DATA statement inserted.
-        #
-        return textwrap.dedent(detail)
+        """
+        result_detail = f"""\
+                    <{rule_iri}> <{RULE}validationResult> <{result}> .
+        """
+
+        if result is None:
+            return textwrap.dedent(core_detail + tail_detail)
+        else:
+            return textwrap.dedent(core_detail + result_detail + tail_detail)
 
 
 def main():

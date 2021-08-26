@@ -18,6 +18,6 @@ class TestDataopsRulesExecutor:
             '--sparql-endpoint-userid', 'admin',
             '--sparql-endpoint-passwd', 'admin',
             '--kgiri-base', kgiri_base,
-           # '--rules-file', f'{test_data_dir}/story-validate/00001-check-dataset-not-empty.ttl'
+            '--rules-file', f'{test_data_dir}/dataops/generic/00001-check-dataset-not-empty.ttl'
         ]
         assert 0 == ekglib.dataops_rules_execute.main()  # TODO: make more meaningful assertions here

@@ -31,7 +31,7 @@ class DataopsRulesExecute:
         self.rule_type = args.rule_type
         self.sparql_endpoint = sparql_endpoint
         if self.rules_file is None:
-            self.g = self._query_all_rules()
+            self.g = self._query_all_rules().convert()
         else:
             self.g = Graph().parse(self.rules_file, format='ttl')
         log_item('Found # rules', len(list(self.g.subjects( RDF.type, RULE.term(self.rule_type)))))
@@ -51,7 +51,7 @@ class DataopsRulesExecute:
 
     def _query_all_rules(self) -> Graph:
         log_item("Get Dataops Rules", self.data_source_code)
-        return self.sparql_endpoint.construct_and_convert(
+        return self.sparql_endpoint.construct(
             f"""\
             PREFIX owl: <http://www.w3.org/2002/07/owl#>
             PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -104,7 +104,7 @@ class DataopsRulesExecute:
                         print("It's a result set in csv format")
                         print(formatted_response)
                 elif statement_type == RULE.SPARQLConstructQuery:
-                    result=self.sparql_endpoint.construct_and_convert(sparql_rule)
+                    result=self.sparql_endpoint.construct(sparql_rule)
                     if result is not None:
                         graph = result.convert()
                         print("It's a graph")

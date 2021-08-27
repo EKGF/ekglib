@@ -259,7 +259,7 @@ class SPARQLEndpoint:
         #     print(f.read().decode('utf-8'))
         return self._execute_query()
 
-    def construct_and_convert(self, sparql_construct_statement: str) -> Optional[Graph]:
+    def construct(self, sparql_construct_statement: str) -> Optional[Graph]:
 
         self.sparql_endpoint.clearCustomHttpHeader("Accept")
         self.sparql_endpoint.setMethod(GET)

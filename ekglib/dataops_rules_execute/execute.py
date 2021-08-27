@@ -51,7 +51,7 @@ class DataopsRulesExecute:
 
     def _query_all_rules(self) -> Graph:
         log_item("Get Dataops Rules", self.data_source_code)
-        return self.sparql_endpoint.construct(
+        return self.sparql_endpoint.execute_construct(
             f"""\
             PREFIX owl: <http://www.w3.org/2002/07/owl#>
             PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -104,7 +104,7 @@ class DataopsRulesExecute:
                         print("It's a result set in csv format")
                         print(formatted_response)
                 elif statement_type == RULE.SPARQLConstructQuery:
-                    result=self.sparql_endpoint.construct(sparql_rule)
+                    result=self.sparql_endpoint.execute_construct(sparql_rule)
                     if result is not None:
                         graph = result.convert()
                         print("It's a graph")
@@ -137,7 +137,7 @@ class DataopsRulesExecute:
                         for severity in self.g.objects(rule_iri, RULE.severity):
                             if severity == RULE.Violation:
                                 return 1
-                return 0
+        return 0
 
 
 

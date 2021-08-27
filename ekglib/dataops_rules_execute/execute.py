@@ -137,7 +137,7 @@ class DataopsRulesExecute:
                         for severity in self.g.objects(rule_iri, RULE.severity):
                             if severity == RULE.Violation:
                                 return 1
-        return 0
+            return 0
 
 
 

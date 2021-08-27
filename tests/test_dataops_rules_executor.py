@@ -20,4 +20,4 @@ class TestDataopsRulesExecutor:
             '--kgiri-base', kgiri_base,
             '--rules-file', f'{test_data_dir}/dataops/generic/00001-check-dataset-not-empty.ttl'
         ]
-        assert 0 == ekglib.dataops_rules_execute.main()  # TODO: make more meaningful assertions here
+        assert  ekglib.dataops_rules_execute.main() == 0  # TODO: make more meaningful assertions here

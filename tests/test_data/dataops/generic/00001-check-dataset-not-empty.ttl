@@ -69,11 +69,12 @@ WHERE {
                                                          <https://ekgf.org/ontology/dataset/dataSourceCode> "ldap" ;
                                                          rule:createsProvenance false ;
                                                          rule:sparqlQueryType     rule:SPARQLAskQuery ;
-                                                         rule:expectedResult      rule:BooleanResultTrue ;
+                                                         rule:expectedResult      rule:BooleanResultFalse ;
+                                                         rule:severity            rule:Violation ;
                                                          rule:definedIn <http://localhost/id/story-validate-rule-file> ;
                                                          rule:hasSPARQLRule """PREFIX legal-entity:  <https://ekgf.org/ontology/legal-entity/>
 ASK {
-    ?s ?p ?o .
+    ?s legal-entity:nonExistantPredicate ?o .
 }
 """ ;
 

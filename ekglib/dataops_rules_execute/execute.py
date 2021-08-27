@@ -73,25 +73,6 @@ class DataopsRulesExecute:
             ORDER BY ?key
             """  # noqa: F541
         )
-    def _evaluate_query_result(self):
-
-        print(type(self.result))
-        if isinstance(self.result, QueryResult):
-            formatted_response = format(self.result.response.read().decode('utf-8'))
-            print("It's a query result")
-            print(formatted_response)
-        elif isinstance(self.result, ConjunctiveGraph):
-            print("It's a graph")
-            print(list(self.result))
-        else:
-            print("Not sure what it is")
-            print(self.result)
-
-            # evaluate code
-            # evaluate formatted_response
-            # insert result info
-
-
     def execute(self) -> int:
         #
         # We're looking up each rule IRI via the sort key to:
@@ -101,18 +82,17 @@ class DataopsRulesExecute:
         #
         rule_iris = list(self.g.objects(None, RULE.sortKey))
         max_rules = len(rule_iris)
+        rc = 0
         for index, key in enumerate(sorted(rule_iris)):
             for rule_iri in self.g.subjects(RULE.sortKey, key):
-                self.execute_rule(rule_iri, index, max_rules, key)
-        return 0
+                rc+=self.execute_rule(rule_iri, index, max_rules, key)
+        return rc
 
     def execute_rule(self, rule_iri, index, max_, key):
         log_rule(f"Executing rule {index + 1}/{max_}: {key}")
         log_iri("Executing Rule", rule_iri)
         count = 0
         for sparql_rule in self.g.objects(rule_iri, RULE.hasSPARQLRule):
-            #get expected result type(rule_iri
-            #get queryType
             count += 1
             validation_result = None
             for statement_type in self.g.objects(rule_iri, RULE.sparqlQueryType):
@@ -134,11 +114,12 @@ class DataopsRulesExecute:
                     if result is not None:
                         actual_result = format(result.response.read().decode('utf-8'))
                         for expected_result in self.g.objects(rule_iri, RULE.expectedResult):
-
                             if expected_result == RULE.BooleanResultTrue and actual_result == 'true':
                                 validation_result=RULE.ValidationRulePass
                             elif expected_result == RULE.BooleanResultFalse and actual_result == 'false':
                                 validation_result=RULE.ValidationRulePass
+                            else:
+                                validation_result=RULE.ValidationRuleFail
                 elif statement_type == RULE.SPARQLUpdateStatement:
                     result=self.sparql_endpoint.execute_sparql_statement(sparql_rule)
                     if result is not None:
@@ -152,7 +133,11 @@ class DataopsRulesExecute:
                     self.sparql_endpoint.execute_sparql_statement(self.insert_detail_about_sparql_statement(self.data_source_code, rule_iri ))
                 else:
                     self.sparql_endpoint.execute_sparql_statement(self.insert_detail_about_sparql_statement(self.data_source_code, rule_iri, validation_result))
-
+                    if validation_result == RULE.ValidationRuleFail:
+                        for severity in self.g.objects(rule_iri, RULE.severity):
+                            if severity == RULE.Violation:
+                                return 1
+                return 0
 
 
 

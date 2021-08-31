@@ -92,6 +92,9 @@ class DataopsRulesExecute:
         log_rule(f"Executing rule {index + 1}/{max_}: {key}")
         log_iri("Executing Rule", rule_iri)
         count = 0
+        if self.rule_type == RULE.ObfuscationRule:
+            # add details of the obfucation rule being executed to the dataset first so it can also be obfuscated
+            self.sparql_endpoint.execute_sparql_statement(self.insert_detail_about_sparql_statement(self.data_source_code, rule_iri ))
         for sparql_rule in self.g.objects(rule_iri, RULE.hasSPARQLRule):
             count += 1
             validation_result = None
@@ -129,14 +132,16 @@ class DataopsRulesExecute:
 
                 else:
                     continue
-                if validation_result is None:
-                    self.sparql_endpoint.execute_sparql_statement(self.insert_detail_about_sparql_statement(self.data_source_code, rule_iri ))
-                else:
-                    self.sparql_endpoint.execute_sparql_statement(self.insert_detail_about_sparql_statement(self.data_source_code, rule_iri, validation_result))
-                    if validation_result == RULE.ValidationRuleFail:
-                        for severity in self.g.objects(rule_iri, RULE.severity):
-                            if severity == RULE.Violation:
-                                return 1
+                #  details of obfucation rules have already been added so should not be included here
+                if self.rule_type != RULE.ObfuscationRule:
+                    if validation_result is None:
+                        self.sparql_endpoint.execute_sparql_statement(self.insert_detail_about_sparql_statement(self.data_source_code, rule_iri ))
+                    else:
+                        self.sparql_endpoint.execute_sparql_statement(self.insert_detail_about_sparql_statement(self.data_source_code, rule_iri, validation_result))
+                        if validation_result == RULE.ValidationRuleFail:
+                            for severity in self.g.objects(rule_iri, RULE.severity):
+                                if severity == RULE.Violation:
+                                    return 1
             return 0
 
 

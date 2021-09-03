@@ -299,7 +299,7 @@ class SPARQLEndpoint:
             error("{}".format(err))
             dump(err)
         except QueryBadFormed:
-            error(f"Bad formed SPARQL statement: {sparql_statement}")
+            error(f"Bad formed SPARQL statement: {self.sparql_endpoint.queryString}")
         except Unauthorized:
             error("Unauthorized to access {}".format(self.sparql_endpoint.endpoint))
         except ConnectionRefusedError:

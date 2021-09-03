@@ -104,14 +104,10 @@ class DataopsRulesExecute:
                     result=self.sparql_endpoint.execute_sparql_select_query(sparql_rule)
                     if result is not None:
                         formatted_response = format(result.response.read().decode('utf-8'))
-                        print("It's a result set in csv format")
-                        print(formatted_response)
                 elif statement_type == RULE.SPARQLConstructQuery:
                     result=self.sparql_endpoint.execute_construct(sparql_rule)
                     if result is not None:
                         graph = result.convert()
-                        print("It's a graph")
-                        print(graph.serialize(format="turtle").decode('utf-8'))
                 elif statement_type == RULE.SPARQLAskQuery:
                     result=self.sparql_endpoint.execute_sparql_statement(sparql_rule)
                     if result is not None:
@@ -127,9 +123,6 @@ class DataopsRulesExecute:
                     result=self.sparql_endpoint.execute_sparql_statement(sparql_rule)
                     if result is not None:
                         formatted_response = format(result.response.read().decode('utf-8'))
-                        print("It's an insert")
-                        print(formatted_response)
-
                 else:
                     continue
                 #  details of obfucation rules have already been added so should not be included here
@@ -142,15 +135,11 @@ class DataopsRulesExecute:
                             for severity in self.g.objects(rule_iri, RULE.severity):
                                 if severity == RULE.Violation:
                                     return 1
-            return 0
-
-
-
-
         if count > 0:
             log_item("# SPARQL Rules", count)
         else:
             warning(f"Story validation rule has no SPARQL rule: {rule_iri}")
+        return 0
 
     def insert_detail_about_sparql_statement(self, dataset_code: str, rule_iri: URIRef, result=None):
         #

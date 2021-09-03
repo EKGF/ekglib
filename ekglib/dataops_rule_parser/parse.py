@@ -43,7 +43,8 @@ def add_dataops_rule_namespaces(rule_graph: Graph):
 
 class DataopsRuleParser:
     """Checks each `rule.ttl` file in each subdirectory of `/metadata` to
-    see if it refers to `.sparql_endpoint` files that are meant to be used by the relevant.
+    see if it refers to `.sparql_endpoint` files that are meant to be used by the relevant calling step.
+    This is driven by the presence of the approprate triple e.g rule a rule:TransformationRule
     Each of these `.sparql_endpoint` files is then imported (its contents) into a new version of
     the `rule.ttl` file
     """

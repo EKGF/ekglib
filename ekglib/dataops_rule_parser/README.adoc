@@ -5,12 +5,12 @@ WARNING: TODO
 
 [source]
 ----
-python3 -m ekglib.story_validate_rule_parser --help
+python3 -m ekglib.dataops_rule_parser --help
 ----
 
 [source]
 ----
-usage: python3 -m ekglib.story_validate_rule_parser [-h] [--verbose]
+usage: python3 -m ekglib.dataops_rule_parser [-h] [--verbose]
                                                [--input INPUT]
                                                [--output OUTPUT]
                                                [--ontologies-root ONTOLOGIES_ROOT]

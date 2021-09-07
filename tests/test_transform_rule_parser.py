@@ -4,26 +4,26 @@ import textwrap
 import ekglib
 
 
-class TestTransformRuleParser:
+class TestDataopsRuleParser:
 
-    def test_transform_rule_parser(self, kgiri_base, test_data_dir):
+    def test_dataops_rule_parser(self, kgiri_base, test_data_dir):
         output = 'test-transform-rule.ttl.txt'
         sys.argv = [
             'pytest',
-            '--input', f'{test_data_dir}/transform/generic/00001-remove-empty-strings/rule.ttl',
+            '--input', f'{test_data_dir}/dataops/generic/00001-remove-empty-strings/rule.ttl',
             '--ontologies-root', f'{test_data_dir}/../../ontologies/',
             '--output', output,
             '--data-source-code', 'abc',
             '--kgiri-base', kgiri_base,
             '--kgiri-base-replace', 'https://placeholder.kg'
         ]
-        ekglib.transform_rule_parser.parse.main()
+        ekglib.dataops_rule_parser.parse.main()
         with open(output) as f:
             actual = textwrap.dedent(f.read())
         os.remove(output)
         expected = textwrap.dedent(f'''\
             @base <{kgiri_base}/id/> .
-            @prefix : <https://ekgf.org/ontology/step-transform/> .
+            @prefix : <https://ekgf.org/ontology/dataops-rule/> .
             @prefix dataset: <https://ekgf.org/ontology/dataset/> .
             @prefix kgiri: <{kgiri_base}/id/> .
             @prefix owl: <http://www.w3.org/2002/07/owl#> .
@@ -32,14 +32,14 @@ class TestTransformRuleParser:
             
             <rule-00001-remove-emtpy-strings> a owl:Thing,
                     :Rule,
-                    :SPARQLRule ;
+                    :SPARQLRule,
+                    :TransformationRule ;
                 rdfs:label "Remove all empty strings" ;
-                dataset:dataSourceCode "abc" ;
                 :createsProvenance false ;
                 :hasSPARQLRule """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
             PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
             PREFIX prov: <http://www.w3.org/ns/prov#>
-            PREFIX transform: <https://ekgf.org/ontology/step-transform/>
+            PREFIX rule: <https://ekgf.org/ontology/dataops-rule/>
             
             DELETE {{
             
@@ -58,7 +58,8 @@ class TestTransformRuleParser:
             """ ;
                 :inSet <rule-set-generic> ;
                 :key "generic-00001-remove-empty-strings" ;
-                :sortKey "01-generic-00001-remove-empty-strings" .
+                :sortKey "01-generic-00001-remove-empty-strings" ;
+                dataset:dataSourceCode "abc" .
             
             <rule-set-generic> a :RuleSet ;
                 rdfs:label "generic" .

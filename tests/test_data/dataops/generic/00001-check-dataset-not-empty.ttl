@@ -11,11 +11,6 @@
                                                          rule:createsProvenance false ;
                                                              rule:sparqlQueryType     rule:SPARQLSelectQuery ;
                                                          rule:definedIn <http://localhost/id/story-validate-rule-file> ;
-#                                                         rule:hasSPARQLRule """PREFIX legal-entity:  <https://ekgf.org/ontology/legal-entity/>
-##ASK {
-##    ?s ?p ?o .
-##}
-##""" ;
                                                          rule:hasSPARQLRule """PREFIX legal-entity:  <https://ekgf.org/ontology/legal-entity/>
 SELECT *  {
     ?s ?p ?o .
@@ -30,12 +25,6 @@ SELECT *  {
                                                                                               rule:createsProvenance false ;
                                                                                                   rule:sparqlQueryType     rule:SPARQLConstructQuery ;
                                                                                               rule:definedIn <http://localhost/id/sha256:b8d8bf3f99515add820eab0d75837753ab8a35fc33c3990a1e1c520982c04fe5> ;
-#                                                                                              rule:hasSPARQLRule """PREFIX le:  <https://ekgf.org/ontology/legal-entity/>
-#  INSERT DATA  {
-#    le:subject le:predicate le:object;
-#        le:predicate2 le:object2.
-#  }
-#""" ;
                                                                                               rule:hasSPARQLRule """PREFIX legal-entity:  <https://ekgf.org/ontology/legal-entity/>
   CONSTRUCT  {
     ?s ?p ?o .

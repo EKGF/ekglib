@@ -28,7 +28,7 @@ class DataopsRulesExecute:
         self.verbose = args.verbose
         self.data_source_code = args.data_source_code
         self.rules_file = args.rules_file
-        self.rule_type = args.rule_type
+        self.rule_type = URIRef(args.rule_type)
         self.sparql_endpoint = sparql_endpoint
         if self.rules_file is None:
             self.g = self._query_all_rules().convert()
@@ -65,7 +65,7 @@ class DataopsRulesExecute:
             }}
             WHERE {{
                 GRAPH kggraph:{self.data_source_code} {{
-                    ?rule a rule:{self.rule_type} .
+                    ?rule a <{self.rule_type}> .
                     ?rule ?p ?s .
                     BIND(localname(?rule) AS ?key)
                 }}

@@ -12,6 +12,7 @@ class TestDataopsRulesExecutor:
             'pytest',
             '--static-datasets-root', f'{test_data_dir}/static-datasets',
             '--data-source-code', 'test',
+            '--rule-type', 'https://ekgf.org/ontology/dataops-rule/TransformationRule',
             '--sparql-endpoint', f'http://localhost:{local_sparql_port}',
             '--sparql-endpoint-database', 'test',
             '--sparql-endpoint-userid', 'admin',

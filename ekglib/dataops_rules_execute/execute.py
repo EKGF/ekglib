@@ -34,7 +34,7 @@ class DataopsRulesExecute:
             self.g = self._query_all_rules().convert()
         else:
             self.g = Graph().parse(self.rules_file, format='ttl')
-        log_item('Found # rules', len(list(self.g.subjects( RDF.type, RULE.term(self.rule_type)))))
+        log_item('Found # rules', len(list(self.g.subjects( RDF.type, self.rule_type))))
         self._filter_out_unused()
         log_rule('Executing Dataops Rules')
         log_item('Number of triples', len(self.g))

@@ -49,7 +49,7 @@ class DataopsRulesCapture:
 
     def filter_rule_directory(self, rule_directory):
         stem = rule_directory.stem
-        return stem == 'generic' or stem == 'generic-last' or stem == self.data_source_code
+        return stem == 'generic' or stem == 'generic-last'or stem == 'obfuscate' or stem == self.data_source_code
 
     def capture_rules_directory(self, rules_directory: Path):
         rules_directory_iri = EKG_NS['KGIRI'].term("dataops-rules-root-directory")

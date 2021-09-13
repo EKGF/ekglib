@@ -39,11 +39,11 @@
       <root url="file://$PROJECT_DIR$/tests/test_data/test-user-story-001.ttl" />
       <root url="file://$PROJECT_DIR$/tests/test_data/dataops" />
       <root url="file://$PROJECT_DIR$/tests/test_data/dataops/generic" />
-      <root url="file://$PROJECT_DIR$/tests/test_data/dataops/generic-last" />
-      <root url="file://$PROJECT_DIR$/tests/test_data/dataops/generic-last/90000-obfuscate-subjects" />
-      <root url="file://$PROJECT_DIR$/tests/test_data/dataops/generic-last/90000-obfuscate-subjects/rule.ttl" />
-      <root url="file://$PROJECT_DIR$/tests/test_data/dataops/generic-last/90001-obfuscate-objects" />
-      <root url="file://$PROJECT_DIR$/tests/test_data/dataops/generic-last/90001-obfuscate-objects/rule.ttl" />
+      <root url="file://$PROJECT_DIR$/tests/test_data/another-dataops-root/generic-last" />
+      <root url="file://$PROJECT_DIR$/tests/test_data/another-dataops-root/generic-last/90000-obfuscate-subjects" />
+      <root url="file://$PROJECT_DIR$/tests/test_data/another-dataops-root/generic-last/90000-obfuscate-subjects/rule.ttl" />
+      <root url="file://$PROJECT_DIR$/tests/test_data/another-dataops-root/generic-last/90001-obfuscate-objects" />
+      <root url="file://$PROJECT_DIR$/tests/test_data/another-dataops-root/generic-last/90001-obfuscate-objects/rule.ttl" />
       <root url="file://$PROJECT_DIR$/tests/test_data/dataops/generic/00001-remove-empty-strings" />
       <root url="file://$PROJECT_DIR$/tests/test_data/dataops/generic/00001-remove-empty-strings/rule.ttl" />
       <root url="file://$PROJECT_DIR$/tests/test_data/dataops/generic/00003-make-true-false-strings-boolean" />

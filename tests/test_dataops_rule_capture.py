@@ -11,7 +11,7 @@ class TestDataopsRulesCapture:
     def test_dataops_rule_capture(self, kgiri_base, test_data_dir, local_s3_port):
         sys.argv = [
             'pytest',
-            '--dataops-root', f'{test_data_dir}/dataops',
+            '--dataops-roots', [f'{test_data_dir}/dataops',f'{test_data_dir}/another-dataops-root'],
             '--ontologies-root', '../ontologies',
             '--data-source-code', 'test-data-source',
             '--s3-endpoint', f'http://localhost:{local_s3_port}',

@@ -28,9 +28,10 @@ class DataopsRulesCapture:
         self.data_source_code = args.data_source_code
         self.graph_iri = EKG_NS['KGGRAPH'].term(self.data_source_code)
         log_iri('Graph IRI', self.graph_iri)
-        self.dataops_root = Path(args.dataops_root)
-        if not self.dataops_root.exists():
-            error(f"The provided rules root directory does not exist: {self.dataops_root}")
+        self.dataops_roots = args.dataops_roots
+        for root_dir in self.dataops_roots:
+            if not Path(root_dir).exists():
+                error(f"The provided rules root directory does not exist: {root_dir}")
         log_item('Git Branch', self.args.git_branch)
         self.g = Graph()
         add_dataops_rule_namespaces(self.g)
@@ -44,7 +45,9 @@ class DataopsRulesCapture:
         log('Finished Capture Phase')
 
     def rules_directories_to_capture(self):
-        all_rules_directories = [x for x in self.dataops_root.iterdir() if x.is_dir()]
+        all_rules_directories = []
+        for root_dir in self.dataops_roots:
+            all_rules_directories.extend([x for x in Path(root_dir).iterdir() if x.is_dir()])
         return list(filter(self.filter_rule_directory, all_rules_directories))
 
     def filter_rule_directory(self, rule_directory):
@@ -86,7 +89,7 @@ class DataopsRulesCapture:
             self.g.add(triple)
 
     def s3_file_name(self):
-        return f"raw-data-{os.path.basename(self.dataops_root)}-rules-{self.data_source_code}.ttl.gz"
+        return f"raw-data-dataops-rules-{self.data_source_code}.ttl.gz"
 
     def export(self) -> int:
         try:
@@ -113,7 +116,7 @@ def main():
         allow_abbrev=False
     )
     parser.add_argument('--verbose', '-v', help='verbose output', default=False, action='store_true')
-    parser.add_argument('--dataops-root', help='The root directory where all rule subdirectories can be found',
+    parser.add_argument('--dataops-roots', help='The root directory(s) where all rule subdirectories can be found',
                         required=True)
     parser.add_argument('--ontologies-root', help='The root directory where ontologies can be found', required=True)
     git_set_cli_params(parser)

@@ -54,25 +54,29 @@ def export_dataset(
         headers={'Accept': mime},
         stream=True
     )
-    sparql_endpoint.handle_error(r)
-    content_encoding = r.headers.get('Content-Encoding')
-    # log_item("Content Encoding", content_encoding)
-    # log_item("Response Encoding", r.encoding)
+    if sparql_endpoint.handle_error(r):
+        log_item("response", "Receiving...")
+        content_encoding = r.headers.get('Content-Encoding')
+        # log_item("Content Encoding", content_encoding)
+        # log_item("Response Encoding", r.encoding)
 
-    log_item('Uploading as', _s3_file_name(mime, data_source_code))
-    uploader = s3_endpoint.uploader_for(
-        key=_s3_file_name(mime, data_source_code),
-        mime=mime,
-        content_encoding=content_encoding,
-        dataset_code=data_source_code
-    )
-    chunk_size = 5 * 1024 * 1024  # 5Mb is minimum
-    # for chunk in r.iter_lines(chunk_size=chunk_size, decode_unicode=False):
-    # for chunk in r.raw.stream(amt=chunk_size, decode_content=None):
-    for chunk in iter_raw(r, chunk_size=chunk_size):
-        uploader.part(chunk)
-    return uploader.complete()
-
+        log_item('Uploading as', _s3_file_name(mime, data_source_code))
+        uploader = s3_endpoint.uploader_for(
+            key=_s3_file_name(mime, data_source_code),
+            mime=mime,
+            content_encoding=content_encoding,
+            dataset_code=data_source_code
+        )
+        chunk_size = 5 * 1024 * 1024  # 5Mb is minimum
+        # for chunk in r.iter_lines(chunk_size=chunk_size, decode_unicode=False):
+        # for chunk in r.raw.stream(amt=chunk_size, decode_content=None):
+        for chunk in iter_raw(r, chunk_size=chunk_size):
+            uploader.part(chunk)
+            log_item("response", "Processed chunk ...")
+        return uploader.complete()
+    else:
+        log_item("response", "Failure!")
+        return False
 
 def _s3_file_name(mime, data_source_code):
     if mime == MIME_NTRIPLES:

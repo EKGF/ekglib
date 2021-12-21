@@ -36,6 +36,9 @@ def test_export_from_ldapclient_dot_com(test_data_dir, kgiri_base, tmpdir):
             print(line, end='')
 
 
+# This no longer works, see:
+# https://www.sonicwall.com/support/knowledge-base/cannot-connect-to-ldap-server-on-port-389-3268-and-636/170504922409869/
+@unittest.skip
 def test_export_from_d_trust_dot_de(test_data_dir, kgiri_base):
     """Generic test that should always work since directory.d-trust.de is always up and running.
        This is the LDAP server of the "Bundesdruckerei" (government printer/publisher), see

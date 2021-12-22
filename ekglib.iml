@@ -10,8 +10,9 @@
       <excludeFolder url="file://$MODULE_DIR$/junit" />
       <excludeFolder url="file://$MODULE_DIR$/tests/test_data" />
       <excludeFolder url="file://$MODULE_DIR$/venv" />
+      <excludeFolder url="file://$MODULE_DIR$/venv38" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.8" jdkType="Python SDK" />
+    <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="ekglib" level="project" />
   </component>

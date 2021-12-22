@@ -28,7 +28,7 @@ class DataopsRulesCapture:
         self.data_source_code = args.data_source_code
         self.graph_iri = EKG_NS['KGGRAPH'].term(self.data_source_code)
         log_iri('Graph IRI', self.graph_iri)
-        self.dataops_roots = args.dataops_roots.split(', ')
+        self.dataops_roots = args.dataops_roots.split(',')
         for root_dir in self.dataops_roots:
             if not Path(root_dir).exists():
                 error(f"The provided rules root directory does not exist: {root_dir}")

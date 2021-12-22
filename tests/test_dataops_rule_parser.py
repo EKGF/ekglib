@@ -11,7 +11,7 @@ class TestDataopsRuleParser:
         sys.argv = [
             'pytest',
             '--input', f'{test_data_dir}/dataops/generic/00001-check-dataset-not-empty/rule.ttl',
-            '--ontologies-root', f'{test_data_dir}/../../ontologies/',
+            '--ontologies-root', f'{test_data_dir}/ontologies',
             '--output', output,
             '--data-source-code', 'abc',
             '--kgiri-base', kgiri_base,

@@ -174,7 +174,7 @@ def datasets_produced_by_pipeline(sparql_endpoint: SPARQLEndpoint, data_source_c
         """)  # noqa: W293
 
     log_item('Query', _query())
-    g = sparql_endpoint.construct_and_convert(_query())
+    g = sparql_endpoint.execute_construct(_query()).convert()
 
     def datasets():
         for dataset_iri, graph_iri in g.subject_objects(DATASET.inGraph):

@@ -7,10 +7,11 @@ import ekglib
 
 class TestDataopsRulesCapture:
 
+    @pytest.mark.focus
     def test_dataops_rule_capture(self, kgiri_base, test_data_dir, local_s3_port):
         sys.argv = [
             'pytest',
-            '--dataops-roots', [f'{test_data_dir}/dataops'],
+            '--dataops-roots', [f'{test_data_dir}/dataops',f'{test_data_dir}/another-dataops-root'],
             '--ontologies-root', '../ontologies',
             '--data-source-code', 'test-data-source',
             '--s3-endpoint', f'http://localhost:{local_s3_port}',
@@ -24,4 +25,5 @@ class TestDataopsRulesCapture:
             '--kgiri-base-replace', 'https://placeholder.kg',
             '--verbose'
         ]
-        assert 0 == ekglib.dataops_rules_capture.main()
+        actual = ekglib.dataops_rules_capture.main()
+        print(actual)

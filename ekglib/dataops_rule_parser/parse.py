@@ -5,8 +5,7 @@ from pathlib import Path
 
 import owlrl
 import rdflib
-from rdflib import Graph, Literal, URIRef
-from rdflib.namespace import RDF, RDFS, OWL, XSD
+from rdflib import Graph, Literal, URIRef, OWL, RDF, RDFS, XSD
 
 from ..data_source import set_cli_params as data_source_set_cli_params
 from ..kgiri import EKG_NS, set_kgiri_base, set_kgiri_base_replace, set_cli_params as kgiri_set_cli_params, \
@@ -18,7 +17,6 @@ from ..namespace import RULE, PROV, RAW, DATAOPS, DATASET
 ontology_file_names = [
     'ekgf-dataops-rule.ttl'
 ]
-
 
 def check_ontologies(ontologies_root: Path):
     if not ontologies_root.exists():
@@ -101,7 +99,7 @@ class DataopsRuleParser:
         )
         owlrl.DeductiveClosure(
             closure_class,
-            improved_datatypes=True,
+            improved_datatypes=False,
             rdfs_closure=True,
             axiomatic_triples=False,
             datatype_axioms=False

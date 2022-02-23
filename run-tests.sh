@@ -84,7 +84,7 @@ function checkEnvironment() {
   fi
 
   if [[ "$(~/.asdf/shims/python3 -V)" != "Python ${python_version}" ]] ; then
-    echo "ERROR: Python version is not ${python_version}: $(~/.asdf/shims/python3 -V))"
+    echo "ERROR: Python version is not ${python_version}: $(~/.asdf/shims/python3 -V)"
     return 1
   fi
 
@@ -150,7 +150,7 @@ function runTests() {
     --maxfail=2 \
     --showlocals \
     --tb=short ${opts}
-  rc=$?
+  local -r rc=$?
   echo "pytest ended with rc=${rc}"
   return ${rc}
 }

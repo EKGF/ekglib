@@ -1,6 +1,7 @@
 import logging
 import sys
 import time
+import typing
 from datetime import datetime
 from base64 import b64encode
 from io import BytesIO
@@ -8,6 +9,7 @@ from io import BytesIO
 import ldap3
 import rdflib
 import stringcase
+import traceback
 from botocore.exceptions import EndpointConnectionError
 from ldap3 import Entry, Connection, SchemaInfo, set_config_parameter
 from ldap3.core.exceptions import LDAPSocketOpenError, LDAPOperationResult, LDAPUnavailableCriticalExtensionResult, \
@@ -15,7 +17,6 @@ from ldap3.core.exceptions import LDAPSocketOpenError, LDAPOperationResult, LDAP
 from ldap3.utils.log import set_library_log_activation_level, set_library_log_detail_level, EXTENDED
 from pyasn1.error import PyAsn1Error
 from rdflib import RDF, Literal, PROV, plugin, URIRef, RDFS, OWL, XSD
-from typing.io import BinaryIO
 
 from ..dataset.various import export_graph
 from ..exceptions import PagingNotSupported, CannotCapture
@@ -55,7 +56,7 @@ def _log_who_am_i(conn):
 class LdapParser:
     skip_rdf_generation = False  # set to true to test/debug the overall flow of the app
 
-    def __init__(self, args, stream: BinaryIO = None):
+    def __init__(self, args, stream: typing.BinaryIO = None):
         self.processed_entries = 0
         self.returned_entries = 0
         logging.info('Starting LDAP parser')
@@ -119,7 +120,6 @@ class LdapParser:
 
         start = time.time()
 
-        rc = 0
         try:
             rc = self._process_connection(server)
         except LDAPBindError:
@@ -207,8 +207,7 @@ class LdapParser:
                     rc = self._process_naming_contexts(server, conn)
             except Exception as e:
                 log_error(f"Unknown exception: {e}")
-                import traceback
-                traceback.print_exception(e)
+                traceback.print_exc()
 
         if conn.last_error:
             log_item("Last error", conn.last_error)
@@ -296,7 +295,6 @@ class LdapParser:
     def _process_search_get_entries(self, conn: Connection, base, scope):
         if self.verbose:
             log_item(f"{scope}-search", base)
-        paged_criticality = False
         if self.paged_size is not None:
             log_item("Paging enabled", True)
             log_item("Paged Size", self.paged_size)
@@ -440,7 +438,7 @@ def _naming_contexts(info):
 
 _substitution_iri_map = {
     # replace the 'placeholder' IRI in the serialized stream with the desired one
-    XSD.term('base64BinaryString').toPython(): XSD.term('base64Binary').toPython()
+    rdflib.term.URIRef(u'http://www.w3.org/2001/XMLSchema#base64BinaryString').toPython(): XSD.base64Binary.toPython()
 }
 
 
@@ -621,4 +619,3 @@ class LdapEntry:
         serializer = plugin.get('ntriples', plugin.Serializer)(self.g)
         serializer.serialize(str_stream)
         self.stream.write(_substitute_iris(str_stream).getvalue())
-

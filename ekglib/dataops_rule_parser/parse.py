@@ -14,6 +14,8 @@ from ..log import error, warning, log_error, log_list, log_item, log_iri
 from ..main import load_rdf_file_into_graph
 from ..namespace import RULE, PROV, RAW, DATAOPS, DATASET
 
+OWL._fail = False  # workaround for this issue: https://github.com/RDFLib/OWL-RL/issues/53
+
 ontology_file_names = [
     'ekgf-dataops-rule.ttl'
 ]

@@ -7,7 +7,6 @@ import ekglib
 
 class TestDataopsRulesCapture:
 
-    @pytest.mark.focus
     def test_dataops_rule_capture(self, kgiri_base, test_data_dir, local_s3_port):
         sys.argv = [
             'pytest',

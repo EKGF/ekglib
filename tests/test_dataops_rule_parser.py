@@ -30,6 +30,9 @@ class TestDataopsRuleParser:
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
+owl:DataRange rdfs:subClassOf rdfs:Datatype ;
+    owl:equivalentClass rdfs:Datatype .
+
 <rule-00001-check-dataset-not-empty> a owl:Thing,
         :Rule,
         :SPARQLRule,
@@ -54,6 +57,7 @@ ASK {{
     rdfs:label "generic" .
             
         ''')  # noqa: W293
-        print(actual)
+        # print(actual)
+        # print(expected)
         self.maxDiff = None
         assert actual == expected

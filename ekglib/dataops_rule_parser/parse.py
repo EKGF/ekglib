@@ -9,7 +9,7 @@ from rdflib import Graph, Literal, URIRef, OWL, RDF, RDFS, XSD
 
 from ..data_source import set_cli_params as data_source_set_cli_params
 from ..kgiri import EKG_NS, set_kgiri_base, set_kgiri_base_replace, set_cli_params as kgiri_set_cli_params, \
-                    kgiri_replace_iri_in_literal
+    kgiri_replace_iri_in_literal
 from ..log import error, warning, log_error, log_list, log_item, log_iri
 from ..main import load_rdf_file_into_graph
 from ..namespace import RULE, PROV, RAW, DATAOPS, DATASET
@@ -19,6 +19,7 @@ OWL._fail = False  # workaround for this issue: https://github.com/RDFLib/OWL-RL
 ontology_file_names = [
     'ekgf-dataops-rule.ttl'
 ]
+
 
 def check_ontologies(ontologies_root: Path):
     if not ontologies_root.exists():

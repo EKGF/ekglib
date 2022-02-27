@@ -14,8 +14,12 @@ __all__ = [  # noqa: F405
     'ldap_parser_to_file',
     'ldap_parser_to_s3',
     'log',
+    'log_item',
+    'log_error',
+    'warning',
     'main',
     'mime',
+    'maturity_model_parser',
     'namespace',
     'persona_parser',
     's3',
@@ -40,6 +44,7 @@ from .ldap_parser_to_s3 import *  # noqa: F405 F403
 from .log import *  # noqa: F405 F403
 from .main import *  # noqa: F405 F403
 from .mime import *  # noqa: F405 F403
+from .maturity_model_parser import *  # noqa: F405 F403
 from .namespace import *  # noqa: F405 F403
 from .persona_parser import *  # noqa: F405 F403
 from .s3 import *  # noqa: F405 F403

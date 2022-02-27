@@ -23,7 +23,14 @@ def error(msg):
 
 
 def log_error(msg):
-    eprint("\rERROR: x {0}".format(msg))
+    eprint("\rERROR: {0}".format(msg))
+
+
+def value_error(*args):
+    """Log an error and return a ValueError exception that you can raise yourself"""
+    line = args[0].format(*args[1:])
+    eprint(line)
+    return ValueError(line)
 
 
 def log(msg):

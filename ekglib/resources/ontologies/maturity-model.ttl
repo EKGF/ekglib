@@ -1,26 +1,25 @@
-@prefix :     <https://ekgf.github.io/ekglib/ontology/maturity-model/> .
-@prefix owl:  <http://www.w3.org/2002/07/owl#> .
-@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix xml:  <http://www.w3.org/XML/1998/namespace> .
-@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix : <https://ekgf.github.io/ekglib/ontology/maturity-model/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @base <https://ekgf.github.io/ekglib/ontology/maturity-model> .
 
-<https://ekgf.github.io/ekglib/ontology/maturity-model>
-    rdf:type owl:Ontology .
+<https://ekgf.github.io/ekglib/ontology/maturity-model> rdf:type owl:Ontology .
 
 #################################################################
 #    Annotation properties
 #################################################################
 
 ###  https://ekgf.github.io/ekglib/ontology/maturity-model/iriLocalName
-:iriLocalName
-    rdf:type     owl:AnnotationProperty ;
-    rdfs:comment "The \"local name\" of the given object as it is used in IRIs or URIs"@en .
+:iriLocalName rdf:type owl:AnnotationProperty ;
+              rdfs:comment "The \"local name\" of the given object as it is used in IRIs or URIs"@en .
 
-:iriLocalTypeName
-    rdf:type     owl:AnnotationProperty ;
-    rdfs:comment "The \"local type name\" of the given object as it is used in IRIs or URIs"@en .
+
+###  https://ekgf.github.io/ekglib/ontology/maturity-model/iriLocalTypeName
+:iriLocalTypeName rdf:type owl:AnnotationProperty ;
+                  rdfs:comment "The \"local type name\" of the given object as it is used in IRIs or URIs"@en .
 
 
 #################################################################
@@ -28,60 +27,74 @@
 #################################################################
 
 ###  https://ekgf.github.io/ekglib/ontology/maturity-model/hasCapability
-:hasCapability
-    rdf:type    owl:ObjectProperty ;
-    rdfs:domain [ rdf:type    owl:Class ;
-                  owl:unionOf ( :CapabilityArea
-                                :Pillar ) ] ;
-    rdfs:range  :Capability .
+:hasCapability rdf:type owl:ObjectProperty ;
+               rdfs:domain [ rdf:type owl:Class ;
+                             owl:unionOf ( :CapabilityArea
+                                           :Pillar
+                                         )
+                           ] ;
+               rdfs:range :Capability ;
+               rdfs:label "hasCapability"@en .
 
 
 ###  https://ekgf.github.io/ekglib/ontology/maturity-model/hasLevel
-:hasLevel
-    rdf:type      owl:ObjectProperty ;
-    owl:inverseOf :levelInModel ;
-    rdfs:domain   :Model ;
-    rdfs:range    :Level .
+:hasLevel rdf:type owl:ObjectProperty ;
+          owl:inverseOf :levelInModel ;
+          rdfs:domain :Model ;
+          rdfs:range :Level ;
+          rdfs:label "hasLevel"@en .
 
 
 ###  https://ekgf.github.io/ekglib/ontology/maturity-model/hasPillar
-:hasPillar
-    rdf:type      owl:ObjectProperty ;
-    owl:inverseOf :pillarInModel ;
-    rdfs:domain   :Model ;
-    rdfs:range    :Pillar .
+:hasPillar rdf:type owl:ObjectProperty ;
+           owl:inverseOf :pillarInModel ;
+           rdfs:domain :Model ;
+           rdfs:range :Pillar ;
+           rdfs:label "hasPillar"@en .
 
 
 ###  https://ekgf.github.io/ekglib/ontology/maturity-model/inArea
-:inArea
-    rdf:type    owl:ObjectProperty ;
-    rdfs:domain :Capability ;
-    rdfs:range  :CapabilityArea .
+:inArea rdf:type owl:ObjectProperty ;
+        rdfs:domain :Capability ;
+        rdfs:range :CapabilityArea ;
+        rdfs:label "inArea"@en .
 
 
 ###  https://ekgf.github.io/ekglib/ontology/maturity-model/inModel
-:inModel
-    rdf:type    owl:ObjectProperty, owl:TransitiveProperty ;
-    rdfs:domain [ rdf:type    owl:Class ;
-                  owl:unionOf ( :Capability
-                                :CapabilityArea
-                                :Level
-                                :Pillar ) ] ;
-    rdfs:range  :Model .
+:inModel rdf:type owl:ObjectProperty ,
+                  owl:TransitiveProperty ;
+         rdfs:domain [ rdf:type owl:Class ;
+                       owl:unionOf ( :Capability
+                                     :CapabilityArea
+                                     :Level
+                                     :Pillar
+                                   )
+                     ] ;
+         rdfs:range :Model ;
+         rdfs:label "inModel"@en .
+
+
+###  https://ekgf.github.io/ekglib/ontology/maturity-model/inPillar
+:inPillar rdf:type owl:ObjectProperty ;
+          rdfs:domain :CapabilityArea ;
+          rdfs:range :Pillar ;
+          rdfs:label "inPillar"@en .
 
 
 ###  https://ekgf.github.io/ekglib/ontology/maturity-model/levelInModel
-:levelInModel
-    rdf:type    owl:ObjectProperty, owl:FunctionalProperty ;
-    rdfs:domain :Level ;
-    rdfs:range  :Model .
+:levelInModel rdf:type owl:ObjectProperty ,
+                       owl:FunctionalProperty ;
+              rdfs:domain :Level ;
+              rdfs:range :Model ;
+              rdfs:label "levelInModel"@en .
 
 
 ###  https://ekgf.github.io/ekglib/ontology/maturity-model/pillarInModel
-:pillarInModel
-    rdf:type    owl:ObjectProperty, owl:FunctionalProperty ;
-    rdfs:domain :Pillar ;
-    rdfs:range  :Model .
+:pillarInModel rdf:type owl:ObjectProperty ,
+                        owl:FunctionalProperty ;
+               rdfs:domain :Pillar ;
+               rdfs:range :Model ;
+               rdfs:label "pillarInModel"@en .
 
 
 #################################################################
@@ -89,38 +102,33 @@
 #################################################################
 
 ###  https://ekgf.github.io/ekglib/ontology/maturity-model/Capability
-:Capability
-    rdf:type   owl:Class ;
-    :iriLocalTypeName "capability" ;
-    rdfs:label "Capability"@en .
+:Capability rdf:type owl:Class ;
+            rdfs:label "Capability"@en ;
+            :iriLocalTypeName "capability" .
 
 
 ###  https://ekgf.github.io/ekglib/ontology/maturity-model/CapabilityArea
-:CapabilityArea
-    rdf:type          owl:Class ;
-    :iriLocalTypeName "capability-area" ;
-    rdfs:label        "Capability Area"@en .
+:CapabilityArea rdf:type owl:Class ;
+                rdfs:label "Capability Area"@en ;
+                :iriLocalTypeName "capability-area" .
 
 
 ###  https://ekgf.github.io/ekglib/ontology/maturity-model/Level
-:Level
-    rdf:type   owl:Class ;
-    :iriLocalTypeName "level" ;
-    rdfs:label "Level"@en .
+:Level rdf:type owl:Class ;
+       rdfs:label "Level"@en ;
+       :iriLocalTypeName "level" .
 
 
 ###  https://ekgf.github.io/ekglib/ontology/maturity-model/Model
-:Model
-    rdf:type   owl:Class ;
-    :iriLocalTypeName "model" ;
-    rdfs:label "Model"@en .
+:Model rdf:type owl:Class ;
+       rdfs:label "Model"@en ;
+       :iriLocalTypeName "model" .
 
 
 ###  https://ekgf.github.io/ekglib/ontology/maturity-model/Pillar
-:Pillar
-    rdf:type   owl:Class ;
-    :iriLocalTypeName "pillar" ;
-    rdfs:label "Pillar"@en .
+:Pillar rdf:type owl:Class ;
+        rdfs:label "Pillar"@en ;
+        :iriLocalTypeName "pillar" .
 
 
 #################################################################
@@ -128,70 +136,77 @@
 #################################################################
 
 ###  https://ekgf.github.io/ekglib/ontology/maturity-model/BusinessPillar
-:BusinessPillar
-    rdf:type      owl:NamedIndividual, :Pillar ;
-    rdfs:label    "Business Pillar"@en ;
-    :iriLocalName "business" .
+:BusinessPillar rdf:type owl:NamedIndividual ,
+                         :Pillar ;
+                rdfs:label "Business Pillar"@en ;
+                :iriLocalName "business" .
 
 
 ###  https://ekgf.github.io/ekglib/ontology/maturity-model/DataPillar
-:DataPillar
-    rdf:type      owl:NamedIndividual, :Pillar ;
-    rdfs:label    "Data Pillar"@en ;
-    :iriLocalName "data" .
+:DataPillar rdf:type owl:NamedIndividual ,
+                     :Pillar ;
+            rdfs:label "Data Pillar"@en ;
+            :iriLocalName "data" .
 
 
 ###  https://ekgf.github.io/ekglib/ontology/maturity-model/EKGFMaturityModel
-:EKGFMaturityModel
-    rdf:type      owl:NamedIndividual, :Model ;
-    :hasLevel     :Level1, :Level2, :Level3, :Level4, :Level5 ;
-    :hasPillar    :BusinessPillar, :DataPillar, :OrganizationPillar, :TechnologyPillar ;
-    rdfs:label    "EKG/MM"@en ;
-    :iriLocalName "ekg-mm" .
+:EKGFMaturityModel rdf:type owl:NamedIndividual ,
+                            :Model ;
+                   :hasLevel :Level1 ,
+                             :Level2 ,
+                             :Level3 ,
+                             :Level4 ,
+                             :Level5 ;
+                   :hasPillar :BusinessPillar ,
+                              :DataPillar ,
+                              :OrganizationPillar ,
+                              :TechnologyPillar ;
+                   rdfs:label "EKG/MM"@en ;
+                   :iriLocalName "ekg-mm" .
 
 
 ###  https://ekgf.github.io/ekglib/ontology/maturity-model/Level1
-:Level1
-    rdf:type      owl:NamedIndividual, :Level ;
-    :iriLocalName "1" .
+:Level1 rdf:type owl:NamedIndividual ,
+                 :Level ;
+        :iriLocalName "1" .
 
 
 ###  https://ekgf.github.io/ekglib/ontology/maturity-model/Level2
-:Level2
-    rdf:type      owl:NamedIndividual, :Level ;
-    :iriLocalName "2" .
+:Level2 rdf:type owl:NamedIndividual ,
+                 :Level ;
+        :iriLocalName "2" .
 
 
 ###  https://ekgf.github.io/ekglib/ontology/maturity-model/Level3
-:Level3
-    rdf:type      owl:NamedIndividual, :Level ;
-    :iriLocalName "3" .
+:Level3 rdf:type owl:NamedIndividual ,
+                 :Level ;
+        :iriLocalName "3" .
 
 
 ###  https://ekgf.github.io/ekglib/ontology/maturity-model/Level4
-:Level4
-    rdf:type      owl:NamedIndividual, :Level ;
-    :iriLocalName "4" .
+:Level4 rdf:type owl:NamedIndividual ,
+                 :Level ;
+        :iriLocalName "4" .
 
 
 ###  https://ekgf.github.io/ekglib/ontology/maturity-model/Level5
-:Level5
-    rdf:type      owl:NamedIndividual, :Level ;
-    :iriLocalName "5" .
+:Level5 rdf:type owl:NamedIndividual ,
+                 :Level ;
+        :iriLocalName "5" .
 
 
 ###  https://ekgf.github.io/ekglib/ontology/maturity-model/OrganizationPillar
-:OrganizationPillar
-    rdf:type      owl:NamedIndividual, :Pillar ;
-    rdfs:label    "Organization Pillar"@en ;
-    :iriLocalName "organization" .
+:OrganizationPillar rdf:type owl:NamedIndividual ,
+                             :Pillar ;
+                    rdfs:label "Organization Pillar"@en ;
+                    :iriLocalName "organization" .
 
 
 ###  https://ekgf.github.io/ekglib/ontology/maturity-model/TechnologyPillar
-:TechnologyPillar
-    rdf:type      owl:NamedIndividual, :Pillar ;
-    rdfs:label    "Technology Pillar"@en ;
-    :iriLocalName "technology" .
+:TechnologyPillar rdf:type owl:NamedIndividual ,
+                           :Pillar ;
+                  rdfs:label "Technology Pillar"@en ;
+                  :iriLocalName "technology" .
 
 
 #################################################################

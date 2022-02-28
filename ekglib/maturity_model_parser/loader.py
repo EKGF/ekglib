@@ -1,5 +1,3 @@
-import argparse
-import os
 from io import BytesIO
 from pathlib import Path
 
@@ -10,7 +8,7 @@ from rdflib import Graph, OWL
 
 from ekglib.log.various import value_error
 from ekglib.main.main import load_rdf_stream_into_graph
-from ekglib.maturity_model_parser.markdown_generator import MaturityModelMarkdownGenerator, MaturityModelGraph
+from ekglib.maturity_model_parser.graph import MaturityModelGraph
 from ..kgiri import EKG_NS
 from ..log import error, log_item
 from ..main import load_rdf_file_into_graph
@@ -44,7 +42,7 @@ def add_dataops_rule_namespaces(rule_graph: Graph):
     rule_graph.namespace_manager.bind('rule', RULE)
 
 
-class MaturityModelParser:
+class MaturityModelLoader:
     """Checks each turtle file in the given directory
     """
     verbose: bool
@@ -67,7 +65,7 @@ class MaturityModelParser:
         self.rdfs_infer()
         log_item("# triples", len(self.g))
         # dump_as_ttl_to_stdout(self.g)
-        return MaturityModelGraph(self.g, 'en')
+        return MaturityModelGraph(self.g, self.verbose, 'en')
 
     def load_ontology_from_stream(self, ontology_stream: BytesIO):
         load_rdf_stream_into_graph(self.g, ontology_stream)
@@ -117,39 +115,4 @@ class MaturityModelParser:
         self.add_literal_triple(s, p2, o)
 
 
-def mkdocs_gen_files(model_root: Path, output_root: Path):
-    loader = MaturityModelParser(True, model_root)
-    graph = loader.load()
-    generator = MaturityModelMarkdownGenerator(graph, mkdocs=True, output_root=output_root)
-    generator.generate()
-    # exporter = GraphExporter(graph)
-    # return exporter.export(stream)
-    return 0
 
-
-def runit(args) -> int:
-    loader = MaturityModelParser(verbose=args.verbose, model_root=Path(args.input))
-    graph = loader.load()
-    generator = MaturityModelMarkdownGenerator(graph, mkdocs=False, output_root=Path(args.output))
-    generator.generate()
-    # exporter = GraphExporter(graph)
-    # return exporter.export(stream)
-    return 0
-
-
-def main():
-    parser = argparse.ArgumentParser(
-        prog='python3 -m ekglib.maturity_model_parser',
-        description='Generates Markdown files for all capabilities found in the given directory',
-        epilog='Currently only supports turtle.',
-        allow_abbrev=False
-    )
-    parser.add_argument('--verbose', '-v', help='verbose output', default=False, action='store_true')
-    parser.add_argument('--input', '-i', help='The input directory', required=True)
-    parser.add_argument('--output', '-o', help='The output directory', required=True)
-
-    return runit(parser.parse_args())
-
-
-if __name__ == "__main__":
-    exit(main())

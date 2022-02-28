@@ -22,6 +22,14 @@ def test_output_dir():
     return ''
 
 
+@pytest.fixture
+def test_ekgmm_repo_dir():
+    if os.path.isdir('../../ekg-mm'):
+        return '../../ekg-mm'
+    pytest.skip(f"../../ekg-mm directory does not exist")
+    return ''
+
+
 def require_port(number, name):
     from ekglib.main.main import is_port_in_use
     if not is_port_in_use(number):
@@ -44,7 +52,7 @@ def local_s3_port():
     return require_port(9000, 'S3')
 
 
-def value_for_test(directory, name, default = None):
+def value_for_test(directory, name, default=None):
     """Get a value from the given .test/<name> file.
     :param directory:
     :param name: the name of the single-line file that contains the value we're looking for
@@ -66,7 +74,7 @@ def value_for_test(directory, name, default = None):
         return f.readline().strip('\n')
 
 
-def value_list_for_test(directory, name, defaults = None):
+def value_list_for_test(directory, name, defaults=None):
     """Get the values from the given .test/<nane> file as a list.
     :param directory:
     :param name: the name of the file that contains the values, one per row, we're looking for

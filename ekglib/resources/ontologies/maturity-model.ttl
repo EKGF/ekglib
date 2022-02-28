@@ -138,6 +138,7 @@
 ###  https://ekgf.github.io/ekglib/ontology/maturity-model/BusinessPillar
 :BusinessPillar rdf:type owl:NamedIndividual ,
                          :Pillar ;
+                :inModel :EKGFMaturityModel ;
                 rdfs:label "Business Pillar"@en ;
                 :iriLocalName "business" .
 
@@ -161,7 +162,7 @@
                               :DataPillar ,
                               :OrganizationPillar ,
                               :TechnologyPillar ;
-                   rdfs:label "EKG/MM"@en ;
+                   rdfs:label "Test EKG/MM"@en ;
                    :iriLocalName "ekg-mm" .
 
 

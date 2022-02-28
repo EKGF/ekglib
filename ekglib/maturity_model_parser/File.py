@@ -1,6 +1,11 @@
+import os
 from pathlib import Path
 
 import mkdocs_gen_files
+from mdutils import MdUtils
+
+from ekglib import log_item
+from ekglib.maturity_model_parser.mdutil_mkdocs import MdUtils4MkDocs
 
 
 class File(object):
@@ -42,3 +47,17 @@ class File(object):
             self.file.write('\n' + file_data[len(first_line + second_line):])
 
 
+def md_file(path: Path, title: str, mkdocs: bool):
+    log_item("Creating", path)
+    if mkdocs:
+        return MdUtils4MkDocs(file_name=str(path), title=title)
+    else:
+        return MdUtils(file_name=str(path), title=title)
+
+
+def makedirs(path: Path, hint: str):
+    log_item(f"{hint} Path", path)
+    try:
+        os.makedirs(path)
+    except FileExistsError:
+        return

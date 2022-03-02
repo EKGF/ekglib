@@ -5,19 +5,30 @@ import mkdocs_gen_files
 from mdutils import MdUtils
 
 from ekglib import log_item
+from ekglib.maturity_model_parser.markdown_document import MarkdownDocument
 from ekglib.maturity_model_parser.mdutil_mkdocs import MdUtils4MkDocs
 
 
 class File(object):
-    """Create a file, when run in MkDocs use `mkdoc_gen_files`, otherwise normal open()
+    """Create or open a file, when run in MkDocs use `mkdoc_gen_files`, otherwise normal open()
     """
 
     def __init__(self, mkdocs: bool, path: Path):
         self.file = None
         self.path = path
         self.mkdocs = mkdocs
-        self.file = self.open(mode='w+')
-        self.file.close()
+        # self.file = self.open(mode='w+')
+        # self.file.close()
+
+    @classmethod
+    def existing_file(cls, mkdocs: bool, path: Path):
+        file = File(mkdocs, path)
+        if not file.exists():
+            raise value_error(f"File {path} does not exist")
+        return file
+
+    def exists(self) -> bool:
+        return self.path.exists()
 
     def open(self, mode: str):
         if self.mkdocs:
@@ -28,6 +39,10 @@ class File(object):
     def rewrite_all_file(self, data):
         with self.open(mode='w') as self.file:
             self.file.write(data)
+
+    def read_all_content(self):
+        with self.open(mode='r') as self.file:
+            return self.file.read()
 
     def append_end(self, data):
         with self.open(mode='a') as self.file:
@@ -46,13 +61,13 @@ class File(object):
             self.file.write(data)  # Write data
             self.file.write('\n' + file_data[len(first_line + second_line):])
 
+    @classmethod
+    def copy(cls, mkdocs: bool, from_path: Path, to_path: Path):
+        log_item("Copying", f"{from_path} -> {to_path}")
+        old_file = File.existing_file(mkdocs=mkdocs, path=from_path)
+        new_file = File(mkdocs=mkdocs, path=to_path)
+        new_file.rewrite_all_file(old_file.read_all_content())
 
-def md_file(path: Path, title: str, mkdocs: bool):
-    log_item("Creating", path)
-    if mkdocs:
-        return MdUtils4MkDocs(file_name=str(path), title=title)
-    else:
-        return MdUtils(file_name=str(path), title=title)
 
 
 def makedirs(path: Path, hint: str):

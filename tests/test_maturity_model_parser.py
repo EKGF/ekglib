@@ -42,21 +42,24 @@ class TestMaturityModelParser:
         capabilities = list(graph.capabilities_in_area(area_strategy_actuation))
         assert len(capabilities) == 3
 
-    def test_maturity_model_parser_003(self, test_data_dir):
+    def test_maturity_model_parser_003(self, test_data_dir, test_output_dir):
         sys.argv = [
             'pytest',
-            '--input', f"{test_data_dir}/maturity-model",
-            '--output', test_data_dir,
+            '--model-root', f"{test_data_dir}/maturity-model",
+            '--docs-root', f"{test_output_dir}/ekgmm_test_003",
+            '--model', "Test EKG/MM",
             '--verbose'
         ]
         assert 0 == ekglib.maturity_model_parser.main()
 
-    def test_maturity_model_parser_004(self, test_ekgmm_repo_dir, test_output_dir):
+    def test_maturity_model_parser_004(self, test_ekgmm_repo_dir, test_ekgmm_docs_root, test_output_dir):
         log_item("Git repo dir", test_ekgmm_repo_dir)
         sys.argv = [
             'pytest',
-            '--input', test_ekgmm_repo_dir,
-            '--output', f"{test_output_dir}/ekg-mm",
+            '--model-root', test_ekgmm_repo_dir,
+            '--docs-root', test_ekgmm_docs_root,
+            '--fragments-root', str((Path(test_ekgmm_docs_root) / "../docs-fragments").resolve()),
+            '--output', f"{test_output_dir}/ekgmm_test_004",
             '--verbose'
         ]
         assert 0 == ekglib.maturity_model_parser.main()

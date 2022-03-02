@@ -1,22 +1,19 @@
+import textwrap
 from pathlib import Path
-from typing import Optional
 
-from mdutils import MdUtils
 from rdflib import RDFS
 from rdflib.term import Node
 
-from .File import md_file, makedirs
-from .graph import MaturityModelGraph
+from .File import makedirs, File
+from .markdown_document import MarkdownDocument
+from ..namespace import MATURIY_MODEL
 
 
 class MaturityModelCapability:
     from .capability_area import MaturityModelCapabilityArea
     class_label: str = "Capability"
-    graph: MaturityModelGraph
-    area: MaturityModelCapabilityArea
-    capability_node: Node
-    mkdocs: bool
-    md_file: Optional[MdUtils]
+    class_label_plural: str = "Capabilities"
+    class_iri = MATURIY_MODEL.Capability
 
     def __init__(self, area: MaturityModelCapabilityArea, capability_node: Node, mkdocs: bool):
         self.graph = area.graph
@@ -28,14 +25,15 @@ class MaturityModelCapability:
         self.local_name = self.graph.local_name_for(self.capability_node, self.class_label)
         self.local_type_name = self.graph.local_type_name_for(self.capability_node, self.class_label)
         self.full_dir = self.area.full_dir / self.local_type_name / self.local_name
-        self.full_path = self.full_dir / 'index.md'
         self.md_file = None
         makedirs(self.full_dir, self.class_label)
 
     def generate_markdown(self):
         self.generate_link_from_area_to_capability()
-        self.md_file = md_file(path=self.full_path, title=self.name, mkdocs=self.mkdocs)
-        self.summary()
+        self.md_file = MarkdownDocument(path=self.full_dir / 'index.md', metadata={
+            "title": self.name
+        })
+        self.generate_summary()
         self.md_file.create_md_file()
 
     def generate_link_from_area_to_capability(self):
@@ -44,13 +42,51 @@ class MaturityModelCapability:
             link=str(link), text=self.name
         ))
 
-    def summary(self):
-        self.md_file.new_header(level=2, title="Summary", add_table_of_contents='n')
-        self.md_file.new_paragraph(
+    def summaries(self):
+        for rdfs_comment in self.graph.g.objects(self.capability_node, RDFS.comment):
+            yield str(rdfs_comment).strip()
+
+    def generate_summary(self):
+        self.md_file.heading(2, "Summary")
+        self.md_file.write(
             f"The capability _{self.name}_\n"
             f"is part of the capability area [_{self.area.name}_](../../index.md)\n"
             f"in the [_{self.area.pillar.name}_](../../index.md)."
         )
         self.md_file.write("\n")
-        for rdfs_comment in self.graph.g.objects(self.capability_node, RDFS.comment):
-            self.md_file.write(str(rdfs_comment).strip(), wrap_width=0)
+        for summary in self.summaries():
+            self.md_file.write(summary, wrap_width=0)
+
+    @classmethod
+    def generate_index_md(cls, area: MaturityModelCapabilityArea):
+        graph = area.graph
+        type_name = graph.local_type_name_for_type(cls.class_iri, cls.class_label)
+        root = area.full_dir / type_name
+        makedirs(root, cls.class_label_plural)
+        md_file = MarkdownDocument(path=root / 'index.md', metadata={
+            "title": f"{area.name} --- {cls.class_label_plural}"
+        })
+        md_file.write(
+            f'An overview of all the capabilities in the area _{area.name}_:\n\n'
+        )
+        for capability in area.capabilities():
+            md_file.heading(2, f"[{capability.name}](./{capability.local_name}/)")
+            for summary in capability.summaries():
+                md_file.write(str(summary).strip(), wrap_width=0)
+                md_file.write("\n\n")
+
+        md_file.create_md_file()
+
+    @classmethod
+    def generate_pages_yaml(cls, pillar: MaturityModelCapabilityArea):
+        graph = pillar.graph
+        type_name = graph.local_type_name_for_type(cls.class_iri, cls.class_label)
+        root = pillar.full_dir / type_name
+        makedirs(root, cls.class_label_plural)
+        pages_yaml = File(False, root / '.pages.yaml')
+        pages_yaml.rewrite_all_file(textwrap.dedent(f"""\
+            title: {cls.class_label_plural}
+            nav:
+              - index.md
+              - ...
+        """))

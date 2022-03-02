@@ -5,21 +5,19 @@ from typing import Optional
 from mdutils import MdUtils
 from rdflib.term import Node
 
+from .markdown_document import MarkdownDocument
 from ..namespace import MATURIY_MODEL
 from .graph import MaturityModelGraph
-from .File import makedirs, md_file, File
+from .File import makedirs, File
 from .pillar import MaturityModelPillar
 
 
 class MaturityModel:
     class_label: str = "Model"
-    graph: MaturityModelGraph
-    model_node: Node
-    mkdocs: bool
-    output_root: Path
-    md_file: Optional[MdUtils] = None
+    class_label_plural: str = "Models"
 
     def __init__(self, graph: MaturityModelGraph, model_name: str, mkdocs: bool, output_root: Path):
+        self.md_file = None
         self.graph = graph
         self.model_node = graph.model_with_name(model_name)
         self.mkdocs = mkdocs
@@ -56,8 +54,9 @@ class MaturityModel:
 
     def generate_pillars_index(self):
         index_md = self.pillars_root / 'index.md'
-        self.md_file = md_file(path=index_md, title="Pillars", mkdocs=self.mkdocs)
-
+        self.md_file = MarkdownDocument(path=index_md, metadata={
+            'title': 'Pillars'
+        })
         for pillar in self.pillars:
             self.md_file.new_line(f"- [{pillar.name}]({Path(pillar.local_name) / 'index.md'})")
 

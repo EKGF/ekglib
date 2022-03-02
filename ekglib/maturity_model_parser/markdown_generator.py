@@ -1,16 +1,14 @@
-import textwrap
 from pathlib import Path
 from typing import Optional
 
-from mdutils import MdUtils
 from rdflib import OWL
 
-from ekglib import log_item
-from ekglib.maturity_model_parser.File import File, md_file, makedirs
-from ekglib.maturity_model_parser.graph import MaturityModelGraph
-from ekglib.maturity_model_parser.model import MaturityModel
-from ekglib.maturity_model_parser.pillar import MaturityModelPillar
-from ekglib.namespace import MATURIY_MODEL
+from .File import makedirs
+from .graph import MaturityModelGraph
+from .model import MaturityModel
+from .pillar import MaturityModelPillar
+from ..namespace import MATURIY_MODEL
+from .markdown_document import MarkdownDocument, MarkDownFile
 
 OWL._fail = False  # workaround for this issue: https://github.com/RDFLib/OWL-RL/issues/53
 
@@ -24,7 +22,7 @@ class MaturityModelMarkdownGenerator:
     model: MaturityModel
     mkdocs: bool
     output_root: Path
-    md_file: Optional[MdUtils] = None
+    md_file: Optional[MarkdownDocument] = None
 
     def __init__(self, graph: MaturityModelGraph, model_name: str, mkdocs: bool, output_root: Path):
         self.graph = graph

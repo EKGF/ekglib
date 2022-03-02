@@ -29,6 +29,13 @@ def test_ekgmm_repo_dir():
     pytest.skip(f"../../ekg-mm directory does not exist")
     return ''
 
+@pytest.fixture
+def test_ekgmm_docs_root():
+    if os.path.isdir('../../ekg-mm/docs'):
+        return '../../ekg-mm/docs'
+    pytest.skip(f"../../ekg-mm/docs directory does not exist")
+    return ''
+
 
 def require_port(number, name):
     from ekglib.main.main import is_port_in_use

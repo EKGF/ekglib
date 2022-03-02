@@ -5,6 +5,7 @@ import owlrl
 import rdflib
 from pkg_resources import resource_stream
 from rdflib import Graph, OWL
+from rdflib.namespace import DefinedNamespaceMeta
 
 from ekglib.log.various import value_error
 from ekglib.main.main import load_rdf_stream_into_graph
@@ -15,6 +16,7 @@ from ..main import load_rdf_file_into_graph
 from ..namespace import RULE, PROV, RAW, DATAOPS, DATASET
 
 OWL._fail = False  # workaround for this issue: https://github.com/RDFLib/OWL-RL/issues/53
+DefinedNamespaceMeta._warn = False
 
 ontology_file_names = [
     'maturity-model.ttl'
@@ -49,14 +51,18 @@ class MaturityModelLoader:
     model_root: Path
     g: rdflib.Graph
 
-    def __init__(self, verbose: bool, model_root: Path):
+    def __init__(self, verbose: bool, model_root: Path, docs_root: Path, fragments_root: Path):
 
         self.verbose = verbose
         self.model_root = model_root
+        self.docs_root = docs_root
+        self.fragments_root = fragments_root
 
         self.g = Graph()
         self.g.base = "https://maturity-model.ekgf.org/"
         if not self.model_root.is_dir():
+            raise value_error("{} is not a valid directory", self.model_root.name)
+        if not self.docs_root.is_dir():
             raise value_error("{} is not a valid directory", self.model_root.name)
 
     def load(self) -> MaturityModelGraph:
@@ -65,7 +71,11 @@ class MaturityModelLoader:
         self.rdfs_infer()
         log_item("# triples", len(self.g))
         # dump_as_ttl_to_stdout(self.g)
-        return MaturityModelGraph(self.g, self.verbose, 'en')
+        graph = MaturityModelGraph(self.g, self.verbose, 'en')
+        if len(list(graph.models())) == 0:
+            raise value_error("No models loaded")
+        graph.rewrite_fragment_references(self.fragments_root)
+        return graph
 
     def load_ontology_from_stream(self, ontology_stream: BytesIO):
         load_rdf_stream_into_graph(self.g, ontology_stream)
@@ -102,10 +112,8 @@ class MaturityModelLoader:
             datatype_axioms=False
         ).expand(self.g)
 
-    #
-    # Add a triple to the graph with the given sparql_endpoint literal.
-    #
     def add_literal_triple(self, s, p, o):
+        """Add a triple to the graph with the given sparql_endpoint literal."""
         if self.verbose:
             print("Adding triple <{0}> - <{1}> - \"{2}\"".format(s, p, o))
         self.g.add((s, p, o))

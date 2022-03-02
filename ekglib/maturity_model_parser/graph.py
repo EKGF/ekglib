@@ -1,8 +1,9 @@
+from pathlib import Path
 from typing import Optional, Iterable
 
 import rdflib
 from rdflib import Graph, RDF, OWL, URIRef
-from rdflib.term import Node
+from rdflib.term import Node, Literal
 
 from ekglib import log_item
 from ekglib.log.various import value_error, warning
@@ -48,7 +49,7 @@ class MaturityModelGraph:
 
     def local_type_name_for_type(self, type_node: Node, hint: str) -> str:
         for local_type_name in self.g.objects(type_node, MATURIY_MODEL.iriLocalTypeName):
-            log_item(f"{hint} Local Type Name", local_type_name)
+            # log_item(f"{hint} Local Type Name", local_type_name)
             return str(local_type_name)
         raise value_error(f"{hint} has no iriLocalTypeName: {type_node}")
 
@@ -122,7 +123,25 @@ class MaturityModelGraph:
         if found == 0:
             warning(f"No capabilities found in area <{area_node}>")
 
+    def fragment_background_and_intro(self, subject_node):
+        for fragment in self.g.objects(subject_node, MATURIY_MODEL.backgroundAndIntro):
+            yield fragment
 
+    def rewrite_fragment_references(self, fragments_root: Path):
+        """
+        For each reference to some text-fragment rewrite the path to that markdown file
+        relative to the given input directory
+        """
+        predicate = MATURIY_MODEL.backgroundAndIntro
+        for (subject, objekt) in self.g.subject_objects(predicate):
+            log_item("Subject", subject)
+            log_item("Fragments Root", fragments_root)
+            fragment_path = fragments_root / objekt
+            log_item("Fragment Path", fragment_path)
+            if not fragment_path.exists():
+                raise value_error(f"Fragment {fragment_path} does not exist")
+            self.g.remove((subject, predicate, objekt))
+            self.g.add((subject, predicate, Literal(str(fragment_path))))
 
 
 

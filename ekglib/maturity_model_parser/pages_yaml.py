@@ -1,4 +1,4 @@
-import textwrap
+from pathlib import Path
 
 from ekglib.maturity_model_parser.File import File
 
@@ -17,8 +17,8 @@ class PagesYaml:
 
     def write(self):
         file = File(False, self.root / '.pages.yaml')
-        file.rewrite_all_file(textwrap.dedent(f"""\
-            title: {self.title}
-            nav:
-        """))
+        data = f"title: {self.title}\nnav:"
+        for item in self.nav:
+            data += f"\n  - {item}"
+        file.rewrite_all_file(data)
 

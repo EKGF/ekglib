@@ -1,4 +1,5 @@
 import sys
+import textwrap
 from pathlib import Path
 
 from rdflib import URIRef
@@ -6,9 +7,25 @@ from rdflib import URIRef
 import ekglib
 from ekglib import log_item
 from ekglib.maturity_model_parser import MaturityModelLoader
+from ekglib.maturity_model_parser.pages_yaml import PagesYaml
 
 
 class TestMaturityModelParser:
+
+    def test_pages_yaml(self, test_output_dir):
+        yaml = PagesYaml(root=Path(test_output_dir), title="TestABC")
+        yaml.add('somepage.md')
+        yaml.add('otherpage.md')
+        yaml.write()
+        with open(f"{test_output_dir}/.pages.yaml") as f:
+            lines = f.readlines()
+        assert lines == [
+            'title: TestABC\n',
+            'nav:\n',
+            '  - index.md\n',
+            '  - somepage.md\n',
+            '  - otherpage.md'
+        ]
 
     def test_maturity_model_parser_001(self, test_data_dir):
         loader = MaturityModelLoader(verbose=True, model_root=Path(f"{test_data_dir}/maturity-model"))

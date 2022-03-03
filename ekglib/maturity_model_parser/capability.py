@@ -1,11 +1,12 @@
 import textwrap
 from pathlib import Path
 
-from rdflib import RDFS
+from rdflib import RDFS, DCTERMS
 from rdflib.term import Node
 
 from .File import makedirs, File
 from .markdown_document import MarkdownDocument
+from .pages_yaml import PagesYaml
 from ..namespace import MATURIY_MODEL
 
 
@@ -43,11 +44,11 @@ class MaturityModelCapability:
         ))
 
     def summaries(self):
-        for rdfs_comment in self.graph.g.objects(self.capability_node, RDFS.comment):
+        for rdfs_comment in self.graph.g.objects(self.capability_node, DCTERMS.description):
             yield str(rdfs_comment).strip()
 
     def generate_summary(self):
-        self.md_file.heading(2, "Summary")
+        # self.md_file.heading(2, "Summary")
         self.md_file.write(
             f"The capability _{self.name}_\n"
             f"is part of the capability area [_{self.area.name}_](../../index.md)\n"
@@ -78,15 +79,13 @@ class MaturityModelCapability:
         md_file.create_md_file()
 
     @classmethod
-    def generate_pages_yaml(cls, pillar: MaturityModelCapabilityArea):
-        graph = pillar.graph
+    def generate_pages_yaml(cls, area: MaturityModelCapabilityArea):
+        graph = area.graph
         type_name = graph.local_type_name_for_type(cls.class_iri, cls.class_label)
-        root = pillar.full_dir / type_name
+        root = area.full_dir / type_name
         makedirs(root, cls.class_label_plural)
-        pages_yaml = File(False, root / '.pages.yaml')
-        pages_yaml.rewrite_all_file(textwrap.dedent(f"""\
-            title: {cls.class_label_plural}
-            nav:
-              - index.md
-              - ...
-        """))
+        pages_yaml = PagesYaml(root=root, title=cls.class_label_plural)
+        for capability in area.capabilities():
+            pages_yaml.add(f"{capability.name}: {capability.local_name}")
+        pages_yaml.add('...')
+        pages_yaml.write()

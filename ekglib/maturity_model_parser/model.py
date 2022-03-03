@@ -6,6 +6,7 @@ from mdutils import MdUtils
 from rdflib.term import Node
 
 from .markdown_document import MarkdownDocument
+from .pages_yaml import PagesYaml
 from ..namespace import MATURIY_MODEL
 from .graph import MaturityModelGraph
 from .File import makedirs, File
@@ -44,13 +45,9 @@ class MaturityModel:
         self.generate_pillars()
 
     def generate_pillars_pages_yaml(self):
-        pages_yaml = File(self.mkdocs, self.pillars_root / '.pages.yaml')
-        pages_yaml.rewrite_all_file(textwrap.dedent("""\
-            title: Pillars
-            nav:
-              - index.md
-              - ...
-        """))
+        pages_yaml = PagesYaml(root=self.pillars_root, title="Pillars")
+        pages_yaml.add('...')
+        pages_yaml.write()
 
     def generate_pillars_index(self):
         index_md = self.pillars_root / 'index.md'

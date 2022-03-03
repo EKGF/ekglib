@@ -2,11 +2,9 @@ import os
 from pathlib import Path
 
 import mkdocs_gen_files
-from mdutils import MdUtils
 
 from ekglib import log_item
-from ekglib.maturity_model_parser.markdown_document import MarkdownDocument
-from ekglib.maturity_model_parser.mdutil_mkdocs import MdUtils4MkDocs
+from ekglib.log.various import value_error
 
 
 class File(object):
@@ -67,7 +65,6 @@ class File(object):
         old_file = File.existing_file(mkdocs=mkdocs, path=from_path)
         new_file = File(mkdocs=mkdocs, path=to_path)
         new_file.rewrite_all_file(old_file.read_all_content())
-
 
 
 def makedirs(path: Path, hint: str):

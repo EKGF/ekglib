@@ -68,7 +68,7 @@ class MarkdownDocument:
 
     def heading(self, level: int, title: str):
         hdr = "#" * level
-        self.write(f"{hdr} {title}\n\n")
+        self.write(f"\n{hdr} {title}\n\n")
 
     def new_table(self, columns, rows, text, text_align='center', marker=''):
         """This method takes a list of strings and creates a table.

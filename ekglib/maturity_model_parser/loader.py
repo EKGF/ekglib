@@ -13,7 +13,7 @@ from ekglib.maturity_model_parser.graph import MaturityModelGraph
 from ..kgiri import EKG_NS
 from ..log import error, log_item
 from ..main import load_rdf_file_into_graph
-from ..namespace import RULE, PROV, RAW, DATAOPS, DATASET
+from ..namespace import RULE, PROV, RAW, DATAOPS, DATASET, MATURIY_MODEL
 
 OWL._fail = False  # workaround for this issue: https://github.com/RDFLib/OWL-RL/issues/53
 DefinedNamespaceMeta._warn = False
@@ -75,6 +75,7 @@ class MaturityModelLoader:
         if len(list(graph.models())) == 0:
             raise value_error("No models loaded")
         graph.rewrite_fragment_references(self.fragments_root)
+        graph.create_sort_keys()
         return graph
 
     def load_ontology_from_stream(self, ontology_stream: BytesIO):

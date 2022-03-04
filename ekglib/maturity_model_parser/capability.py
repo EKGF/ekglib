@@ -23,6 +23,7 @@ class MaturityModelCapability:
         self.mkdocs = mkdocs
 
         self.name = self.graph.name_for(self.capability_node, self.class_label)
+        self.number = self.graph.capability_number_for(self.capability_node, self.class_label)
         self.local_name = self.graph.local_name_for(self.capability_node, self.class_label)
         self.local_type_name = self.graph.local_type_name_for(self.capability_node, self.class_label)
         self.full_dir = self.area.full_dir / self.local_type_name / self.local_name
@@ -32,7 +33,7 @@ class MaturityModelCapability:
     def generate_markdown(self):
         self.generate_link_from_area_to_capability()
         self.md_file = MarkdownDocument(path=self.full_dir / 'index.md', metadata={
-            "title": self.name
+            "title": f"{self.number}. {self.name}"
         })
         self.generate_summary()
         self.md_file.create_md_file()
@@ -50,9 +51,10 @@ class MaturityModelCapability:
     def generate_summary(self):
         # self.md_file.heading(2, "Summary")
         self.md_file.write(
-            f"The capability _{self.name}_\n"
+            f"The capability _{self.name}_ ({self.number})\n"
             f"is part of the capability area [_{self.area.name}_](../../index.md)\n"
-            f"in the [_{self.area.pillar.name}_](../../index.md)."
+            f"in the [_{self.area.pillar.name}_](../../index.md).",
+            wrap_width=0
         )
         self.md_file.write("\n")
         for summary in self.summaries():
@@ -71,7 +73,7 @@ class MaturityModelCapability:
             f'An overview of all the capabilities in the area _{area.name}_:\n\n'
         )
         for capability in area.capabilities():
-            md_file.heading(2, f"[{capability.name}](./{capability.local_name}/)")
+            md_file.heading(2, f"{capability.number}. [{capability.name}](./{capability.local_name}/)")
             for summary in capability.summaries():
                 md_file.write(str(summary).strip(), wrap_width=0)
                 md_file.write("\n\n")

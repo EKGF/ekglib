@@ -37,6 +37,12 @@ class MaturityModelGraph:
             return name
         raise value_error(f"{hint} has no label: {subject_uri}")
 
+    def capability_number_for(self, capability_node, hint: str):
+        for number in self.g.objects(capability_node, MATURIY_MODEL.capabilityNumber):
+            log_item(f"{hint} Number", number)
+            return str(number)
+        raise value_error(f"{hint} has no capabilityNumber: {capability_node}")
+
     def local_name_for(self, subject_node: Node, hint: str) -> str:
         for local_name in self.g.objects(subject_node, MATURIY_MODEL.iriLocalName):
             log_item(f"{hint} Local Name", local_name)
@@ -142,6 +148,15 @@ class MaturityModelGraph:
                 raise value_error(f"Fragment {fragment_path} does not exist")
             self.g.remove((subject, predicate, objekt))
             self.g.add((subject, predicate, Literal(str(fragment_path))))
+
+    def create_sort_keys(self):
+        """ Generate sortKeys for anything with an ekgmm:capabilityNumber """
+        for subject, capability_number in self.g.subject_objects(MATURIY_MODEL.capabilityNumber):
+            capability_number_parts = str(capability_number).split('.')
+            if len(capability_number_parts) != 3:
+                raise value_error(f"{subject} has an invalid number: {capability_number}")
+            sort_key = f'{capability_number_parts[0]}.{capability_number_parts[1]:0>3}.{capability_number_parts[2]:0>3}'
+            self.g.add((subject, MATURIY_MODEL.sortKey, Literal(sort_key)))
 
 
 

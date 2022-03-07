@@ -5,8 +5,9 @@ from rdflib import URIRef, Graph, RDFS
 from rdflib.term import Literal
 
 import ekglib
-from ekglib import log_item
+from ekglib import log_item, Config
 from ekglib.maturity_model_parser import MaturityModelLoader
+from ekglib.maturity_model_parser.File import makedirs
 from ekglib.maturity_model_parser.graph import get_text_in_language
 from ekglib.maturity_model_parser.pages_yaml import PagesYaml
 
@@ -53,8 +54,18 @@ class TestMaturityModelParser:
             '  - otherpage.md'
         ]
 
-    def test_maturity_model_parser_001(self, test_data_dir):
-        loader = MaturityModelLoader(verbose=True, model_root=Path(f"{test_data_dir}/maturity-model"))
+    def test_maturity_model_parser_001(self, test_data_dir, test_output_dir):
+        docs_root = Path(f"{test_data_dir}/maturity-model/docs")
+        config = Config(
+            model_name="Test EKG/MM",
+            verbose=False,
+            mkdocs=False,
+            model_root=Path(f"{test_data_dir}/maturity-model"),
+            docs_root=docs_root,
+            fragments_root=(docs_root / '..' / 'docs-fragments').resolve(),
+            output_root=Path(f"{test_output_dir}/ekgmm_test_001")
+        )
+        loader = MaturityModelLoader(config=config)
         graph = loader.load()
         models = list(graph.models())
         assert len(models) == 1
@@ -69,8 +80,20 @@ class TestMaturityModelParser:
         capabilities = list(graph.capabilities_in_area(area_strategy_actuation))
         assert len(capabilities) == 3
 
-    def test_maturity_model_parser_002(self, test_ekgmm_repo_dir):
-        loader = MaturityModelLoader(verbose=False, model_root=Path(test_ekgmm_repo_dir))
+    def test_maturity_model_parser_002(self, test_output_dir, test_ekgmm_repo_dir):
+        output_root = Path(f"{test_output_dir}/ekgmm_test_002")
+        docs_root = output_root / 'docs'
+        makedirs(docs_root, "abc")
+        config = Config(
+            model_name="EKG/MM",
+            verbose=False,
+            mkdocs=False,
+            model_root=Path(test_ekgmm_repo_dir),
+            docs_root=docs_root,
+            fragments_root=Path(test_ekgmm_repo_dir) / 'docs-fragments',
+            output_root=output_root
+        )
+        loader = MaturityModelLoader(config=config)
         graph = loader.load()
         models = list(graph.models())
         assert len(models) == 2

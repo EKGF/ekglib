@@ -48,8 +48,6 @@ def add_dataops_rule_namespaces(rule_graph: Graph):
 class MaturityModelLoader:
     """Checks each turtle file in the given directory
     """
-    verbose: bool
-    model_root: Path
     g: rdflib.Graph
 
     def __init__(self, config: Config):
@@ -109,7 +107,7 @@ class MaturityModelLoader:
 
     def add_literal_triple(self, s, p, o):
         """Add a triple to the graph with the given sparql_endpoint literal."""
-        if self.verbose:
+        if self.config.verbose:
             print("Adding triple <{0}> - <{1}> - \"{2}\"".format(s, p, o))
         self.g.add((s, p, o))
 

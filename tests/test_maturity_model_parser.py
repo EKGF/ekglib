@@ -56,13 +56,14 @@ class TestMaturityModelParser:
 
     def test_maturity_model_parser_001(self, test_data_dir, test_output_dir):
         docs_root = Path(f"{test_data_dir}/maturity-model/docs")
+        fragments_root = Path(f"{test_data_dir}/maturity-model/docs-fragments")
         config = Config(
             model_name="Test EKG/MM",
             verbose=False,
             mkdocs=False,
             model_root=Path(f"{test_data_dir}/maturity-model"),
             docs_root=docs_root,
-            fragments_root=(docs_root / '..' / 'docs-fragments').resolve(),
+            fragments_root=fragments_root,
             output_root=Path(f"{test_output_dir}/ekgmm_test_001")
         )
         loader = MaturityModelLoader(config=config)

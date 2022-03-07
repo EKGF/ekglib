@@ -1,6 +1,8 @@
 import os
 from pathlib import Path
 
+import mkdocs_gen_files
+
 from ekglib import log_item
 from ekglib.log.various import value_error
 from ekglib.maturity_model_parser.config import Config

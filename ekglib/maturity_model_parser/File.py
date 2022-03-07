@@ -1,10 +1,10 @@
 import os
 from pathlib import Path
 
-import mkdocs_gen_files
-
 from ekglib import log_item
 from ekglib.log.various import value_error
+from ekglib.maturity_model_parser.config import Config
+from ekglib.maturity_model_parser.markdown_document import MarkdownDocument
 
 
 class File(object):
@@ -60,10 +60,11 @@ class File(object):
             self.file.write('\n' + file_data[len(first_line + second_line):])
 
     @classmethod
-    def copy(cls, mkdocs: bool, from_path: Path, to_path: Path):
-        log_item("Copying", f"{from_path} -> {to_path}")
-        old_file = File.existing_file(mkdocs=mkdocs, path=from_path)
-        new_file = File(mkdocs=mkdocs, path=to_path)
+    def copy(cls, config: Config, from_path: Path, to_path: Path):
+        if config.verbose:
+            log_item("Copying", f"{from_path} -> {to_path}")
+        old_file = File.existing_file(mkdocs=config.mkdocs, path=from_path)
+        new_file = File(mkdocs=config.mkdocs, path=to_path)
         new_file.rewrite_all_file(old_file.read_all_content())
 
 
@@ -73,3 +74,30 @@ def makedirs(path: Path, hint: str):
         os.makedirs(path)
     except FileExistsError:
         return
+
+
+def copy_template_fragment(from_path: Path, config: Config):
+    log_item("Fragment not found", from_path)
+    fragment_base = from_path.name
+    template_path = config.fragments_root / 'template' / fragment_base
+    if not template_path.exists():
+        raise value_error(f"Template not found: {template_path}")
+    makedirs(from_path.parent, "Fragments")
+    File.copy(config=config, from_path=template_path, to_path=from_path)
+
+
+def copy_fragment(md_file: MarkdownDocument, from_path: Path, config: Config):
+    if not from_path.exists():
+        copy_template_fragment(from_path=from_path, config=config)
+    fragment_base = from_path.name
+    log_item("Copying fragment", fragment_base)
+    to_path2 = md_file.path.parent / fragment_base
+    if config.verbose:
+        log_item("to", to_path2)
+    File.copy(config=config, from_path=from_path, to_path=to_path2)
+    md_file.write(
+        "\n\n{% include-markdown \""
+        f"{fragment_base}"
+        "\" heading-offset=1 %}",
+        wrap_width=0
+    )

@@ -1,13 +1,38 @@
+import textwrap
 from pathlib import Path
 from typing import Optional, Iterable
 
 import rdflib
-from rdflib import Graph, RDF, OWL, URIRef
+from rdflib import Graph, RDF, OWL, URIRef, RDFS, DCTERMS
 from rdflib.term import Node, Literal
 
 from ekglib import log_item
 from ekglib.log.various import value_error, warning
+from ekglib.maturity_model_parser.markdown_document import MarkdownDocument
 from ekglib.namespace import MATURIY_MODEL
+
+
+def get_text_in_language(
+        graph: Graph,
+        lang: str,
+        subject: Node,
+        predicate: URIRef
+):
+    default_value = None
+    for value in graph.objects(subject, predicate):
+        if not isinstance(value, rdflib.Literal):
+            raise value_error(f"Found non-literal as value for {predicate} for subject {subject}")
+        literal: Literal = value
+        literal_lang = literal.language
+        if literal_lang == lang:
+            return textwrap.dedent(str(literal)).strip()
+        if literal_lang is None:
+            default_value = literal
+        if default_value is None and literal_lang == 'en':
+            default_value = literal
+    if default_value is None:
+        return None
+    return textwrap.dedent(str(default_value)).strip()
 
 
 class MaturityModelGraph:
@@ -36,6 +61,9 @@ class MaturityModelGraph:
         if name is not None:
             return name
         raise value_error(f"{hint} has no label: {subject_uri}")
+
+    def tag_line_for(self, node: Node):
+        return get_text_in_language(self.g, self.lang, node, RDFS.comment)
 
     def capability_number_for(self, capability_node, hint: str):
         for number in self.g.objects(capability_node, MATURIY_MODEL.capabilityNumber):
@@ -158,5 +186,15 @@ class MaturityModelGraph:
             sort_key = f'{capability_number_parts[0]}.{capability_number_parts[1]:0>3}.{capability_number_parts[2]:0>3}'
             self.g.add((subject, MATURIY_MODEL.sortKey, Literal(sort_key)))
 
+    def write_tag_line(self, md: MarkdownDocument, node: Node, _hint: str):
+        tag_line = self.tag_line_for(node)
+        if tag_line:
+            md.write(f'\n_{tag_line}_\n', wrap_width=0)
 
+    def description_of(self, node: Node, _hint: str):
+        return get_text_in_language(self.g, self.lang, node, DCTERMS.description)
 
+    def write_description(self, md: MarkdownDocument, node: Node, hint: str):
+        dct_description = self.description_of(node, hint)
+        if dct_description:
+            md.write(dct_description, wrap_width=0)

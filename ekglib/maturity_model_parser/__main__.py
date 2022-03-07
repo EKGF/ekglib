@@ -1,54 +1,32 @@
 import argparse
 from pathlib import Path
 
+from ekglib.maturity_model_parser.config import Config
 from ekglib.maturity_model_parser.loader import MaturityModelLoader
 from ekglib.maturity_model_parser.markdown_generator import MaturityModelMarkdownGenerator
 
 
-def mkdocs_gen_files(model_root: Path, output_root: Path, docs_root: Path, fragments_root: Path):
-    loader = MaturityModelLoader(
-        verbose=True,
-        model_root=model_root,
-        docs_root=docs_root,
-        fragments_root=fragments_root
-    )
+def run_with_config(config: Config) -> int:
+    loader = MaturityModelLoader(config)
     graph = loader.load()
-    generator = MaturityModelMarkdownGenerator(graph, model_name="EKG/MM", mkdocs=True, output_root=output_root)
+    generator = MaturityModelMarkdownGenerator(graph, config)
     generator.generate()
     # exporter = GraphExporter(graph)
     # return exporter.export(stream)
     return 0
 
 
-def mkdocs_gen_files2(model_root: Path, output_root: Path, docs_root: Path, fragments_root: Path):
-    loader = MaturityModelLoader(
-        verbose=True,
-        model_root=model_root,
-        docs_root=docs_root,
-        fragments_root=fragments_root
-    )
-    graph = loader.load()
-    generator = MaturityModelMarkdownGenerator(graph, model_name="EKG/MM", mkdocs=False, output_root=output_root)
-    generator.generate()
-    # exporter = GraphExporter(graph)
-    # return exporter.export(stream)
-    return 0
-
-
-def runit(args) -> int:
-    loader = MaturityModelLoader(
+def run_with_args(args) -> int:
+    config = Config(
+        model_name=args.model,
         verbose=args.verbose,
+        mkdocs=False,
         model_root=Path(args.model_root),
         docs_root=Path(args.docs_root),
-        fragments_root=Path(args.fragments_root)
+        fragments_root=Path(args.fragments_root),
+        output_root=Path(args.output)
     )
-    graph = loader.load()
-    generator = MaturityModelMarkdownGenerator(graph, model_name=args.model, mkdocs=False,
-                                               output_root=Path(args.output))
-    generator.generate()
-    # exporter = GraphExporter(graph)
-    # return exporter.export(stream)
-    return 0
+    return run_with_config(config)
 
 
 def main():
@@ -68,7 +46,7 @@ def main():
     parser.add_argument('--output', help='The output directory', required=True)
     parser.add_argument('--model', help='The name of the model', default="EKG/MM")
 
-    return runit(parser.parse_args())
+    return run_with_args(parser.parse_args())
 
 
 if __name__ == "__main__":

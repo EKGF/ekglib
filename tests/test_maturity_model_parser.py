@@ -1,16 +1,42 @@
 import sys
-import textwrap
 from pathlib import Path
 
-from rdflib import URIRef
+from rdflib import URIRef, Graph, RDFS
+from rdflib.term import Literal
 
 import ekglib
 from ekglib import log_item
 from ekglib.maturity_model_parser import MaturityModelLoader
+from ekglib.maturity_model_parser.graph import get_text_in_language
 from ekglib.maturity_model_parser.pages_yaml import PagesYaml
 
 
 class TestMaturityModelParser:
+
+    def test_get_text_in_language1(self):
+        graph = Graph()
+        subject = URIRef("https://test")
+        graph.add((subject, RDFS.comment, Literal("english", lang="en")))
+        graph.add((subject, RDFS.comment, Literal("french", lang="fr")))
+        graph.add((subject, RDFS.comment, Literal("nolang")))
+        english = get_text_in_language(graph, 'en', subject, RDFS.comment)
+        assert english == "english"
+        french = get_text_in_language(graph, 'fr', subject, RDFS.comment)
+        assert french == "french"
+        dutch = get_text_in_language(graph, 'nl', subject, RDFS.comment)
+        assert dutch == "nolang"
+
+    def test_get_text_in_language2(self):
+        graph = Graph()
+        subject = URIRef("https://test")
+        graph.add((subject, RDFS.comment, Literal("english", lang="en")))
+        graph.add((subject, RDFS.comment, Literal("french", lang="fr")))
+        english = get_text_in_language(graph, 'en', subject, RDFS.comment)
+        assert english == "english"
+        french = get_text_in_language(graph, 'fr', subject, RDFS.comment)
+        assert french == "french"
+        dutch = get_text_in_language(graph, 'nl', subject, RDFS.comment)
+        assert dutch == "english"
 
     def test_pages_yaml(self, test_output_dir):
         yaml = PagesYaml(root=Path(test_output_dir), title="TestABC")
@@ -63,7 +89,9 @@ class TestMaturityModelParser:
         sys.argv = [
             'pytest',
             '--model-root', f"{test_data_dir}/maturity-model",
-            '--docs-root', f"{test_output_dir}/ekgmm_test_003",
+            '--docs-root', f"{test_data_dir}/maturity-model/docs",
+            '--fragments-root', f"{test_data_dir}/maturity-model",
+            '--output', f"{test_output_dir}/ekgmm_test_003",
             '--model', "Test EKG/MM",
             '--verbose'
         ]

@@ -10,6 +10,7 @@ from rdflib.namespace import DefinedNamespaceMeta
 from ekglib.log.various import value_error
 from ekglib.main.main import load_rdf_stream_into_graph
 from ekglib.maturity_model_parser.graph import MaturityModelGraph
+from .config import Config
 from ..kgiri import EKG_NS
 from ..log import error, log_item
 from ..main import load_rdf_file_into_graph
@@ -51,19 +52,12 @@ class MaturityModelLoader:
     model_root: Path
     g: rdflib.Graph
 
-    def __init__(self, verbose: bool, model_root: Path, docs_root: Path, fragments_root: Path):
+    def __init__(self, config: Config):
 
-        self.verbose = verbose
-        self.model_root = model_root
-        self.docs_root = docs_root
-        self.fragments_root = fragments_root
+        self.config = config
 
         self.g = Graph()
         self.g.base = "https://maturity-model.ekgf.org/"
-        if not self.model_root.is_dir():
-            raise value_error("{} is not a valid directory", self.model_root.name)
-        if not self.docs_root.is_dir():
-            raise value_error("{} is not a valid directory", self.model_root.name)
 
     def load(self) -> MaturityModelGraph:
         self.load_ontologies()
@@ -71,10 +65,10 @@ class MaturityModelLoader:
         self.rdfs_infer()
         log_item("# triples", len(self.g))
         # dump_as_ttl_to_stdout(self.g)
-        graph = MaturityModelGraph(self.g, self.verbose, 'en')
+        graph = MaturityModelGraph(self.g, self.config.verbose, 'en')
         if len(list(graph.models())) == 0:
             raise value_error("No models loaded")
-        graph.rewrite_fragment_references(self.fragments_root)
+        graph.rewrite_fragment_references(self.config.fragments_root)
         graph.create_sort_keys()
         return graph
 
@@ -90,7 +84,7 @@ class MaturityModelLoader:
     def load_model_files(self):
         # for turtle_file in self.root_directory.rglob("*.ttl"):
         #     log_item("Going to load", turtle_file)
-        for turtle_file in self.model_root.rglob("*.ttl"):
+        for turtle_file in self.config.model_root.rglob("*.ttl"):
             self.load_model_file(Path(turtle_file))
 
     def load_model_file(self, turtle_file: Path):

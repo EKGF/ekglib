@@ -1,10 +1,11 @@
 import textwrap
 from pathlib import Path
 
-from rdflib import DCTERMS
+from rdflib import DCTERMS, RDFS
 from rdflib.term import Node
 
 from .File import makedirs, File
+from .config import Config
 from .markdown_document import MarkdownDocument
 from .pages_yaml import PagesYaml
 from .pillar import MaturityModelPillar
@@ -17,19 +18,27 @@ class MaturityModelCapabilityArea:
     class_label_plural: str = "Capability Areas"
     class_iri = MATURIY_MODEL.CapabilityArea
 
-    def __init__(self, pillar: MaturityModelPillar, area_node: Node, mkdocs: bool):
+    def __init__(
+            self,
+            pillar: MaturityModelPillar,
+            area_node: Node,
+            pillar_fragments_dir: Path,
+            config: Config
+    ):
         self.md_file = None
         self.graph = pillar.graph
         self.pillar = pillar
-        self.area_node = area_node
-        self.mkdocs = mkdocs
+        self.node = area_node
+        self.config = config
         self._capabilities = list()
 
-        self.name = self.graph.name_for(self.area_node, self.class_label)
-        self.local_name = self.graph.local_name_for(self.area_node, self.class_label)
-        self.local_type_name = self.graph.local_type_name_for(self.area_node, self.class_label)
+        self.name = self.graph.name_for(self.node, self.class_label)
+        self.local_name = self.graph.local_name_for(self.node, self.class_label)
+        self.local_type_name = self.graph.local_type_name_for(self.node, self.class_label)
+        self.tag_line = self.graph.tag_line_for(self.node)
         self.full_dir = self.pillar.full_dir / self.local_type_name / self.local_name
         self.full_path = self.full_dir / 'index.md'
+        self.fragments_dir = pillar_fragments_dir / self.local_type_name / self.local_name
         makedirs(self.full_dir, self.class_label)
 
     def generate_markdown(self):
@@ -38,20 +47,22 @@ class MaturityModelCapabilityArea:
         self.md_file = MarkdownDocument(path=self.full_path, metadata={
             'title': self.name
         })
-        self.summary()
-        self.md_file.heading(2, MaturityModelCapability.class_label_plural)
+        self.generate_summary()
         self.generate_capabilities()
         self.md_file.create_md_file()
 
-    def summary(self):
+    def generate_summary(self):
         # self.md_file.heading(2, "Summary")
-        self.md_file.new_paragraph(
+        self.md_file.write(
             f"The capability area _{self.name}_ is "
-            f"in the [_{self.pillar.name}_](../../index.md).\n"
+            f"in the [_{self.pillar.name}_](../../index.md).\n",
+            wrap_width=0
         )
-        self.md_file.write("\n")
-        for rdfs_comment in self.graph.g.objects(self.area_node, DCTERMS.description):
-            self.md_file.write(str(rdfs_comment).strip(), wrap_width=0)
+        self.generate_summary_short(self.md_file)
+
+    def generate_summary_short(self, md_file: MarkdownDocument):
+        self.graph.write_tag_line(md_file, self.node, self.class_label)
+        self.graph.write_description(md_file, self.node, self.class_label)
 
     def generate_link_from_pillar_to_capability_area(self):
         link = Path('.') / self.local_type_name / self.local_name / 'index.md'
@@ -60,7 +71,7 @@ class MaturityModelCapabilityArea:
         ))
 
     def capabiliy_nodes_unsorted(self):
-        for capability_node in self.graph.g.subjects(MATURIY_MODEL.inArea, self.area_node):
+        for capability_node in self.graph.g.subjects(MATURIY_MODEL.inArea, self.node):
             yield capability_node
 
     def sort_key(self, element):
@@ -79,7 +90,7 @@ class MaturityModelCapabilityArea:
     def capabilities_non_cached(self):
         from .capability import MaturityModelCapability
         for capability_node in self.capability_nodes():
-            yield MaturityModelCapability(self, capability_node, self.mkdocs)
+            yield MaturityModelCapability(self, capability_node, self.fragments_dir, self.config)
 
     def capabilities(self):
         if len(self._capabilities) == 0:
@@ -88,6 +99,7 @@ class MaturityModelCapabilityArea:
 
     def generate_capabilities(self):
         from .capability import MaturityModelCapability
+        self.md_file.heading(2, MaturityModelCapability.class_label_plural)
         MaturityModelCapability.generate_index_md(self)
         MaturityModelCapability.generate_pages_yaml(self)
         for capability in self.capabilities():
@@ -102,6 +114,10 @@ class MaturityModelCapabilityArea:
         md_file = MarkdownDocument(path=root / 'index.md', metadata={
             "title": f"{pillar.name} --- {cls.class_label_plural}"
         })
+        for area in pillar.capability_areas():
+            md_file.heading(2, area.name, area.local_name)
+            area.generate_summary_short(md_file)
+            md_file.write(f'\n\n[More info...]({area.local_name})\n\n')
         md_file.create_md_file()
 
     @classmethod

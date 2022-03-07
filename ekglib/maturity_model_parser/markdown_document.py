@@ -34,6 +34,7 @@ class MarkdownDocument:
         :type file_name: str
         """
         log_item("Creating", path)
+        self.path = path
         self.file_name = str(path) # TODO: change all to Path
         self.textUtils = TextUtils
         self.file_data_text = ""
@@ -66,9 +67,12 @@ class MarkdownDocument:
 
         return file_data
 
-    def heading(self, level: int, title: str):
+    def heading(self, level: int, title: str, link: str = None):
         hdr = "#" * level
-        self.write(f"\n{hdr} {title}\n\n")
+        if link:
+            self.write(f"\n{hdr} [{title}]({link})\n\n")
+        else:
+            self.write(f"\n{hdr} {title}\n\n")
 
     def new_table(self, columns, rows, text, text_align='center', marker=''):
         """This method takes a list of strings and creates a table.

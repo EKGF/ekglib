@@ -6,8 +6,9 @@
 @prefix ekgmm:     <https://ekgf.github.io/ekglib/ontology/maturity-model/> .
 
 <capability-business-goals>
-    a                  ekgmm:Capability ;
-    rdfs:label         "Business Goals" ;
-    ekgmm:iriLocalName "goals" ;
-    ekgmm:inArea       <capability-area-business-strategy-actuation> ;
+    a                      ekgmm:Capability ;
+    rdfs:label             "Business Goals" ;
+    ekgmm:iriLocalName     "goals" ;
+    ekgmm:inArea           <capability-area-business-strategy-actuation> ;
+    ekgmm:capabilityNumber "A.1.2" ;
 .

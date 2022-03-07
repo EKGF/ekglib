@@ -98,6 +98,17 @@
 
 
 #################################################################
+#    Data properties
+#################################################################
+
+###  https://ekgf.github.io/ekglib/ontology/maturity-model/capabilityNumber
+:capabilityNumber rdf:type owl:DatatypeProperty ,
+                           owl:FunctionalProperty ;
+                  rdfs:range xsd:string ;
+                  rdfs:comment "A capability number in the format `<pillar>.<area>.<capability>` where `<pillar>` is an uppercase letter and `<area>` and `<capability>` are integer numbers."@en .
+
+
+#################################################################
 #    Classes
 #################################################################
 

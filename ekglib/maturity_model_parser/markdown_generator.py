@@ -4,6 +4,7 @@ from typing import Optional
 from rdflib import OWL
 
 from .File import makedirs
+from .config import Config
 from .graph import MaturityModelGraph
 from .model import MaturityModel
 from .pillar import MaturityModelPillar
@@ -24,18 +25,17 @@ class MaturityModelMarkdownGenerator:
     output_root: Path
     md_file: Optional[MarkdownDocument] = None
 
-    def __init__(self, graph: MaturityModelGraph, model_name: str, mkdocs: bool, output_root: Path):
+    def __init__(self, graph: MaturityModelGraph, config: Config):
         self.graph = graph
-        self.mkdocs = mkdocs
-        self.output_root = output_root
+        self.config = config
 
-        self.model = MaturityModel(graph=self.graph, model_name=model_name, mkdocs=mkdocs, output_root=output_root)
+        self.model = MaturityModel(graph=self.graph, config=config)
 
         self.local_type_name = self.graph.local_type_name_for_type(
             MATURIY_MODEL.Pillar, MaturityModelPillar.class_label
         )
-        self.full_dir = self.output_root / self.local_type_name
-        makedirs(self.full_dir, "Model")
+        self.full_dir = self.config.output_root / self.local_type_name
+        makedirs(self.full_dir, MaturityModel.class_label)
         self.full_path = self.full_dir / 'index.md'
 
     def generate(self):

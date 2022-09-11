@@ -102,7 +102,7 @@ class TestMaturityModelParser:
         pillars = list(graph.pillars(model))
         assert len(pillars) == 4
         business_pillar = graph.get_pillar_with_name(model, "Business Pillar")
-        assert business_pillar == URIRef("https://maturity-model.ekgf.org/business-pillar")
+        assert business_pillar == URIRef("https://maturity.ekgf.org/business-pillar")
         areas = list(graph.capability_areas_of_pillar(business_pillar))
         assert len(areas) == 3
         area_strategy_actuation = areas[0]

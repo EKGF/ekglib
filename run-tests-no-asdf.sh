@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 
-# This scriptlet creates a Python 3.10.2 virtual environment under the project folder (not to be checked in)
+# This scriptlet creates a Python 3.10.7 virtual environment under the project folder (not to be checked in)
 # and then once it is available it enters it and executes all the tests in the tests folder
 
 if [[ ! $(which python3) ]] ; then
-  echo "Python 3 not installed, please install Python 3.10.2, e.g. by running %brew install python@3.10"
+  echo "Python 3 not installed, please install Python 3.10.7, e.g. by running %brew install python@3.10"
   exit 1
 fi
-if ! python3 --version 2>/dev/null | grep -q "Python 3.10.2" ; then
-  echo "ERROR: Please install Python 3.10.2" >&2
+if ! python3 --version 2>/dev/null | grep -q "Python 3.10.7" ; then
+  echo "ERROR: Please install Python 3.10.7" >&2
   exit 1
 fi
 

@@ -4,7 +4,7 @@
 #
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 
-python_version=3.10.2
+python_version=3.10.7
 
 flag_file="/tmp/ekglib-last-checked-environment.flag"
 

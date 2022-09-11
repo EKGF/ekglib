@@ -55,7 +55,7 @@ class MaturityModelLoader:
         self.config = config
 
         self.g = Graph()
-        self.g.base = "https://maturity-model.ekgf.org/"
+        self.g.base = "https://maturity.ekgf.org/"
 
     def load(self) -> MaturityModelGraph:
         self.load_ontologies()

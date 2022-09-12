@@ -83,7 +83,7 @@ class MaturityModelLoader:
             owl_closure=True,
             rdfs_closure=True,
             owl_extras=True,
-            trimming=True
+            trimming=False
         )
         owlrl.DeductiveClosure(
             closure_class,

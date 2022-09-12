@@ -3,7 +3,7 @@ import sys
 import textwrap
 
 import ekglib
-from .fixtures import test_data_dir, kgiri_base
+
 
 class TestPersonaParser:
     def test_persona_parser(self, kgiri_base, test_data_dir):

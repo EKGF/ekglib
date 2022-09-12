@@ -2,7 +2,7 @@
 """
 
 # The format of the __version__ line is matched by a regex in setup.py
-__version__ = "0.0.22"
+__version__ = "0.0.23"
 __all__ = [  # noqa: F405
     'concept_parser',
     'data_source',

@@ -1,6 +1,6 @@
 from rdflib import Namespace
 
-MATURIY_MODEL = Namespace("https://ekgf.github.io/ekglib/ontology/maturity-model/")
+MATURIY_MODEL = Namespace("https://raw.githubusercontent.com/EKGF/ontology-maturity-model/main/maturity-model.ttl#")
 USERSTORY = Namespace("https://ekgf.org/ontology/user-story/")
 RULE = Namespace("https://ekgf.org/ontology/dataops-rule/")
 DATAOPS = Namespace("https://ekgf.org/ontology/dataops/")

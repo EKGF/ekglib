@@ -1,3 +1,6 @@
+
+BASE_IRI_MATURITY_MODEL = "https://maturity.ekgf.org/"
+
 from .capability import MaturityModelCapability  # noqa: F401
 from .capability_area import MaturityModelCapabilityArea  # noqa: F401
 from .pillar import MaturityModelPillar  # noqa: F401
@@ -22,3 +25,4 @@ __all__ = [
     'MaturityModelCapabilityArea',
     'MaturityModelCapability'
 ]
+

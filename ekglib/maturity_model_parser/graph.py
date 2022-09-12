@@ -44,6 +44,7 @@ class MaturityModelGraph:
         self.lang = lang
 
     def __name_with_lang_for(self, subject_uri, lang: Optional[str], hint: str):
+        assert(isinstance(self.g, rdflib.Graph), "graph is not an instance of rdflib.Graph")
         for uri, value in self.g.preferredLabel(subject_uri, lang=lang):
             if isinstance(value, rdflib.term.Literal):
                 log_item(f"{hint} Name", value.toPython())
@@ -116,7 +117,7 @@ class MaturityModelGraph:
         return self.g.subjects(RDF.type, type_uri)
 
     def models(self):
-        return self.g.subjects(RDF.type, MATURIY_MODEL.Model)
+        return self.subjects_of_type(MATURIY_MODEL.Model)
 
     def model_with_name(self, model_name: str):
         for model in self.models():

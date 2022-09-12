@@ -4,8 +4,6 @@ import pytest
 
 import ekglib
 
-from unittest import mock
-
 
 class TestExport:
 

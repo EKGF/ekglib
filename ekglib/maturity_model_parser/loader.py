@@ -4,20 +4,21 @@ from pathlib import Path
 import owlrl
 import rdflib
 from pkg_resources import resource_stream
-from rdflib import Graph, OWL
-from rdflib.namespace import DefinedNamespaceMeta
+from rdflib import Graph
 
 from ekglib.log.various import value_error
 from ekglib.main.main import load_rdf_stream_into_graph
 from ekglib.maturity_model_parser.graph import MaturityModelGraph
+from . import BASE_IRI_MATURITY_MODEL
 from .config import Config
-from ..kgiri import EKG_NS
 from ..log import error, log_item
 from ..main import load_rdf_file_into_graph
-from ..namespace import RULE, PROV, RAW, DATAOPS, DATASET, MATURIY_MODEL
 
-OWL._fail = False  # workaround for this issue: https://github.com/RDFLib/OWL-RL/issues/53
-DefinedNamespaceMeta._warn = False
+# from rdflib.namespace import DefinedNamespaceMeta
+
+# OWL._fail = False  # workaround for this issue: https://github.com/RDFLib/OWL-RL/issues/53
+# DefinedNamespaceMeta._warn = False
+
 
 ontology_file_names = [
     'maturity-model.ttl'
@@ -32,19 +33,6 @@ def check_ontologies(ontologies_root: Path):
             error(f"Could not find {ontology_file_name} ontology")
     return ontologies_root
 
-
-def add_dataops_rule_namespaces(rule_graph: Graph):
-    rule_graph.base = EKG_NS['KGIRI']
-    rule_graph.bind("kgiri", EKG_NS['KGIRI'])
-    rule_graph.bind("kggraph", EKG_NS['KGGRAPH'])
-    rule_graph.namespace_manager.bind('owl', OWL)
-    rule_graph.namespace_manager.bind('prov', PROV)
-    rule_graph.namespace_manager.bind('raw', RAW)
-    rule_graph.namespace_manager.bind('dataops', DATAOPS)
-    rule_graph.namespace_manager.bind('dataset', DATASET)
-    rule_graph.namespace_manager.bind('rule', RULE)
-
-
 class MaturityModelLoader:
     """Checks each turtle file in the given directory
     """
@@ -55,13 +43,12 @@ class MaturityModelLoader:
         self.config = config
 
         self.g = Graph()
-        self.g.base = "https://maturity.ekgf.org/"
+        self.g.base = BASE_IRI_MATURITY_MODEL
 
     def load(self) -> MaturityModelGraph:
         self.load_ontologies()
         self.load_model_files()
         self.rdfs_infer()
-        log_item("# triples", len(self.g))
         # dump_as_ttl_to_stdout(self.g)
         graph = MaturityModelGraph(self.g, self.config.verbose, 'en')
         if len(list(graph.models())) == 0:
@@ -84,6 +71,7 @@ class MaturityModelLoader:
         #     log_item("Going to load", turtle_file)
         for turtle_file in self.config.model_root.rglob("*.ttl"):
             self.load_model_file(Path(turtle_file))
+        log_item("# asserted triples", len(self.g))
 
     def load_model_file(self, turtle_file: Path):
         log_item("Loading Model File", turtle_file)
@@ -104,6 +92,7 @@ class MaturityModelLoader:
             axiomatic_triples=False,
             datatype_axioms=False
         ).expand(self.g)
+        log_item("# triples", len(self.g))
 
     def add_literal_triple(self, s, p, o):
         """Add a triple to the graph with the given sparql_endpoint literal."""

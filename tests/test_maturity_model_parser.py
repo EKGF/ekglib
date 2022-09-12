@@ -87,7 +87,7 @@ class TestMaturityModelParser:
     def test_maturity_model_parser_002(self, test_output_dir, test_ekgmm_repo_dir):
         output_root = Path(f"{test_output_dir}/ekgmm_test_002")
         docs_root = output_root / 'docs'
-        makedirs(docs_root, "abc")
+        makedirs(docs_root, "Test 002 Output")
         config = Config(
             model_name="EKG/MM",
             verbose=False,

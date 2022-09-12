@@ -83,7 +83,8 @@ ekgmm:inModel rdf:type owl:ObjectProperty ,
 
 
 ###  https://raw.githubusercontent.com/EKGF/ontology-maturity-model/main/maturity-model.ttl#inPillar
-ekgmm:inPillar rdf:type owl:ObjectProperty ;
+ekgmm:inPillar rdf:type owl:ObjectProperty ,
+                        owl:FunctionalProperty ;
                rdfs:domain ekgmm:CapabilityArea ;
                rdfs:range ekgmm:Pillar ;
                rdfs:label "inPillar"@en .
@@ -154,10 +155,6 @@ ekgmm:Pillar rdf:type owl:Class ;
 #    Individuals
 #################################################################
 
-###  https://maturity.ekgf.org/Level5
-maturity-site:Level5 rdf:type owl:NamedIndividual .
-
-
 ###  https://maturity.ekgf.org/business-pillar
 maturity-site:business-pillar rdf:type owl:NamedIndividual ,
                                        ekgmm:Pillar ;
@@ -190,7 +187,6 @@ maturity-site:data-pillar rdf:type owl:NamedIndividual ,
 ###  https://maturity.ekgf.org/level1
 maturity-site:level1 rdf:type owl:NamedIndividual ,
                               ekgmm:Level ;
-                     ekgmm:pillarInModel maturity-site:maturity-model ;
                      rdfs:label "Level 1" ;
                      ekgmm:iriLocalName "1" ;
                      ekgmm:iriLocalTypeName "level" .
@@ -199,7 +195,7 @@ maturity-site:level1 rdf:type owl:NamedIndividual ,
 ###  https://maturity.ekgf.org/level2
 maturity-site:level2 rdf:type owl:NamedIndividual ,
                               ekgmm:Level ;
-                     ekgmm:pillarInModel maturity-site:maturity-model ;
+                     ekgmm:levelInModel maturity-site:maturity-model ;
                      rdfs:label "Level 2" ;
                      ekgmm:iriLocalName "2" ;
                      ekgmm:iriLocalTypeName "level" .
@@ -208,7 +204,7 @@ maturity-site:level2 rdf:type owl:NamedIndividual ,
 ###  https://maturity.ekgf.org/level3
 maturity-site:level3 rdf:type owl:NamedIndividual ,
                               ekgmm:Level ;
-                     ekgmm:pillarInModel maturity-site:maturity-model ;
+                     ekgmm:levelInModel maturity-site:maturity-model ;
                      rdfs:label "Level 3" ;
                      ekgmm:iriLocalName "3" ;
                      ekgmm:iriLocalTypeName "level" .
@@ -217,7 +213,7 @@ maturity-site:level3 rdf:type owl:NamedIndividual ,
 ###  https://maturity.ekgf.org/level4
 maturity-site:level4 rdf:type owl:NamedIndividual ,
                               ekgmm:Level ;
-                     ekgmm:pillarInModel maturity-site:maturity-model ;
+                     ekgmm:levelInModel maturity-site:maturity-model ;
                      rdfs:label "Level 4" ;
                      ekgmm:iriLocalName "4" ;
                      ekgmm:iriLocalTypeName "level" .
@@ -226,7 +222,7 @@ maturity-site:level4 rdf:type owl:NamedIndividual ,
 ###  https://maturity.ekgf.org/level5
 maturity-site:level5 rdf:type owl:NamedIndividual ,
                               ekgmm:Level ;
-                     ekgmm:pillarInModel maturity-site:maturity-model ;
+                     ekgmm:levelInModel maturity-site:maturity-model ;
                      rdfs:label "Level 5" ;
                      ekgmm:iriLocalName "5" ;
                      ekgmm:iriLocalTypeName "level" .
@@ -235,16 +231,16 @@ maturity-site:level5 rdf:type owl:NamedIndividual ,
 ###  https://maturity.ekgf.org/maturity-model
 maturity-site:maturity-model rdf:type owl:NamedIndividual ,
                                       ekgmm:Model ;
-                             ekgmm:hasLevel maturity-site:Level5 ,
-                                            maturity-site:level1 ,
+                             ekgmm:hasLevel maturity-site:level1 ,
                                             maturity-site:level2 ,
                                             maturity-site:level3 ,
-                                            maturity-site:level4 ;
+                                            maturity-site:level4 ,
+                                            maturity-site:level5 ;
                              ekgmm:hasPillar maturity-site:business-pillar ,
                                              maturity-site:data-pillar ,
                                              maturity-site:organization-pillar ,
                                              maturity-site:technology-pillar ;
-                             rdfs:label           "EKG/MM"@en ;
+                             rdfs:label "EKG/MM"@en ;
                              ekgmm:iriLocalName "ekg-mm" .
 
 
@@ -280,16 +276,6 @@ maturity-site:technology-pillar rdf:type owl:NamedIndividual ,
 #    General axioms
 #################################################################
 
-[ rdf:type owl:AllDisjointClasses ;
-  owl:members ( ekgmm:Capability
-                ekgmm:CapabilityArea
-                ekgmm:Level
-                ekgmm:Model
-                ekgmm:Pillar
-              )
-] .
-
-
 [ rdf:type owl:AllDifferent ;
   owl:distinctMembers ( maturity-site:business-pillar
                         maturity-site:data-pillar
@@ -297,6 +283,7 @@ maturity-site:technology-pillar rdf:type owl:NamedIndividual ,
                         maturity-site:technology-pillar
                       )
 ] .
+
 
 [ rdf:type owl:AllDifferent ;
   owl:distinctMembers ( maturity-site:level1
@@ -306,5 +293,6 @@ maturity-site:technology-pillar rdf:type owl:NamedIndividual ,
                         maturity-site:level5
                       )
 ] .
+
 
 ###  Generated by the OWL API (version 4.5.9.2019-02-01T07:24:44Z) https://github.com/owlcs/owlapi

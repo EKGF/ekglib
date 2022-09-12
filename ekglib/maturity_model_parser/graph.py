@@ -128,7 +128,8 @@ class MaturityModelGraph:
 
     def pillars(self, model_node: Node):
         found = 0
-        for pillar in self.g.subjects(MATURIY_MODEL.pillarInModel, model_node):
+        for pillar in self.g.subjects(predicate=MATURIY_MODEL.pillarInModel, object=model_node):
+            log_item("Pillar", pillar)
             found += 1
             yield pillar
         if found == 0:

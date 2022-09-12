@@ -2,7 +2,7 @@
 <module type="PYTHON_MODULE" version="4">
   <component name="FacetManager">
     <facet type="Python" name="Python facet">
-      <configuration sdkName="Python 3.6" />
+      <configuration sdkName="Python 3.10 (ekglib)" />
     </facet>
   </component>
   <component name="NewModuleRootManager" inherit-compiler-output="true">
@@ -16,11 +16,12 @@
       <excludeFolder url="file://$MODULE_DIR$/tests/test_data" />
       <excludeFolder url="file://$MODULE_DIR$/venv" />
       <excludeFolder url="file://$MODULE_DIR$/venv38" />
+      <excludeFolder url="file://$MODULE_DIR$/venv310" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.10 (venv)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="ekglib" level="project" />
-    <orderEntry type="library" name="Python 3.6 interpreter library" level="application" />
+    <orderEntry type="library" name="Python 3.10 (ekglib) interpreter library" level="application" />
   </component>
   <component name="PackageRequirementsSettings">
     <option name="requirementsPath" value="$MODULE_DIR$/requirements.txt" />

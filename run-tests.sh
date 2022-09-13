@@ -72,19 +72,19 @@ function checkEnvironment() {
     # See https://gist.github.com/rubencaro/888fb8e4f0811e79fa22b5ac39610c9e#setup-a-new-project
     #
     asdf exec python3 -m venv --upgrade --upgrade-deps "${VIRTUAL_ENV}"
-    source env/bin/activate
+    source "${VIRTUAL_ENV}/bin/activate"
   else
     echo "ERROR: Please install asdf"
     return 1
   fi
 
-  if ! command -v ~/.asdf/shims/python3 >/dev/null 2>&1 ; then
-    echo "ERROR: You don't have ~/.asdf/shims/python3"
+  if ! command -v "${VIRTUAL_ENV}/bin/python3" >/dev/null 2>&1 ; then
+    echo "ERROR: You don't have ${VIRTUAL_ENV}/bin/python3"
     return 1
   fi
 
-  if [[ "$(~/.asdf/shims/python3 -V)" != "Python ${python_version}" ]] ; then
-    echo "ERROR: Python version is not ${python_version}: $(~/.asdf/shims/python3 -V)"
+  if ! command -v "${VIRTUAL_ENV}/bin/pip3" >/dev/null 2>&1 ; then
+    echo "ERROR: You don't have ${VIRTUAL_ENV}/bin/pip3"
     return 1
   fi
 
@@ -92,6 +92,16 @@ function checkEnvironment() {
   "${VIRTUAL_ENV}/bin/pip3" install flake8 pytest pytest-cov
   "${VIRTUAL_ENV}/bin/pip3" install -r requirements.txt --no-cache-dir
   "${VIRTUAL_ENV}/bin/pip3" wheel -r requirements.txt
+
+  if ! command -v "${VIRTUAL_ENV}/bin/flake8" >/dev/null 2>&1 ; then
+    echo "ERROR: You don't have ${VIRTUAL_ENV}/bin/flake8"
+    return 1
+  fi
+
+  if ! command -v "${VIRTUAL_ENV}/bin/pytest" >/dev/null 2>&1 ; then
+    echo "ERROR: You don't have ${VIRTUAL_ENV}/bin/pytest"
+    return 1
+  fi
 
   # shellcheck disable=SC2035
   rm -f *.whl >/dev/null 2>&1
@@ -104,9 +114,9 @@ function runLint() {
   echo "========================== lint"
 
   # stop the build if there are Python syntax errors or undefined names
-  "${VIRTUAL_ENV}/bin/python3" -m flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics || return $?
+  "${VIRTUAL_ENV}/bin/flake8" . --count --select=E9,F63,F7,F82 --show-source --statistics || return $?
   # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-  "${VIRTUAL_ENV}/bin/python3" -m flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics || return $?
+  "${VIRTUAL_ENV}/bin/flake8" . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics || return $?
 
   echo "Lint was ok"
   return 0
@@ -143,7 +153,7 @@ function runTests() {
   echo "========================== tests"
 
   # shellcheck disable=SC2086
-  "${VIRTUAL_ENV}/bin/python3" -m pytest tests/ -rA \
+  "${VIRTUAL_ENV}/bin/pytest" tests/ -rA \
     --doctest-modules \
     --junitxml=junit/test-results.xml \
     --cov-report=html \

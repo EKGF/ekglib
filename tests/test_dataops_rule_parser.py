@@ -7,7 +7,7 @@ import ekglib
 class TestDataopsRuleParser:
 
     def test_dataops_rule_parser(self, kgiri_base, test_data_dir):
-        output = 'test-dataops-rule.ttl.txt'
+        output = 'output/test-dataops-rule.ttl.txt'
         sys.argv = [
             'pytest',
             '--input', f'{test_data_dir}/dataops/generic/00001-check-dataset-not-empty/rule.ttl',
@@ -20,7 +20,7 @@ class TestDataopsRuleParser:
         ekglib.dataops_rule_parser.parse.main()
         with open(output) as f:
             actual = textwrap.dedent(f.read())
-        os.remove(output)
+        # os.remove(output)
         expected = textwrap.dedent(f'''\
 @base <{kgiri_base}/id/> .
 @prefix : <https://ekgf.org/ontology/dataops-rule/> .

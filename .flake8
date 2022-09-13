@@ -1,2 +1,2 @@
 [flake8]
-exclude = .git,__pycache__,env,junit,docs/source/conf.py,old,build,dist
+exclude = .git,__pycache__,.venv,junit,docs/source/conf.py,old,build,dist

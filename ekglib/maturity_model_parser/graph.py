@@ -1,9 +1,9 @@
 import textwrap
 from pathlib import Path
-from typing import Optional, Iterable
+from typing import Optional, Iterable, Any
 
 import rdflib
-from rdflib import Graph, RDF, OWL, URIRef, RDFS, DCTERMS
+from rdflib import Graph, RDF, OWL, URIRef, RDFS, DCTERMS, SKOS
 from rdflib.term import Node, Literal
 
 from ekglib import log_item
@@ -44,8 +44,7 @@ class MaturityModelGraph:
         self.lang = lang
 
     def __name_with_lang_for(self, subject_uri, lang: Optional[str], hint: str):
-        assert(isinstance(self.g, rdflib.Graph), "graph is not an instance of rdflib.Graph")
-        for uri, value in self.g.preferredLabel(subject_uri, lang=lang):
+        for uri, value in self.preferred_label(subject_uri, lang=lang):
             if isinstance(value, rdflib.term.Literal):
                 log_item(f"{hint} Name", value.toPython())
                 return value.toPython()
@@ -53,6 +52,49 @@ class MaturityModelGraph:
             log_item("Unknown Value Type", type(value))
             return value.toPython()
         return None
+
+    def preferred_label(
+            self,
+            subject,
+            lang=None,
+            default=None,
+            label_properties=(SKOS.prefLabel, RDFS.label),
+    ):
+        """
+        Find the preferred label for subject.
+
+        This method has been copied (and modified) from rdflib 6.1.1 where
+        it was called "preferredLabel()".
+        Tt was deprecated in later versions of rdflib.
+
+        By default, prefers skos:prefLabels over rdfs:labels. In case at least
+        one prefLabel is found returns those, else returns labels. In case a
+        language string (e.g., "en", "de" or even "" for no lang-tagged
+        literals) is given, only such labels will be considered.
+
+        Return a list of (labelProp, label) pairs, where labelProp is either
+        skos:prefLabel or rdfs:label.
+        """
+
+        if default is None:
+            default = []
+
+        # set up the language filtering
+        if lang is not None:
+            if lang == "":  # we only want not language-tagged literals
+                lang_filter = lambda l_: l_.language is None # noqa
+            else:
+                lang_filter = lambda l_: l_.language == lang # noqa
+        else:  # we don't care about language tags
+            lang_filter = lambda l_: True # noqa
+
+        for labelProp in label_properties:
+            labels = list(filter(lang_filter, self.g.objects(subject=subject, predicate=labelProp)))
+            if len(labels) == 0:
+                continue
+            else:
+                return [(labelProp, l_) for l_ in labels]
+        return default
 
     def name_for(self, subject_uri, hint: str) -> str:
         name = self.__name_with_lang_for(subject_uri, self.lang, hint)  # first ask language specific label

@@ -3,6 +3,7 @@
 # run the python tests
 #
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+VIRTUAL_ENV="${SCRIPT_DIR}/.venv"
 
 python_version=3.10.7
 
@@ -70,7 +71,7 @@ function checkEnvironment() {
     #
     # See https://gist.github.com/rubencaro/888fb8e4f0811e79fa22b5ac39610c9e#setup-a-new-project
     #
-    asdf exec python3 -m venv env
+    asdf exec python3 -m venv --upgrade --upgrade-deps "${VIRTUAL_ENV}"
     source env/bin/activate
   else
     echo "ERROR: Please install asdf"
@@ -87,10 +88,10 @@ function checkEnvironment() {
     return 1
   fi
 
-  ~/.asdf/shims/python3 -m pip install --upgrade pip wheel setuptools
-  ~/.asdf/shims/python3 -m pip install flake8 pytest pytest-cov
-  ~/.asdf/shims/python3 -m pip install -r requirements.txt --no-cache-dir
-  ~/.asdf/shims/python3 -m pip wheel -r requirements.txt
+  "${VIRTUAL_ENV}/bin/pip3" install --upgrade pip wheel setuptools
+  "${VIRTUAL_ENV}/bin/pip3" install flake8 pytest pytest-cov
+  "${VIRTUAL_ENV}/bin/pip3" install -r requirements.txt --no-cache-dir
+  "${VIRTUAL_ENV}/bin/pip3" wheel -r requirements.txt
 
   # shellcheck disable=SC2035
   rm -f *.whl >/dev/null 2>&1
@@ -103,9 +104,9 @@ function runLint() {
   echo "========================== lint"
 
   # stop the build if there are Python syntax errors or undefined names
-   ~/.asdf/shims/python3 -m flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics || return $?
+  "${VIRTUAL_ENV}/bin/python3" -m flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics || return $?
   # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-   ~/.asdf/shims/python3 -m flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics || return $?
+  "${VIRTUAL_ENV}/bin/python3" -m flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics || return $?
 
   echo "Lint was ok"
   return 0
@@ -142,7 +143,7 @@ function runTests() {
   echo "========================== tests"
 
   # shellcheck disable=SC2086
-   ~/.asdf/shims/python3 -m pytest tests/ -rA \
+  "${VIRTUAL_ENV}/bin/python3" -m pytest tests/ -rA \
     --doctest-modules \
     --junitxml=junit/test-results.xml \
     --cov-report=html \

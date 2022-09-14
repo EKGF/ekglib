@@ -156,10 +156,10 @@ class MaturityModelGraph:
         return self.has_type(subject_iri, MATURIY_MODEL.Capability)
 
     def subjects_of_type(self, type_uri: URIRef) -> Iterable[Node]:
-        return self.g.subjects(RDF.type, type_uri)
+        return self.g.subjects(predicate=RDF.type, object=type_uri)
 
     def models(self):
-        return self.subjects_of_type(MATURIY_MODEL.Model)
+        return self.subjects_of_type(type_uri=MATURIY_MODEL.Model)
 
     def model_with_name(self, model_name: str):
         for model in self.models():
@@ -185,7 +185,7 @@ class MaturityModelGraph:
 
     def capability_areas_of_pillar(self, pillar_node: Node) -> Iterable[Node]:
         found = 0
-        for in_pillar_thing in self.g.subjects(MATURIY_MODEL.inPillar, pillar_node):
+        for in_pillar_thing in self.g.subjects(predicate=MATURIY_MODEL.inPillar, object=pillar_node):
             if self.has_type_capability_area(in_pillar_thing):
                 found += 1
                 yield in_pillar_thing

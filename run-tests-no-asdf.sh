@@ -1,41 +1,39 @@
 #!/usr/bin/env bash
-
 # This scriptlet creates a Python 3.10.7 virtual environment under the project folder (not to be checked in)
 # and then once it is available it enters it and executes all the tests in the tests folder
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+VIRTUAL_ENV="${SCRIPT_DIR}/.venv"
 
-if [[ ! $(which python3) ]] ; then
-  echo "Python 3 not installed, please install Python 3.10.7, e.g. by running %brew install python@3.10"
-  exit 1
-fi
-if ! python3 --version 2>/dev/null | grep -q "Python 3.10.7" ; then
-  echo "ERROR: Please install Python 3.10.7" >&2
-  exit 1
-fi
-
-if [ -d ./venv310 ] ; then
-  source venv310/bin/activate || exit $?
-  echo "Inside Python 3.10 Virtual Environment"
+if [ -d "${VIRTUAL_ENV}" ] ; then
+  # shellcheck source=.venv/bin/activate
+  source "${VIRTUAL_ENV}/bin/activate" || exit $?
+  echo "Inside Python 3.10 Virtual Environment" >&2
 else
   echo "WARNING: No Virtual Environment was found. Will create one NOW!" >&2
-  python3 -m venv venv310 || exit $?
-  source venv310/bin/activate || exit $?
-  python3 -m pip install --upgrade pip wheel setuptools \
-    && python3 -m pip install flake8 pytest pytest-cov \
-    && python3 -m pip install -r requirements.txt --no-cache-dir \
-    && python3 -m pip wheel -r requirements.txt \
+  if [[ ! $(which python3) ]] ; then
+    echo "Python 3 not installed, please install a recent version of python e.g. by running %brew install python@3.10" >&2
+    exit 1
+  fi
+  python3 -m venv "${VIRTUAL_ENV}" || exit $?
+  # shellcheck source=.venv/bin/activate
+  source "${VIRTUAL_ENV}/bin/activate" || exit $?
+  "${VIRTUAL_ENV}/bin/pip3" install --upgrade pip wheel setuptools && \
+    "${VIRTUAL_ENV}/bin/pip3" install flake8 pytest pytest-cov && \
+    "${VIRTUAL_ENV}/bin/pip3" install -r requirements.txt --no-cache-dir && \
+    "${VIRTUAL_ENV}/bin/pip3" wheel -r requirements.txt \
     || exit $?
-  echo "Virtual Environment has been initialised successfully, will run the tests now"
+  echo "Virtual Environment has been initialised successfully, will run the tests now" >&2
 fi
 
-echo "========================== tests"
+echo "========================== tests" >&2
 # shellcheck disable=SC2086
-python3 -m pytest tests/ -rA \
+"${VIRTUAL_ENV}/bin/pytest" tests/ -rA \
   --doctest-modules \
   --junitxml=junit/test-results.xml \
   --cov-report=html \
   --maxfail=2 \
   --showlocals \
-  --tb=short ${opts}
+  --tb=short ${@}
 rc=$?
-echo "pytest ended with rc=${rc}"
+echo "pytest ended with rc=${rc}" >&2
 exit ${rc}

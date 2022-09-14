@@ -44,7 +44,7 @@ def main():
                              'fragments or copied to the output directory', required=True
                         )
     parser.add_argument('--output', help='The output directory', required=True)
-    parser.add_argument('--model', help='The name of the model', default="EKG/MM")
+    parser.add_argument('--model', help='The name of the model', default="EKG/Maturity")
 
     return run_with_args(parser.parse_args())
 

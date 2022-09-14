@@ -6,7 +6,7 @@ numpy==1.23.3
 data-science-types==0.2.23
 python-dateutil==2.8.2
 rdflib==6.2.0
-owlrl==6.0.2
+owlrl @ git+https://github.com/EKGF/OWL-RL.git
 requests==2.28.1
 six==1.16.0
 SPARQLWrapper==2.0.0

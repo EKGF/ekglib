@@ -20,7 +20,7 @@ class TestDataopsRuleParser:
         ekglib.dataops_rule_parser.parse.main()
         with open(output) as f:
             actual = textwrap.dedent(f.read())
-        # os.remove(output)
+        os.remove(output)
         expected = textwrap.dedent(f'''\
 @base <{kgiri_base}/id/> .
 @prefix : <https://ekgf.org/ontology/dataops-rule/> .

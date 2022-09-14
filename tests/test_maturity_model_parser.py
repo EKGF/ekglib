@@ -1,6 +1,6 @@
 import sys
-from pathlib import Path
 
+from pathlib import Path
 from rdflib import URIRef, Graph, RDFS
 from rdflib.term import Literal
 
@@ -10,8 +10,6 @@ from ekglib.maturity_model_parser import MaturityModelLoader, Config, BASE_IRI_M
 from ekglib.maturity_model_parser.File import makedirs
 from ekglib.maturity_model_parser.graph import get_text_in_language
 from ekglib.maturity_model_parser.pages_yaml import PagesYaml
-
-from ekglib.namespace import MATURIY_MODEL
 
 
 class TestMaturityModelParser:
@@ -60,7 +58,7 @@ class TestMaturityModelParser:
         docs_root = Path(f"{test_data_dir}/maturity-model/docs")
         fragments_root = Path(f"{test_data_dir}/maturity-model/docs-fragments")
         config = Config(
-            model_name="Test EKG/MM",
+            model_name="Test EKG/Maturity",
             verbose=False,
             mkdocs=False,
             model_root=Path(f"{test_data_dir}/maturity-model"),
@@ -77,7 +75,7 @@ class TestMaturityModelParser:
         pillars = list(graph.pillars(model))
         assert len(pillars) == 4
         business_pillar = graph.get_pillar_with_name(model, "Business Pillar")
-        assert business_pillar == MATURIY_MODEL.BusinessPillar
+        assert business_pillar == URIRef("business-pillar", BASE_IRI_MATURITY_MODEL)
         areas = list(graph.capability_areas_of_pillar(business_pillar))
         assert len(areas) == 1
         area_strategy_actuation = areas[0]
@@ -89,7 +87,7 @@ class TestMaturityModelParser:
         docs_root = output_root / 'docs'
         makedirs(docs_root, "Test 002 Output")
         config = Config(
-            model_name="EKG/MM",
+            model_name="EKG/Maturity",
             verbose=False,
             mkdocs=False,
             model_root=Path(test_ekgmm_repo_dir),
@@ -101,7 +99,7 @@ class TestMaturityModelParser:
         graph = loader.load()
         models = list(graph.models())
         assert len(models) == 1
-        model = graph.model_with_name("EKG/MM")
+        model = graph.model_with_name("EKG/Maturity")
         pillars = list(graph.pillars(model))
         assert len(pillars) == 4
         business_pillar = graph.get_pillar_with_name(model, "Business Pillar")
@@ -119,7 +117,7 @@ class TestMaturityModelParser:
             '--docs-root', f"{test_data_dir}/maturity-model/docs",
             '--fragments-root', f"{test_data_dir}/maturity-model",
             '--output', f"{test_output_dir}/ekgmm_test_003",
-            '--model', "Test EKG/MM",
+            '--model', "EKG/Maturity",
             '--verbose'
         ]
         assert 0 == ekglib.maturity_model_parser.main()

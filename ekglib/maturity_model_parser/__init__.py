@@ -13,6 +13,7 @@ from .config import Config  # noqa: F401
 from .__main__ import main, run_with_config, run_with_args  # noqa: F401
 
 __all__ = [
+    'BASE_IRI_MATURITY_MODEL',
     'Config',
     'MaturityModelLoader',
     'MaturityModelMarkdownGenerator',

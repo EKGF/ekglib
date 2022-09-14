@@ -45,8 +45,8 @@ Data Source:
                         The code of the dataset (can also be set with env var
                         EKG_DATA_SOURCE_CODE) (default: None)
   --git-branch GIT_BRANCH, --branch GIT_BRANCH
-                        The git branch name we're working on, default master
-                        (default: master)
+                        The git branch name we're working on, default main
+                        (default: main)
 
 KGIRI:
   --kgiri-base KGIRI_BASE

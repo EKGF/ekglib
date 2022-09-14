@@ -1,12 +1,12 @@
 name: Publish Docs
 
 # Controls when the action will run. Triggers the workflow on push or pull request
-# events but only for the master branch
+# events but only for the main branch
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -40,7 +40,7 @@ jobs:
           echo X
           git rev-parse --short HEAD > /tmp/commit-hash.txt
           cat /tmp/commit-hash.txt
-          git checkout --orphan gh-pages master 1>/dev/null
+          git checkout --orphan gh-pages main 1>/dev/null
         shell: bash
 
       - name: Converting AsciiDoc files to HTML

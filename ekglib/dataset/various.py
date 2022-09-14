@@ -18,7 +18,7 @@ from ..sparql import SPARQLEndpoint, iter_raw
 
 def set_cli_params(parser):
     ekg_dataset_code = os.getenv('EKG_DATASET_CODE', None)
-    # git_branch = os.getenv('GIT_BRANCH', os.getenv('BRANCH_NAME', 'master'))
+    # git_branch = os.getenv('GIT_BRANCH', os.getenv('BRANCH_NAME', 'main'))
     group = parser.add_argument_group('Dataset')
     if ekg_dataset_code:
         group.add_argument(

@@ -1,7 +1,5 @@
 from os.path import relpath
 
-from option import Some
-from pathlib import Path
 from rdflib.term import Node
 from typing import Generator, Any
 

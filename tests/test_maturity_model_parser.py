@@ -1,5 +1,6 @@
 import sys
 
+import option
 from pathlib import Path
 from rdflib import URIRef, Graph, RDFS
 from rdflib.term import Literal
@@ -59,13 +60,14 @@ class TestMaturityModelParser:
         docs_root = Path(f"{test_data_dir}/maturity-model/docs")
         fragments_root = Path(f"{test_data_dir}/maturity-model/docs-fragments")
         config = Config(
-            model_name="Test EKG/Maturity",
+            model_name="EKG/Maturity",
             verbose=False,
             mkdocs=False,
             model_root=Path(f"{test_data_dir}/maturity-model"),
             docs_root=docs_root,
             fragments_root=fragments_root,
-            output_root=Path(f"{test_output_dir}/ekgmm_test_001")
+            output_root=Path(f"{test_output_dir}/ekgmm_test_001"),
+            pillar_dir_name=option.NONE
         )
         loader = MaturityModelLoader(config=config)
         graph = loader.load()
@@ -97,7 +99,8 @@ class TestMaturityModelParser:
             model_root=Path(test_ekgmm_repo_dir),
             docs_root=docs_root,
             fragments_root=Path(test_ekgmm_repo_dir) / 'docs-fragments',
-            output_root=output_root
+            output_root=output_root,
+            pillar_dir_name=option.NONE
         )
         loader = MaturityModelLoader(config=config)
         graph = loader.load()

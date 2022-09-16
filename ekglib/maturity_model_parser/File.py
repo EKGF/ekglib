@@ -37,6 +37,7 @@ class File(object):
             return open(self.path, mode, encoding='UTF-8')
 
     def rewrite_all_file(self, data):
+        makedirs(self.path.parent, "Generated")
         with self.open(mode='w') as self.file:
             self.file.write(data)
 

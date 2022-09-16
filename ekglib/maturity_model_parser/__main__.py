@@ -1,4 +1,5 @@
 import argparse
+import option
 from pathlib import Path
 
 from ekglib.maturity_model_parser.config import Config
@@ -17,6 +18,12 @@ def run_with_config(config: Config) -> int:
 
 
 def run_with_args(args) -> int:
+
+    if args.pillar_dir_name is None:
+        pillar_dir_name = option.NONE
+    else:
+        pillar_dir_name = option.Some(args.pillar_dir_name)
+
     config = Config(
         model_name=args.model,
         verbose=args.verbose,
@@ -24,7 +31,8 @@ def run_with_args(args) -> int:
         model_root=Path(args.model_root),
         docs_root=Path(args.docs_root),
         fragments_root=Path(args.fragments_root),
-        output_root=Path(args.output)
+        output_root=Path(args.output),
+        pillar_dir_name=pillar_dir_name
     )
     return run_with_config(config)
 
@@ -42,6 +50,10 @@ def main():
     parser.add_argument('--fragments-root',
                         help='The input directory with the static .md files that are included as '
                              'fragments or copied to the output directory', required=True
+                        )
+    parser.add_argument('--pillar-dir-name',
+                        help='The name of the top level directory under "./docs" where we '
+                             'generate content', required=False
                         )
     parser.add_argument('--output', help='The output directory', required=True)
     parser.add_argument('--model', help='The name of the model', default="EKG/Maturity")

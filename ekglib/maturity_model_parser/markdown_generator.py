@@ -8,7 +8,7 @@ from .config import Config
 from .graph import MaturityModelGraph
 from .model import MaturityModel
 from .pillar import MaturityModelPillar
-from ..namespace import MATURIY_MODEL
+from ..namespace import MATURITY_MODEL
 from .markdown_document import MarkdownDocument, MarkDownFile
 
 OWL._fail = False  # workaround for this issue: https://github.com/RDFLib/OWL-RL/issues/53
@@ -29,10 +29,10 @@ class MaturityModelMarkdownGenerator:
         self.graph = graph
         self.config = config
 
-        self.model = MaturityModel(graph=self.graph, config=config)
+        self.model = graph.model_with_name(config.model_name)
 
         self.local_type_name = self.graph.local_type_name_for_type(
-            MATURIY_MODEL.Pillar, MaturityModelPillar.class_label
+            MATURITY_MODEL.Pillar, MaturityModelPillar.class_label
         )
         self.full_dir = self.config.output_root / self.local_type_name
         makedirs(self.full_dir, MaturityModel.class_label)

@@ -1,22 +1,21 @@
-import textwrap
-from pathlib import Path
+from os.path import relpath
 
-from rdflib import DCTERMS, RDFS
+from pathlib import Path
 from rdflib.term import Node
 
-from .File import makedirs, File
+from .File import makedirs
 from .config import Config
 from .markdown_document import MarkdownDocument
 from .pages_yaml import PagesYaml
 from .pillar import MaturityModelPillar
-from ..log.various import value_error, log_item
-from ..namespace import MATURIY_MODEL
+from ..log.various import log_item
+from ..namespace import MATURITY_MODEL
 
 
 class MaturityModelCapabilityArea:
     class_label: str = "Capability Area"
     class_label_plural: str = "Capability Areas"
-    class_iri = MATURIY_MODEL.CapabilityArea
+    class_iri = MATURITY_MODEL.CapabilityArea
 
     def __init__(
             self,
@@ -35,14 +34,14 @@ class MaturityModelCapabilityArea:
         self.name = self.graph.name_for(self.node, self.class_label)
         self.local_name = self.graph.local_name_for(self.node, self.class_label)
         self.local_type_name = self.graph.local_type_name_for(self.node, self.class_label)
-        self.tag_line = self.graph.tag_line_for(self.node)
+        self.description = self.graph.description_for(self.node, 'area')
+        log_item("Area Description", self.description)
         self.full_dir = self.pillar.full_dir / self.local_type_name / self.local_name
         self.full_path = self.full_dir / 'index.md'
         self.fragments_dir = pillar_fragments_dir / self.local_type_name / self.local_name
         makedirs(self.full_dir, self.class_label)
 
     def generate_markdown(self):
-        from .capability import MaturityModelCapability
         self.generate_link_from_pillar_to_capability_area()
         self.md_file = MarkdownDocument(path=self.full_path, metadata={
             'title': self.name
@@ -71,11 +70,11 @@ class MaturityModelCapabilityArea:
         ))
 
     def capabiliy_nodes_unsorted(self):
-        for capability_node in self.graph.g.subjects(MATURIY_MODEL.inArea, self.node):
+        for capability_node in self.graph.g.subjects(MATURITY_MODEL.inArea, self.node):
             yield capability_node
 
     def sort_key(self, element):
-        for sort_key in self.graph.g.objects(element, MATURIY_MODEL.sortKey):
+        for sort_key in self.graph.g.objects(element, MATURITY_MODEL.sortKey):
             log_item("Sort key of", f"{sort_key} -> {element}")
             return str(sort_key)
         sort_key = str(element)

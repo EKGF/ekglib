@@ -29,8 +29,17 @@ def test_ekgmm_repo_dir():
     pytest.skip(f"../../ekg-maturity directory does not exist")
     return ''
 
+
 @pytest.fixture
 def test_ekgmm_docs_root():
+    if os.path.isdir('../../ekg-maturity/docs'):
+        return '../../ekg-maturity/docs'
+    pytest.skip(f"../../ekg-maturity/docs directory does not exist")
+    return ''
+
+
+@pytest.fixture
+def test_ekgmm_output_dir():
     if os.path.isdir('../../ekg-maturity/docs'):
         return '../../ekg-maturity/docs'
     pytest.skip(f"../../ekg-maturity/docs directory does not exist")

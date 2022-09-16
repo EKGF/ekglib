@@ -1,43 +1,81 @@
-import textwrap
+from os.path import relpath
+
+from option import Some
 from pathlib import Path
-from typing import Optional
-
-from mdutils import MdUtils
 from rdflib.term import Node
+from typing import Generator, Any
 
+from .File import makedirs
 from .config import Config
+from .graph import MaturityModelGraph
 from .markdown_document import MarkdownDocument
 from .pages_yaml import PagesYaml
+from .pillar import MaturityModelPillar, pillars_root
 from .. import log_item
-from ..namespace import MATURIY_MODEL
-from .graph import MaturityModelGraph
-from .File import makedirs, File
-from .pillar import MaturityModelPillar
+from ..log.various import value_error
+from ..namespace import MATURITY_MODEL
 
 
 class MaturityModel:
     class_label: str = "Model"
     class_label_plural: str = "Models"
 
-    def __init__(self, graph: MaturityModelGraph, config: Config):
+    def __init__(self, graph: MaturityModelGraph, model_node: Node, config: Config):
         self.md_file = None
         self.graph = graph
-        self.model_node = graph.model_with_name(config.model_name)
+        self.model_node = model_node
+        # self.model_node = graph.model_with_name(config.model_name)
         self.config = config
 
         self.name = self.graph.name_for(self.model_node, self.class_label)
         self.local_name = self.graph.local_name_for(self.model_node, self.class_label)
         self.local_type_name = self.graph.local_type_name_for(self.model_node, self.class_label)
         self.full_dir = self.config.output_root / self.local_type_name
-        self.pillar_type_name = self.graph.local_type_name_for_type(MATURIY_MODEL.Pillar, MaturityModelPillar.class_label)
-        self.pillars_root = self.config.output_root / self.pillar_type_name
+        self.pillars_root = pillars_root(graph=graph, config=config)
         makedirs(self.full_dir, self.class_label)
-        self.pillars = list(map(lambda pillar_node: MaturityModelPillar(
-            graph=self.graph,
-            model_node=self.model_node,
-            pillar_node=pillar_node,
-            config=self.config
-        ), self.graph.pillars(self.model_node)))
+        self._pillars = list()
+
+    def sort_key(self, element):
+        for sort_key in self.graph.g.objects(subject=element, predicate=MATURITY_MODEL.sortKey):
+            log_item("Sort key of", f"{sort_key} -> {element}")
+            return str(sort_key)
+        sort_key = str(element)
+        log_item("No sort key for", element)
+        return sort_key
+
+    def pillar_nodes_unsorted(self):
+        found = 0
+        for pillar in self.graph.g.subjects(predicate=MATURITY_MODEL.pillarInModel, object=self.model_node):
+            log_item("Pillar", pillar)
+            found += 1
+            yield pillar
+        if found == 0:
+            raise value_error(f"Model has no pillars: <{self.model_node}>")
+
+    def pillar_nodes(self):
+        nodes = list(self.pillar_nodes_unsorted())
+        nodes.sort(key=self.sort_key)
+        return nodes
+
+    def pillars_non_cached(self) -> Generator[MaturityModelPillar, Any, None]:
+        from .pillar import MaturityModelPillar
+        for pillar_node in self.pillar_nodes():
+            yield MaturityModelPillar(
+                graph=self.graph,
+                model_node=self.model_node,
+                pillar_node=pillar_node,
+                config=self.config
+            )
+
+    def pillars(self):
+        if len(self._pillars) == 0:
+            self._pillars = list(self.pillars_non_cached())
+        return self._pillars
+
+    def get_pillars_with_name(self, name: str) -> Generator[MaturityModelPillar, Any, None]:
+        for pillar in self.pillars():
+            if pillar.name == name:
+                yield pillar
 
     def generate(self):
         self.generate_pillars_pages_yaml()
@@ -54,15 +92,46 @@ class MaturityModel:
     def generate_pillars_index(self):
         index_md = self.pillars_root / 'index.md'
         self.md_file = MarkdownDocument(path=index_md, metadata={
-            'title': 'Pillars'
+            'title': 'Pillars',
+            'hide': [
+                'navigation',
+                'toc'
+            ]
         })
-        for pillar in self.pillars:
-            self.md_file.new_line(f"- [{pillar.name}]({Path(pillar.local_name) / 'index.md'})")
+        card_indent_1 = "    "
+        card_indent_2 = "         "
+        icon = ":orange_book:"
+        arrow = ":octicons-arrow-right-24:"
+        icon_style = "{ .lg .middle }"
+        for pillar in self.pillars():
+            self.md_file.new_line(f'\n=== "{pillar.name}"\n')
+            self.md_file.indent = card_indent_1
+            self.md_file.new_line('<div class="grid cards annotate" markdown>')
+            for index, area in enumerate(pillar.capability_areas()):
+                index2 = index + 1
+                path = relpath(area.full_dir, self.pillars_root)
+                self.md_file.indent = card_indent_1
+                self.md_file.new_line('')
+                self.md_file.new_line(f"- {icon}{icon_style} __[{area.name}]({path}/index.md)__({index2})", wrap_width=0)
+                self.md_file.indent = card_indent_2
+                self.md_file.new_line('')
+                self.md_file.new_line('------')
+                if area.description is None:
+                    self.md_file.new_line("We welcome your content here", wrap_width=0)
+                else:
+                    self.md_file.new_line(area.description, wrap_width=0)
+                self.md_file.new_line('')
+                self.md_file.new_line(f"[{arrow}{icon_style} Learn more]({path}/index.md)\n", wrap_width=0)
+            self.md_file.indent = card_indent_1
+            self.md_file.new_line('</div>\n')
+            for index, area in enumerate(pillar.capability_areas()):
+                index2 = index + 1
+                self.md_file.new_line(f"{index2}.  This is the Capability Area {area.name} in the {pillar.name}")
 
         self.md_file.create_md_file()
 
     def generate_pillars(self):
-        for pillar in self.pillars:
+        for pillar in self.pillars():
             pillar.generate()
 
     def generate_capabilities_overview_table(self):
@@ -88,7 +157,7 @@ class MaturityModel:
             "</tr>\n</thead>\n<tbody>\n",
             wrap_width=0
         )
-        for pillar_index, pillar in enumerate(self.pillars):
+        for pillar_index, pillar in enumerate(self.pillars()):
             pillar_url = f'/pillar/{pillar.local_name}'
             overview_md.write(
                 '<tr>\n'

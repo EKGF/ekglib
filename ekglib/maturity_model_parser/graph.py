@@ -1,15 +1,16 @@
 import textwrap
 from pathlib import Path
-from typing import Optional, Iterable, Any
+from typing import Optional, Iterable, Any, Generator
 
 import rdflib
 from rdflib import Graph, RDF, OWL, URIRef, RDFS, DCTERMS, SKOS
 from rdflib.term import Node, Literal
+from .config import Config
 
 from ekglib import log_item
 from ekglib.log.various import value_error, warning
 from ekglib.maturity_model_parser.markdown_document import MarkdownDocument
-from ekglib.namespace import MATURIY_MODEL
+from ekglib.namespace import MATURITY_MODEL
 
 
 def get_text_in_language(
@@ -38,10 +39,12 @@ def get_text_in_language(
 class MaturityModelGraph:
     g: rdflib.Graph
 
-    def __init__(self, g: Graph, verbose: bool, lang: str):
+    def __init__(self, g: Graph, config: Config, verbose: bool, lang: str):
         self.g = g
+        self.config = config
         self.verbose = verbose
         self.lang = lang
+        self._models = list()
 
     def __name_with_lang_for(self, subject_uri, lang: Optional[str], hint: str):
         for uri, value in self.preferred_label(subject_uri, lang=lang):
@@ -108,14 +111,17 @@ class MaturityModelGraph:
     def tag_line_for(self, node: Node):
         return get_text_in_language(self.g, self.lang, node, RDFS.comment)
 
+    def description_for(self, node: Node, _hint: str):
+        return get_text_in_language(self.g, self.lang, node, DCTERMS.description)
+
     def capability_number_for(self, capability_node, hint: str):
-        for number in self.g.objects(capability_node, MATURIY_MODEL.capabilityNumber):
+        for number in self.g.objects(capability_node, MATURITY_MODEL.capabilityNumber):
             log_item(f"{hint} Number", number)
             return str(number)
         raise value_error(f"{hint} has no capabilityNumber: {capability_node}")
 
     def local_name_for(self, subject_node: Node, hint: str) -> str:
-        for local_name in self.g.objects(subject_node, MATURIY_MODEL.iriLocalName):
+        for local_name in self.g.objects(subject_node, MATURITY_MODEL.iriLocalName):
             log_item(f"{hint} Local Name", local_name)
             return str(local_name)
         raise value_error(f"{hint} has no iriLocalName: {subject_node}")
@@ -125,7 +131,7 @@ class MaturityModelGraph:
         return self.local_type_name_for_type(type_node, hint)
 
     def local_type_name_for_type(self, type_node: Node, hint: str) -> str:
-        for local_type_name in self.g.objects(type_node, MATURIY_MODEL.iriLocalTypeName):
+        for local_type_name in self.g.objects(type_node, MATURITY_MODEL.iriLocalTypeName):
             # log_item(f"{hint} Local Type Name", local_type_name)
             return str(local_type_name)
         raise value_error(f"{hint} has no iriLocalTypeName: {type_node}")
@@ -140,52 +146,50 @@ class MaturityModelGraph:
         return (subject_uri, RDF.type, type_uri) in self.g
 
     def has_type_pillar(self, subject_iri):
-        return self.has_type(subject_iri, MATURIY_MODEL.Pillar)
+        return self.has_type(subject_iri, MATURITY_MODEL.Pillar)
 
     def has_type_level(self, subject_iri):
-        return self.has_type(subject_iri, MATURIY_MODEL.Level)
+        return self.has_type(subject_iri, MATURITY_MODEL.Level)
 
     def has_type_capability_area(self, subject_iri):
         if self.verbose:
             log_item("Type of", f"{subject_iri} == {self.get_type(subject_iri)}")
-        return self.has_type(subject_iri, MATURIY_MODEL.CapabilityArea)
+        return self.has_type(subject_iri, MATURITY_MODEL.CapabilityArea)
 
     def has_type_capability(self, subject_iri):
         if self.verbose:
             log_item("Type of", f"{subject_iri} == {self.get_type(subject_iri)}")
-        return self.has_type(subject_iri, MATURIY_MODEL.Capability)
+        return self.has_type(subject_iri, MATURITY_MODEL.Capability)
 
     def subjects_of_type(self, type_uri: URIRef) -> Iterable[Node]:
         return self.g.subjects(predicate=RDF.type, object=type_uri)
 
+    def model_nodes(self) -> Iterable[Node]:
+        return self.subjects_of_type(type_uri=MATURITY_MODEL.Model)
+
+    def models_non_cached(self):  # -> Generator[model.MaturityModel, Any, None]:
+        from .model import MaturityModel
+        for model_node in self.model_nodes():
+            yield MaturityModel(
+                graph=self,
+                model_node=model_node,
+                config=self.config
+            )
+
     def models(self):
-        return self.subjects_of_type(type_uri=MATURIY_MODEL.Model)
+        if len(self._models) == 0:
+            self._models = list(self.models_non_cached())
+        return self._models
 
     def model_with_name(self, model_name: str):
         for model in self.models():
-            name = self.name_for(model, "Model")
-            if name == model_name:
+            if model.name == model_name:
                 return model
         raise value_error(f"Model with name {model_name} does not exist")
 
-    def pillars(self, model_node: Node):
-        found = 0
-        for pillar in self.g.subjects(predicate=MATURIY_MODEL.pillarInModel, object=model_node):
-            log_item("Pillar", pillar)
-            found += 1
-            yield pillar
-        if found == 0:
-            raise value_error(f"Model has no pillars: <{model_node}>")
-
-    def get_pillar_with_name(self, model_node: Node, name: str) -> Node:
-        for pillar in self.pillars(model_node):
-            pillar_name = self.name_for(pillar, "Pillar")
-            if pillar_name == name:
-                return pillar
-
     def capability_areas_of_pillar(self, pillar_node: Node) -> Iterable[Node]:
         found = 0
-        for in_pillar_thing in self.g.subjects(predicate=MATURIY_MODEL.inPillar, object=pillar_node):
+        for in_pillar_thing in self.g.subjects(predicate=MATURITY_MODEL.inPillar, object=pillar_node):
             if self.has_type_capability_area(in_pillar_thing):
                 found += 1
                 yield in_pillar_thing
@@ -194,7 +198,7 @@ class MaturityModelGraph:
 
     def capabilities_in_area(self, area_node: Node) -> Iterable[Node]:
         found = 0
-        for in_area_thing in self.g.subjects(MATURIY_MODEL.inArea, area_node):
+        for in_area_thing in self.g.subjects(MATURITY_MODEL.inArea, area_node):
             if self.has_type_capability(in_area_thing):
                 found += 1
                 yield in_area_thing
@@ -202,7 +206,7 @@ class MaturityModelGraph:
             warning(f"No capabilities found in area <{area_node}>")
 
     def fragment_background_and_intro(self, subject_node):
-        for fragment in self.g.objects(subject_node, MATURIY_MODEL.backgroundAndIntro):
+        for fragment in self.g.objects(subject_node, MATURITY_MODEL.backgroundAndIntro):
             yield fragment
 
     def rewrite_fragment_references(self, fragments_root: Path):
@@ -210,7 +214,7 @@ class MaturityModelGraph:
         For each reference to some text-fragment rewrite the path to that markdown file
         relative to the given input directory
         """
-        predicate = MATURIY_MODEL.backgroundAndIntro
+        predicate = MATURITY_MODEL.backgroundAndIntro
         for (subject, objekt) in self.g.subject_objects(predicate):
             log_item("Subject", subject)
             log_item("Fragments Root", fragments_root)
@@ -223,22 +227,19 @@ class MaturityModelGraph:
 
     def create_sort_keys(self):
         """ Generate sortKeys for anything with an ekgmm:capabilityNumber """
-        for subject, capability_number in self.g.subject_objects(MATURIY_MODEL.capabilityNumber):
+        for subject, capability_number in self.g.subject_objects(MATURITY_MODEL.capabilityNumber):
             capability_number_parts = str(capability_number).split('.')
             if len(capability_number_parts) != 3:
                 raise value_error(f"{subject} has an invalid number: {capability_number}")
             sort_key = f'{capability_number_parts[0]}.{capability_number_parts[1]:0>3}.{capability_number_parts[2]:0>3}'
-            self.g.add((subject, MATURIY_MODEL.sortKey, Literal(sort_key)))
+            self.g.add((subject, MATURITY_MODEL.sortKey, Literal(sort_key)))
 
     def write_tag_line(self, md: MarkdownDocument, node: Node, _hint: str):
         tag_line = self.tag_line_for(node)
         if tag_line:
             md.write(f'\n_{tag_line}_\n', wrap_width=0)
 
-    def description_of(self, node: Node, _hint: str):
-        return get_text_in_language(self.g, self.lang, node, DCTERMS.description)
-
     def write_description(self, md: MarkdownDocument, node: Node, hint: str):
-        dct_description = self.description_of(node, hint)
+        dct_description = self.description_for(node, hint)
         if dct_description:
             md.write(dct_description, wrap_width=0)

@@ -1,21 +1,18 @@
-import textwrap
 from pathlib import Path
-
-from rdflib import RDFS, DCTERMS
 from rdflib.term import Node
 
-from .File import makedirs, File, copy_fragment
+from .File import makedirs, copy_fragment
 from .config import Config
 from .markdown_document import MarkdownDocument
 from .pages_yaml import PagesYaml
-from ..namespace import MATURIY_MODEL
+from ..namespace import MATURITY_MODEL
 
 
 class MaturityModelCapability:
     from .capability_area import MaturityModelCapabilityArea
     class_label: str = "Capability"
     class_label_plural: str = "Capabilities"
-    class_iri = MATURIY_MODEL.Capability
+    class_iri = MATURITY_MODEL.Capability
 
     def __init__(
             self,

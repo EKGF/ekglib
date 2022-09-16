@@ -9,16 +9,10 @@ from rdflib import Graph
 from ekglib.log.various import value_error
 from ekglib.main.main import load_rdf_stream_into_graph
 from ekglib.maturity_model_parser.graph import MaturityModelGraph
-from . import BASE_IRI_MATURITY_MODEL
+from ..namespace import BASE_IRI_MATURITY_MODEL
 from .config import Config
 from ..log import error, log_item
 from ..main import load_rdf_file_into_graph
-
-# from rdflib.namespace import DefinedNamespaceMeta
-
-# OWL._fail = False  # workaround for this issue: https://github.com/RDFLib/OWL-RL/issues/53
-# DefinedNamespaceMeta._warn = False
-
 
 ontology_file_names = [
     'maturity-model.ttl'
@@ -32,6 +26,7 @@ def check_ontologies(ontologies_root: Path):
         if not (ontologies_root / ontology_file_name).exists():
             error(f"Could not find {ontology_file_name} ontology")
     return ontologies_root
+
 
 class MaturityModelLoader:
     """Checks each turtle file in the given directory
@@ -50,8 +45,8 @@ class MaturityModelLoader:
         self.load_model_files()
         self.rdfs_infer()
         # dump_as_ttl_to_stdout(self.g)
-        graph = MaturityModelGraph(self.g, self.config.verbose, 'en')
-        if len(list(graph.models())) == 0:
+        graph = MaturityModelGraph(self.g, self.config, self.config.verbose, 'en')
+        if len(list(graph.model_nodes())) == 0:
             raise value_error("No models loaded")
         graph.rewrite_fragment_references(self.config.fragments_root)
         graph.create_sort_keys()
@@ -103,6 +98,3 @@ class MaturityModelLoader:
     def replace_literal_triple(self, s, p1, p2, o):
         self.g.remove((s, p1, None))
         self.add_literal_triple(s, p2, o)
-
-
-

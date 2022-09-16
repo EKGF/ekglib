@@ -37,6 +37,7 @@ class MarkdownDocument:
         self.path = path
         self.file_name = str(path) # TODO: change all to Path
         self.textUtils = TextUtils
+        self.indent = ""
         self.file_data_text = ""
         self._table_titles = []
         self.reference = Reference()
@@ -70,9 +71,9 @@ class MarkdownDocument:
     def heading(self, level: int, title: str, link: str = None):
         hdr = "#" * level
         if link:
-            self.write(f"\n{hdr} [{title}]({link})\n\n")
+            self.write(f"\n{self.indent}{hdr} [{title}]({link})\n\n")
         else:
-            self.write(f"\n{hdr} {title}\n\n")
+            self.write(f"\n{self.indent}{hdr} {title}\n\n")
 
     def new_table(self, columns, rows, text, text_align='center', marker=''):
         """This method takes a list of strings and creates a table.
@@ -142,7 +143,14 @@ class MarkdownDocument:
         """
 
         if wrap_width > 0:
-            text = fill(text, wrap_width, break_long_words=False, replace_whitespace=False, drop_whitespace=False)
+            text = fill(
+                text, wrap_width,
+                break_long_words=False,
+                replace_whitespace=False,
+                drop_whitespace=False,
+                initial_indent=self.indent,
+                subsequent_indent=self.indent
+            )
 
         if bold_italics_code or color != 'black' or align:
             self.___update_file_data('\n\n' + self.textUtils.text_format(text, bold_italics_code, color, align))
@@ -171,12 +179,29 @@ class MarkdownDocument:
         """
 
         if wrap_width > 0:
-            text = fill(text, wrap_width, break_long_words=False, replace_whitespace=False, drop_whitespace=False)
+            text = fill(
+                text,
+                wrap_width,
+                break_long_words=False,
+                replace_whitespace=False,
+                drop_whitespace=False,
+                initial_indent=self.indent,
+                subsequent_indent=self.indent
+            )
+        else:
+            text_unformatted = text
+            text = ""
+            for line in text_unformatted.splitlines():
+                line = f"{self.indent}{line}"
+                if text == "":
+                    text += line
+                else:
+                    text += f"\n{line}"
 
         if bold_italics_code or color != 'black' or align:
-            self.___update_file_data('  \n' + self.textUtils.text_format(text, bold_italics_code, color, align))
+            self.___update_file_data('\n' + self.textUtils.text_format(text, bold_italics_code, color, align))
         else:
-            self.___update_file_data('  \n' + text)
+            self.___update_file_data(f'\n{text}')
 
         return self.file_data_text
 
@@ -199,7 +224,15 @@ class MarkdownDocument:
         """
 
         if wrap_width > 0:
-            text = fill(text, wrap_width, break_long_words=False, replace_whitespace=False, drop_whitespace=False)
+            text = fill(
+                text,
+                wrap_width,
+                break_long_words=False,
+                replace_whitespace=False,
+                drop_whitespace=False,
+                initial_indent=self.indent,
+                subsequent_indent=self.indent
+            )
 
         if bold_italics_code or color or align:
             new_text = self.textUtils.text_format(text, bold_italics_code, color, align)

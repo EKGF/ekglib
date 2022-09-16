@@ -1,6 +1,3 @@
-
-BASE_IRI_MATURITY_MODEL = "https://maturity.ekgf.org/"
-
 from .capability import MaturityModelCapability  # noqa: F401
 from .capability_area import MaturityModelCapabilityArea  # noqa: F401
 from .pillar import MaturityModelPillar  # noqa: F401
@@ -13,8 +10,8 @@ from .config import Config  # noqa: F401
 from .__main__ import main, run_with_config, run_with_args  # noqa: F401
 
 __all__ = [
-    'BASE_IRI_MATURITY_MODEL',
     'Config',
+    'MaturityModel',
     'MaturityModelLoader',
     'MaturityModelMarkdownGenerator',
     'GraphExporter',
@@ -26,4 +23,3 @@ __all__ = [
     'MaturityModelCapabilityArea',
     'MaturityModelCapability'
 ]
-

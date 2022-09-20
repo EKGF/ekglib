@@ -32,7 +32,7 @@ class MaturityModelPillar:
         self.local_name = self.graph.local_name_for(self.node, self.class_label)
 
         self.pillars_root = MaturityModelPillar.pillars_root(graph=graph, config=config)
-        log_item("Pillar's root", self.pillars_root)
+        log_item(f"{self.name}'s root", self.pillars_root)
 
         self.local_type_name = self.graph.local_type_name_for(self.node, self.class_label)
         self.full_dir = self.pillars_root / self.local_name
@@ -112,6 +112,7 @@ class MaturityModelPillar:
         })
         card_indent_1 = "    "
         card_indent_2 = "         "
+        card_indent_3 = "             "
         icon = ":orange_book:"
         arrow = ":octicons-arrow-right-24:"
         icon_style = "{ .lg .middle }"
@@ -129,11 +130,14 @@ class MaturityModelPillar:
                 md_file.indent = card_indent_2
                 md_file.new_line('')
                 md_file.new_line('------')
-                if area.description is None:
-                    md_file.new_line("We welcome your content here", wrap_width=0)
-                else:
-                    md_file.new_line(area.description, wrap_width=0)
                 md_file.new_line('')
+                for capability in area.capabilities():
+                    path = relpath(capability.full_dir, pillars_root)
+                    md_file.new_line(f"- [{capability.name}]({path})")
+                md_file.new_line('')
+                if area.description is not None:
+                    md_file.new_line('------')
+                    md_file.new_line(area.description, wrap_width=0)
                 md_file.new_line(f"[{arrow}{icon_style} Learn more]({path}/index.md)\n", wrap_width=0)
             md_file.indent = card_indent_1
             md_file.new_line('</div>\n')

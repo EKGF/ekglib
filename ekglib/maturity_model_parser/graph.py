@@ -1,16 +1,16 @@
+from __future__ import annotations
+import rdflib
 import textwrap
 from pathlib import Path
-from typing import Optional, Iterable, Any, Generator
-
-import rdflib
 from rdflib import Graph, RDF, OWL, URIRef, RDFS, DCTERMS, SKOS
 from rdflib.term import Node, Literal
-from .config import Config
+from typing import Optional, Iterable
 
-from ekglib import log_item
-from ekglib.log.various import value_error, warning
-from ekglib.maturity_model_parser.markdown_document import MarkdownDocument
-from ekglib.namespace import MATURITY_MODEL
+from .config import Config
+from .markdown_document import MarkdownDocument
+from ..log import log_item
+from ..log.various import value_error, warning
+from ..namespace import MATURITY_MODEL
 
 
 def get_text_in_language(
@@ -85,11 +85,11 @@ class MaturityModelGraph:
         # set up the language filtering
         if lang is not None:
             if lang == "":  # we only want not language-tagged literals
-                lang_filter = lambda l_: l_.language is None # noqa
+                lang_filter = lambda l_: l_.language is None  # noqa
             else:
-                lang_filter = lambda l_: l_.language == lang # noqa
+                lang_filter = lambda l_: l_.language == lang  # noqa
         else:  # we don't care about language tags
-            lang_filter = lambda l_: True # noqa
+            lang_filter = lambda l_: True  # noqa
 
         for labelProp in label_properties:
             labels = list(filter(lang_filter, self.g.objects(subject=subject, predicate=labelProp)))

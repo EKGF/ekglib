@@ -1,18 +1,18 @@
-from io import BytesIO
-from pathlib import Path
-
+from __future__ import annotations
 import owlrl
 import rdflib
+from io import BytesIO
+from pathlib import Path
 from pkg_resources import resource_stream
 from rdflib import Graph
 
-from ekglib.log.various import value_error
-from ekglib.main.main import load_rdf_stream_into_graph
-from ekglib.maturity_model_parser.graph import MaturityModelGraph
-from ..namespace import BASE_IRI_MATURITY_MODEL
 from .config import Config
+from .graph import MaturityModelGraph
 from ..log import error, log_item
+from ..log.various import value_error
 from ..main import load_rdf_file_into_graph
+from ..main.main import load_rdf_stream_into_graph
+from ..namespace import BASE_IRI_MATURITY_MODEL
 
 ontology_file_names = [
     'maturity-model.ttl'

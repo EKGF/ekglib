@@ -1,7 +1,8 @@
+from __future__ import annotations
 from option import Option
 from pathlib import Path
 
-from ekglib.log.various import value_error
+from ..log.various import value_error
 
 
 class Config:

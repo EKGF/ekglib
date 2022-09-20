@@ -1,15 +1,15 @@
+from __future__ import annotations
 from pathlib import Path
-from typing import Optional
-
 from rdflib import OWL
+from typing import Optional
 
 from .File import makedirs
 from .config import Config
 from .graph import MaturityModelGraph
+from .markdown_document import MarkdownDocument
 from .model import MaturityModel
 from .pillar import MaturityModelPillar
 from ..namespace import MATURITY_MODEL
-from .markdown_document import MarkdownDocument, MarkDownFile
 
 OWL._fail = False  # workaround for this issue: https://github.com/RDFLib/OWL-RL/issues/53
 

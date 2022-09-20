@@ -1,7 +1,8 @@
+from __future__ import annotations
 import rdflib
 from rdflib import Graph, OWL
 
-from ekglib import warning, log_item
+from ..log.various import warning, log_item
 
 OWL._fail = False  # workaround for this issue: https://github.com/RDFLib/OWL-RL/issues/53
 

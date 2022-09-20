@@ -1,24 +1,22 @@
+from __future__ import annotations
+
+from os.path import relpath
+
 from rdflib.term import Node
 
 from .File import makedirs, copy_fragment
 from .config import Config
 from .graph import MaturityModelGraph
 from .markdown_document import MarkdownDocument
-from .. import log_item
+from .pages_yaml import PagesYaml
 from ..namespace import MATURITY_MODEL
-
-
-def pillars_root(graph: MaturityModelGraph, config: Config):
-    if config.pillar_dir_name.is_none:
-        pillar_type_name = graph.local_type_name_for_type(
-            MaturityModelPillar.class_iri, MaturityModelPillar.class_label
-        )
-    else:
-        pillar_type_name = config.pillar_dir_name.expect("")
-    return config.output_root / pillar_type_name
+from ..log import log_item
 
 
 class MaturityModelPillar:
+
+    from .model import MaturityModel
+
     class_iri: Node = MATURITY_MODEL.Pillar
     class_label: str = "Pillar"
     class_label_plural: str = "Pillars"
@@ -33,7 +31,7 @@ class MaturityModelPillar:
         self.name = self.graph.name_for(self.node, self.class_label)
         self.local_name = self.graph.local_name_for(self.node, self.class_label)
 
-        self.pillars_root = pillars_root(graph=graph, config=config)
+        self.pillars_root = MaturityModelPillar.pillars_root(graph=graph, config=config)
         log_item("Pillar's root", self.pillars_root)
 
         self.local_type_name = self.graph.local_type_name_for(self.node, self.class_label)
@@ -79,3 +77,68 @@ class MaturityModelPillar:
         for area in self.capability_areas():
             count += len(area.capabilities())
         return count
+
+    @staticmethod
+    def generate_pillars(model: MaturityModel):
+        for pillar in model.pillars():
+            pillar.generate()
+
+    @staticmethod
+    def pillars_root(graph: MaturityModelGraph, config: Config):
+        if config.pillar_dir_name.is_none:
+            pillar_type_name = graph.local_type_name_for_type(
+                MaturityModelPillar.class_iri, MaturityModelPillar.class_label
+            )
+        else:
+            pillar_type_name = config.pillar_dir_name.expect("")
+        return config.output_root / pillar_type_name
+
+    @staticmethod
+    def generate_pillars_pages_yaml(model: MaturityModel):
+        pages_yaml = PagesYaml(root=model.pillars_root, title="Pillars")
+        pages_yaml.add('...')
+        pages_yaml.write()
+
+    @staticmethod
+    def generate_index_md(model: MaturityModel):
+        pillars_root = model.pillars_root
+        index_md = pillars_root / 'index.md'
+        model.md_file = MarkdownDocument(path=index_md, metadata={
+            'title': 'Pillars',
+            'hide': [
+                'navigation',
+                'toc'
+            ]
+        })
+        card_indent_1 = "    "
+        card_indent_2 = "         "
+        icon = ":orange_book:"
+        arrow = ":octicons-arrow-right-24:"
+        icon_style = "{ .lg .middle }"
+        md_file = model.md_file
+        for pillar in model.pillars():
+            md_file.new_line(f'\n=== "{pillar.name}"\n')
+            md_file.indent = card_indent_1
+            md_file.new_line('<div class="grid cards annotate" markdown>')
+            for index, area in enumerate(pillar.capability_areas()):
+                index2 = index + 1
+                path = relpath(area.full_dir, pillars_root)
+                md_file.indent = card_indent_1
+                md_file.new_line('')
+                md_file.new_line(f"- {icon}{icon_style} __[{area.name}]({path}/index.md)__({index2})", wrap_width=0)
+                md_file.indent = card_indent_2
+                md_file.new_line('')
+                md_file.new_line('------')
+                if area.description is None:
+                    md_file.new_line("We welcome your content here", wrap_width=0)
+                else:
+                    md_file.new_line(area.description, wrap_width=0)
+                md_file.new_line('')
+                md_file.new_line(f"[{arrow}{icon_style} Learn more]({path}/index.md)\n", wrap_width=0)
+            md_file.indent = card_indent_1
+            md_file.new_line('</div>\n')
+            for index, area in enumerate(pillar.capability_areas()):
+                index2 = index + 1
+                md_file.new_line(f"{index2}.  This is the Capability Area {area.name} in the {pillar.name}")
+
+        md_file.create_md_file()

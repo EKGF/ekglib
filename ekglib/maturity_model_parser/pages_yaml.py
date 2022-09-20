@@ -1,6 +1,7 @@
+from __future__ import annotations
 from pathlib import Path
 
-from ekglib.maturity_model_parser.File import File
+from .File import File
 
 
 class PagesYaml:

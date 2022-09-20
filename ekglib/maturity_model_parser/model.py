@@ -1,5 +1,4 @@
-from os.path import relpath
-
+from __future__ import annotations
 from rdflib.term import Node
 from typing import Generator, Any
 
@@ -7,18 +6,17 @@ from .File import makedirs
 from .config import Config
 from .graph import MaturityModelGraph
 from .markdown_document import MarkdownDocument
-from .pages_yaml import PagesYaml
-from .pillar import MaturityModelPillar, pillars_root
-from .. import log_item
-from ..log.various import value_error
+from ..log.various import value_error, log_item
 from ..namespace import MATURITY_MODEL
 
 
 class MaturityModel:
+
     class_label: str = "Model"
     class_label_plural: str = "Models"
 
     def __init__(self, graph: MaturityModelGraph, model_node: Node, config: Config):
+        from .pillar import MaturityModelPillar
         self.md_file = None
         self.graph = graph
         self.model_node = model_node
@@ -29,7 +27,7 @@ class MaturityModel:
         self.local_name = self.graph.local_name_for(self.model_node, self.class_label)
         self.local_type_name = self.graph.local_type_name_for(self.model_node, self.class_label)
         self.full_dir = self.config.output_root / self.local_type_name
-        self.pillars_root = pillars_root(graph=graph, config=config)
+        self.pillars_root = MaturityModelPillar.pillars_root(graph=graph, config=config)
         makedirs(self.full_dir, self.class_label)
         self._pillars = list()
 
@@ -76,61 +74,12 @@ class MaturityModel:
                 yield pillar
 
     def generate(self):
-        self.generate_pillars_pages_yaml()
-        self.generate_pillars_index()
-        self.generate_pillars()
+        from .pillar import MaturityModelPillar
+        MaturityModelPillar.generate_pillars_pages_yaml(self)
+        MaturityModelPillar.generate_index_md(self)
+        MaturityModelPillar.generate_pillars(self)
         self.generate_capabilities_overview_table()
         # self.generate_capabilities_overview()
-
-    def generate_pillars_pages_yaml(self):
-        pages_yaml = PagesYaml(root=self.pillars_root, title="Pillars")
-        pages_yaml.add('...')
-        pages_yaml.write()
-
-    def generate_pillars_index(self):
-        index_md = self.pillars_root / 'index.md'
-        self.md_file = MarkdownDocument(path=index_md, metadata={
-            'title': 'Pillars',
-            'hide': [
-                'navigation',
-                'toc'
-            ]
-        })
-        card_indent_1 = "    "
-        card_indent_2 = "         "
-        icon = ":orange_book:"
-        arrow = ":octicons-arrow-right-24:"
-        icon_style = "{ .lg .middle }"
-        for pillar in self.pillars():
-            self.md_file.new_line(f'\n=== "{pillar.name}"\n')
-            self.md_file.indent = card_indent_1
-            self.md_file.new_line('<div class="grid cards annotate" markdown>')
-            for index, area in enumerate(pillar.capability_areas()):
-                index2 = index + 1
-                path = relpath(area.full_dir, self.pillars_root)
-                self.md_file.indent = card_indent_1
-                self.md_file.new_line('')
-                self.md_file.new_line(f"- {icon}{icon_style} __[{area.name}]({path}/index.md)__({index2})", wrap_width=0)
-                self.md_file.indent = card_indent_2
-                self.md_file.new_line('')
-                self.md_file.new_line('------')
-                if area.description is None:
-                    self.md_file.new_line("We welcome your content here", wrap_width=0)
-                else:
-                    self.md_file.new_line(area.description, wrap_width=0)
-                self.md_file.new_line('')
-                self.md_file.new_line(f"[{arrow}{icon_style} Learn more]({path}/index.md)\n", wrap_width=0)
-            self.md_file.indent = card_indent_1
-            self.md_file.new_line('</div>\n')
-            for index, area in enumerate(pillar.capability_areas()):
-                index2 = index + 1
-                self.md_file.new_line(f"{index2}.  This is the Capability Area {area.name} in the {pillar.name}")
-
-        self.md_file.create_md_file()
-
-    def generate_pillars(self):
-        for pillar in self.pillars():
-            pillar.generate()
 
     def generate_capabilities_overview_table(self):
         overview_md_path = self.config.docs_root / 'intro' / 'overview.md'

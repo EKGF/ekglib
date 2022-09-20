@@ -1,6 +1,7 @@
 #
 # Initial version of this code has been copied from https://github.com/didix21/mdutils
 #
+from __future__ import annotations
 from pathlib import Path
 from textwrap import fill
 

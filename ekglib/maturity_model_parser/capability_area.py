@@ -1,5 +1,4 @@
-from os.path import relpath
-
+from __future__ import annotations
 from pathlib import Path
 from rdflib.term import Node
 
@@ -7,12 +6,14 @@ from .File import makedirs
 from .config import Config
 from .markdown_document import MarkdownDocument
 from .pages_yaml import PagesYaml
-from .pillar import MaturityModelPillar
 from ..log.various import log_item
 from ..namespace import MATURITY_MODEL
 
 
 class MaturityModelCapabilityArea:
+
+    from .pillar import MaturityModelPillar
+
     class_label: str = "Capability Area"
     class_label_plural: str = "Capability Areas"
     class_iri = MATURITY_MODEL.CapabilityArea

@@ -1,12 +1,13 @@
+from __future__ import annotations
 import os
 from pathlib import Path
 
 import mkdocs_gen_files
 
-from ekglib import log_item
-from ekglib.log.various import value_error
-from ekglib.maturity_model_parser.config import Config
-from ekglib.maturity_model_parser.markdown_document import MarkdownDocument
+from ..log import log_item
+from ..log.various import value_error
+from .config import Config
+from .markdown_document import MarkdownDocument
 
 
 class File(object):

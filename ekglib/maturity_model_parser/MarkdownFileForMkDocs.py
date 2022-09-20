@@ -5,6 +5,7 @@
 # It uses `mkdocs_gen_files.open()` instead of standard `open()`, see https://oprypin.github.io/mkdocs-gen-files/
 #
 # MIT License: (C) 2018 Dídac Coll
+from __future__ import annotations
 import mkdocs_gen_files
 
 

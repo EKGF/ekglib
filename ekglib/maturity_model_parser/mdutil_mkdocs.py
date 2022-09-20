@@ -1,6 +1,7 @@
+from __future__ import annotations
 from mdutils import MdUtils
 
-from ekglib.maturity_model_parser.MarkdownFileForMkDocs import MarkDownFileForMkDocs
+from .MarkdownFileForMkDocs import MarkDownFileForMkDocs
 
 
 class MdUtils4MkDocs(MdUtils):

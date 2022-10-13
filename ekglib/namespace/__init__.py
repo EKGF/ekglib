@@ -14,4 +14,3 @@ EKGPSS = Namespace("https://ekgf.org/ontology/ekg-platform-story-service/")
 LDAP = Namespace("https://ekgf.org/ontology/ldap/")
 PROV = Namespace("http://www.w3.org/ns/prov#")
 RAW = Namespace("https://ekgf.org/ontology/raw/")
-

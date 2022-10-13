@@ -1,3 +1,4 @@
+# flake8: noqa
 import argparse
 import textwrap
 
@@ -128,9 +129,13 @@ class DataopsRulesExecute:
                 #  details of obfucation rules have already been added so should not be included here
                 if self.rule_type != RULE.ObfuscationRule:
                     if validation_result is None:
-                        self.sparql_endpoint.execute_sparql_statement(self.insert_detail_about_sparql_statement(self.data_source_code, rule_iri ))
+                        self.sparql_endpoint.execute_sparql_statement(
+                            self.insert_detail_about_sparql_statement(self.data_source_code, rule_iri)
+                        )
                     else:
-                        self.sparql_endpoint.execute_sparql_statement(self.insert_detail_about_sparql_statement(self.data_source_code, rule_iri, validation_result))
+                        self.sparql_endpoint.execute_sparql_statement(self.insert_detail_about_sparql_statement(
+                            self.data_source_code, rule_iri, validation_result)
+                        )
                         if validation_result == RULE.ValidationRuleFail:
                             for severity in self.g.objects(rule_iri, RULE.severity):
                                 if severity == RULE.Violation:
@@ -204,8 +209,8 @@ def main():
 
     parser.add_argument('--verbose', '-v', help='verbose output', default=False, action='store_true')
     parser.add_argument('--static-datasets-root', help='The static datasets root, relevant when dataset-code=metadata')
-    parser.add_argument('--rules-file', help='Optional aternative source of rules', default=None )
-    parser.add_argument('--rule-type', help='Type of rules to be executed', default=None )
+    parser.add_argument('--rules-file', help='Optional aternative source of rules', default=None)
+    parser.add_argument('--rule-type', help='Type of rules to be executed', default=None)
     git_set_cli_params(parser)
     kgiri_set_cli_params(parser)
     data_source_set_cli_params(parser)

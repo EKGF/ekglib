@@ -68,4 +68,3 @@ class MarkDownFileForMkDocs(object):
             file_data = file.read()
 
         return file_data
-

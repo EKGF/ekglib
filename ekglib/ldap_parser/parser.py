@@ -594,14 +594,15 @@ class LdapEntry:
     def _parse_has_subordinates(self, values):
         """Since we're scanning all entries we don't need to generate clutter saying that there are sub-entries"""
         #
-        # TODO: When objectClass is a person and hasSubordinates is true can we then always conclude its a LineManager?
+        # TODO: When objectClass is a person and hasSubordinates is true can we
+        #       then always conclude its a LineManager?
         #
         pass
 
     def _parse_object_class(self, values):
         """Translate object class to an RDF type"""
         for value in values:
-            self._add((self.entry_iri, RDF.type, self._parse_value_to_rdf_type(value)))
+            self._add((self.entry_iri, RDF.type, self._parse_value_to_rdf_type(value)))  # noqa: E501
 
     @staticmethod
     def _parse_value_to_rdf_type(value):
@@ -609,7 +610,7 @@ class LdapEntry:
         return LDAP.term(stringcase.capitalcase(value))
 
     def _parse_entry_status(self):
-        if isinstance(self.entry, dict):  # No status when entry is a 'searchResEntry'
+        if isinstance(self.entry, dict):  # No status when entry is a 'searchResEntry' # noqa: E501
             return
         status = self.entry.entry_status
         self._add((self.entry_iri, LDAP.entryStatus, Literal(status)))

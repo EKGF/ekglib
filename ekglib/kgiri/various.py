@@ -6,7 +6,7 @@ from typing import Any
 
 import inflection
 from pandas._libs.tslibs.timestamps import Timestamp  # noqa
-from rdflib import URIRef, Literal
+from rdflib import Literal
 
 from .namespace import EKG_NS, set_kgiri_base, set_kgiri_base_replace
 from ..string import strip_end
@@ -22,12 +22,13 @@ def set_cli_params(parser):
     group = parser.add_argument_group('KGIRI')
     group.add_argument(
         '--kgiri-base',
-        help=f'A root level URL to be used for all KGIRI types (default is env.EKG_KGIRI_BASE)',
+        help='A root level URL to be used for all KGIRI types (default is env.EKG_KGIRI_BASE)',
         default=ekg_kgiri_base
     )
     group.add_argument(
         '--kgiri-base-replace',
-        help=f'Optionally have the KGIRI base fragment replaced with the EKG_KGIRI_BASE value, see --kgiri-base (default is env.KGIRI_BASE_REPLACE)',
+        help='Optionally have the KGIRI base fragment replaced with the EKG_KGIRI_BASE value, '
+             'see --kgiri-base (default is env.KGIRI_BASE_REPLACE)',
         default=ekg_kgiri_base_replace,
         required=False
     )

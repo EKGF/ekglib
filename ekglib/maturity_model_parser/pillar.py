@@ -113,7 +113,6 @@ class MaturityModelPillar:
         })
         card_indent_1 = "    "
         card_indent_2 = "         "
-        card_indent_3 = "             "
         icon = ":orange_book:"
         arrow = ":octicons-arrow-right-24:"
         icon_style = "{ .lg .middle }"

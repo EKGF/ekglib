@@ -136,9 +136,9 @@ class TestUserStoryParser:
         ]
         try:
             main()
-            assert(False)
+            assert False
         except PrefixException:
-            assert(True)
+            assert True
 
     def test_user_story_parser_with_base_iris_from_env(self, test_data_dir):
         test_output = f'{test_data_dir}/test-user-story-001.ttl.txt'
@@ -158,4 +158,4 @@ class TestUserStoryParser:
             actual = textwrap.dedent(f.read())
         os.remove(test_output)
         print(actual)
-        assert(len(actual) > 0)
+        assert len(actual) > 0

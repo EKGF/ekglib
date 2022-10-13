@@ -4,7 +4,8 @@ from pathlib import Path
 import rdflib
 from rdflib.namespace import RDF, RDFS
 
-from ..kgiri import set_kgiri_base, set_kgiri_base_replace, set_cli_params as kgiri_set_cli_params, kgiri_replace_iri_in_graph
+from ..kgiri import set_kgiri_base, set_kgiri_base_replace, \
+    set_cli_params as kgiri_set_cli_params, kgiri_replace_iri_in_graph
 from ..log import error, log_item, warning
 from ..namespace import CONCEPT
 

@@ -1,4 +1,4 @@
-import argparse, os
+import argparse
 from pathlib import Path
 
 import rdflib
@@ -7,13 +7,13 @@ from rdflib import Graph, URIRef
 from rdflib.namespace import RDF
 
 from ..data_source import set_cli_params as data_source_set_cli_params
+from ..dataops_rule_parser import DataopsRuleParser, add_dataops_rule_namespaces
 from ..dataset.various import export_graph
 from ..git import set_cli_params as git_set_cli_params
 from ..kgiri import set_kgiri_base, set_kgiri_base_replace, EKG_NS, set_cli_params as kgiri_set_cli_params
 from ..log import error, warning, log, log_item, log_iri, log_error
 from ..namespace import RAW
 from ..s3 import S3ObjectStore, set_cli_params as s3_set_cli_params
-from ..dataops_rule_parser import DataopsRuleParser, add_dataops_rule_namespaces
 
 
 class DataopsRulesCapture:
@@ -52,7 +52,7 @@ class DataopsRulesCapture:
 
     def filter_rule_directory(self, rule_directory):
         stem = rule_directory.stem
-        return stem == 'generic' or stem == 'generic-last'or stem == 'obfuscate' or stem == self.data_source_code
+        return stem == 'generic' or stem == 'generic-last' or stem == 'obfuscate' or stem == self.data_source_code
 
     def capture_rules_directory(self, rules_directory: Path):
         rules_directory_iri = EKG_NS['KGIRI'].term("dataops-rules-root-directory")
@@ -111,7 +111,8 @@ def main():
     parser = argparse.ArgumentParser(
         prog='python3 -m ekglib.dataops_rules_capture',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-        description='Captures all story validate rule files from a given directory and uploads the resulting file to S3',
+        description='Captures all story validate rule files from a '
+                    'given directory and uploads the resulting file to S3',
         epilog='Currently only supports turtle.',
         allow_abbrev=False
     )

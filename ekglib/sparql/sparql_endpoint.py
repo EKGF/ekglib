@@ -3,18 +3,17 @@ import urllib
 from typing import Optional
 
 import requests
-from SPARQLWrapper.Wrapper import QueryResult
 from rdflib import Graph
 from requests.exceptions import StreamConsumedError
 from requests.utils import (
     iter_slices)
 
-from ..log import log, log_item, log_error, error, warning
+from ..log import log_item, log_error, error, warning
 from ..mime import MIME_CSV, check_sparql_mime_type, MIME_TSV
 
 try:
-    from SPARQLWrapper import SPARQLWrapper, POST, GET, URLENCODED, JSON, RDFXML, CONSTRUCT
-    from SPARQLWrapper.SPARQLExceptions import QueryBadFormed, EndPointNotFound, EndPointInternalError, Unauthorized
+    from SPARQLWrapper import SPARQLWrapper, POST, GET, URLENCODED, JSON, RDFXML
+    from SPARQLWrapper.SPARQLExceptions import QueryBadFormed, EndPointNotFound, Unauthorized
 except ImportError:
     raise Exception("SPARQLWrapper not found! install with 'pip3 install SPARQLWrapper'")
 
@@ -185,8 +184,6 @@ class SPARQLEndpoint:
         #     print(f.read().decode('utf-8'))
         return self._execute_query()
 
-
-
     def execute_csv_query(self, sparql_statement: str):
         return self.execute_sparql_query2(sparql_statement)
 
@@ -284,12 +281,12 @@ class SPARQLEndpoint:
         try:
             result = self.sparql_endpoint.query()
             response = result.response
-            log_item("Response Code", result.response.code)
-            for (key, value) in result.response.info().items():
+            log_item("Response Code", response.code)
+            for (key, value) in response.info().items():
                 log_item(key, value)
             for (key, value) in result.info().items():
                 log_item(key, value)
-            if result.response.code in (200, 201):
+            if response.code in (200, 201):
                 return result
         except urllib.error.HTTPError as err:
             error("{} code={}".format(err, err.code))

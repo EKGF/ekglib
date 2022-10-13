@@ -13,9 +13,11 @@ kgiri_replace_enabled: bool = False
 
 EKG_NS = {}
 
+
 # NB: Using a private logger, we can't use the log library as it would introduce a cyclic dependency
 def _log_item(item, msg):
     print("\r - {:<26}: [{:}]".format(item, msg))
+
 
 def complete_ns_iri_ending(iri):
     if isinstance(iri, string_types):
@@ -81,12 +83,14 @@ def kgiri_replace(value):
     else:
         return value
 
+
 def kgiri_replace_iri_in_graph(g: Graph):
     if not kgiri_replace_enabled:
         return
     for s, p, o in g:
         g.remove((s, p, o))
         g.add((kgiri_replace(s), kgiri_replace(p), kgiri_replace(o)))
+
 
 def kgiri_replace_iri_in_literal(value: Literal):
     if not kgiri_replace_enabled:

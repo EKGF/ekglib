@@ -8,10 +8,10 @@ from .graph import MaturityModelGraph
 from .markdown_document import MarkdownDocument
 from ..log.various import value_error, log_item
 from ..namespace import MATURITY_MODEL
+from .pillar import MaturityModelPillar
 
 
 class MaturityModel:
-
     class_label: str = "Model"
     class_label_plural: str = "Models"
 
@@ -207,7 +207,8 @@ class MaturityModel:
                     if tag_line is None:
                         tag_line = "... todo ..."
                     overview_md.write(
-                        f"|{pillar_filler}|{area_filler}|{capability.number}|[{capability.name}]({capability_url})|{tag_line}|\n",
+                        f"|{pillar_filler}|{area_filler}|{capability.number}|"
+                        f"[{capability.name}]({capability_url})|{tag_line}|\n",
                         wrap_width=0
                     )
         overview_md.create_md_file()

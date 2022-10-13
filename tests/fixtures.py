@@ -26,7 +26,7 @@ def test_output_dir():
 def test_ekgmm_repo_dir():
     if os.path.isdir('../../ekg-maturity'):
         return '../../ekg-maturity'
-    pytest.skip(f"../../ekg-maturity directory does not exist")
+    pytest.skip("../../ekg-maturity directory does not exist")
     return ''
 
 
@@ -34,7 +34,7 @@ def test_ekgmm_repo_dir():
 def test_ekgmm_docs_root():
     if os.path.isdir('../../ekg-maturity/docs'):
         return '../../ekg-maturity/docs'
-    pytest.skip(f"../../ekg-maturity/docs directory does not exist")
+    pytest.skip("../../ekg-maturity/docs directory does not exist")
     return ''
 
 
@@ -42,7 +42,7 @@ def test_ekgmm_docs_root():
 def test_ekgmm_output_dir():
     if os.path.isdir('../../ekg-maturity/docs'):
         return '../../ekg-maturity/docs'
-    pytest.skip(f"../../ekg-maturity/docs directory does not exist")
+    pytest.skip("../../ekg-maturity/docs directory does not exist")
     return ''
 
 
@@ -77,12 +77,12 @@ def value_for_test(directory, name, default=None):
     """
     value_file = f'{directory}/.test/{name}'
     if not os.path.isfile(value_file):
-        if default == None:
+        if default is None:
             raise SkipTest(f'Missing {value_file} and no default has been specified')
         dirFs = os.path.dirname(value_file)
         try:
             os.stat(dirFs)
-        except:
+        except:  # noqa: E722
             os.mkdir(dirFs)
         with open(value_file, 'w') as f:
             f.write("{}\n".format(default))
@@ -99,12 +99,12 @@ def value_list_for_test(directory, name, defaults=None):
     """
     value_file = f'{directory}/.test/{name}'
     if not os.path.isfile(value_file):
-        if defaults == None:
+        if defaults is None:
             raise SkipTest(f'Missing {value_file} and no default has been specified')
         dirFs = os.path.dirname(value_file)
         try:
             os.stat(dirFs)
-        except:
+        except:  # noqa: E722
             os.mkdir(dirFs)
         with open(value_file, 'w') as f:
             for item in defaults:

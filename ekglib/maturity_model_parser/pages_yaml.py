@@ -22,4 +22,3 @@ class PagesYaml:
         for item in self.nav:
             data += f"\n  - {item}"
         file.rewrite_all_file(data)
-

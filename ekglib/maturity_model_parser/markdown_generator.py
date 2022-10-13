@@ -40,4 +40,3 @@ class MaturityModelMarkdownGenerator:
 
     def generate(self):
         self.model.generate()
-

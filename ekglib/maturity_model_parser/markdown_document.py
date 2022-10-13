@@ -36,7 +36,7 @@ class MarkdownDocument:
         """
         log_item("Creating", path)
         self.path = path
-        self.file_name = str(path) # TODO: change all to Path
+        self.file_name = str(path)  # TODO: change all to Path
         self.textUtils = TextUtils
         self.indent = ""
         self.file_data_text = ""
@@ -106,10 +106,12 @@ class MarkdownDocument:
         :Example:
         >>> from mdutils import MdUtils
         >>> md = MdUtils(file_name='Example')
-        >>> text_list = ['List of Items', 'Description', 'Result', 'Item 1', 'Description of item 1', '10', 'Item 2', 'Description of item 2', '0']
+        >>> text_list = ['List of Items', 'Description', 'Result', 'Item 1', 'Description of item 1',
+                         '10', 'Item 2', 'Description of item 2', '0']
         >>> table = md.new_table(columns=3, rows=3, text=text_list, text_align='center')
         >>> print(repr(table))
-        '\\n|List of Items|Description|Result|\\n| :---: | :---: | :---: |\\n|Item 1|Description of item 1|10|\\n|Item 2|Description of item 2|0|\\n'
+        '\\n|List of Items|Description|Result|\\n| :---: | :---: | :---: |\\n|
+        Item 1|Description of item 1|10|\\n|Item 2|Description of item 2|0|\\n'
 
 
             .. csv-table:: **Table result on Markdown**
@@ -140,7 +142,8 @@ class MarkdownDocument:
         :type color: str
         :param align: Using this parameter you can align text.
         :type align: str
-        :param wrap_width: wraps text with designated width by number of characters. By default, long words are not broken.
+        :param wrap_width: wraps text with designated width by number of characters.
+                           By default, long words are not broken.
                            Use width of 0 to disable wrapping.
         :type wrap_width: int
         :return:  ``'\\n\\n' + text``. Not necessary to take it, if only has to be written to
@@ -177,7 +180,8 @@ class MarkdownDocument:
         :type color: str
         :param align: Using this parameter you can align text. For example ``'right'``, ``'left'`` or ``'center'``.
         :type align: str
-        :param wrap_width: wraps text with designated width by number of characters. By default, long words are not broken.
+        :param wrap_width: wraps text with designated width by number of characters.
+                           By default, long words are not broken.
                            Use width of 0 to disable wrapping.
         :type wrap_width: int
         :return: return a string ``'\\n' + text``. Not necessary to take it, if only has to be written to the
@@ -223,7 +227,8 @@ class MarkdownDocument:
         :type color: str
         :param align: Using this parameter you can align text. For example ``'right'``, ``'left'`` or ``'center'``.
         :type align: str
-        :param wrap_width: wraps text with designated width by number of characters. By default, long words are not broken.
+        :param wrap_width: wraps text with designated width by number of characters.
+                           By default, long words are not broken.
                            Use width of 0 to disable wrapping.
         :type wrap_width: int
         :param marker: allows to replace a marker on some point of the file by the text.
@@ -371,6 +376,7 @@ class MarkdownDocument:
 
         mdcheckbox = MDCheckbox(items=items, checked=checked)
         self.___update_file_data('\n' + mdcheckbox.get_md())
+
 
 if __name__ == "__main__":
     import doctest

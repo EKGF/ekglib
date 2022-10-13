@@ -107,7 +107,8 @@ class MaturityModelPillar:
             'title': 'Pillars',
             'hide': [
                 'navigation',
-                'toc'
+                'toc',
+                'title'
             ]
         })
         card_indent_1 = "    "

@@ -48,8 +48,14 @@ class MarkdownDocument:
         for key, value in metadata.items():
             self.write(f"{key}: {value}\n")
         self.write("---\n")
-        if 'title' in metadata:
-            self.heading(1, metadata['title'])
+        self.write_title(metadata)
+
+    def write_title(self, metadata: dict = {}):
+        if 'title' not in metadata:
+            return
+        if 'hide' in metadata and 'title' in metadata['hide']:
+            return
+        self.heading(1, metadata['title'])
 
     def create_md_file(self) -> MarkDownFile:
         file = MarkDownFile(self.file_name)
@@ -365,7 +371,6 @@ class MarkdownDocument:
 
         mdcheckbox = MDCheckbox(items=items, checked=checked)
         self.___update_file_data('\n' + mdcheckbox.get_md())
-
 
 if __name__ == "__main__":
     import doctest

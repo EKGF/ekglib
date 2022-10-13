@@ -35,7 +35,7 @@ class MaturityModelCapabilityArea:
         self.name = self.graph.name_for(self.node, self.class_label)
         self.local_name = self.graph.local_name_for(self.node, self.class_label)
         self.local_type_name = self.graph.local_type_name_for(self.node, self.class_label)
-        self.description = self.graph.description_for(self.node, 'area')
+        self.description = self.graph.description_for(self.node, '')
         log_item("Area Description", self.description)
         self.full_dir = self.pillar.full_dir / self.local_type_name / self.local_name
         self.full_path = self.full_dir / 'index.md'
@@ -61,8 +61,8 @@ class MaturityModelCapabilityArea:
         self.generate_summary_short(self.md_file)
 
     def generate_summary_short(self, md_file: MarkdownDocument):
-        self.graph.write_tag_line(md_file, self.node, self.class_label)
-        self.graph.write_description(md_file, self.node, self.class_label)
+        self.graph.write_tag_line(md_file, self.node, '')
+        self.graph.write_description(md_file, self.node, '')
 
     def generate_link_from_pillar_to_capability_area(self):
         link = Path('.') / self.local_type_name / self.local_name / 'index.md'

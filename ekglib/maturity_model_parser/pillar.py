@@ -49,7 +49,7 @@ class MaturityModelPillar:
         self.md_file.create_md_file()
 
     def copy_fragments(self):
-        copy_fragment(self.md_file, self.fragments_dir / 'background-and-intro.md', self.config)
+        copy_fragment(self.md_file, self.fragments_dir / 'background-and-intro.md', self.config, '')
 
     def capability_area_nodes(self):
         return self.graph.capability_areas_of_pillar(self.node)

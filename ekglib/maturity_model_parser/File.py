@@ -90,7 +90,7 @@ def copy_template_fragment(from_path: Path, config: Config):
     File.copy(config=config, from_path=template_path, to_path=from_path)
 
 
-def copy_fragment(md_file: MarkdownDocument, from_path: Path, config: Config):
+def copy_fragment(md_file: MarkdownDocument, from_path: Path, config: Config, indent_prefix: str):
     if not from_path.exists():
         copy_template_fragment(from_path=from_path, config=config)
     fragment_base = from_path.name
@@ -99,4 +99,22 @@ def copy_fragment(md_file: MarkdownDocument, from_path: Path, config: Config):
     if config.verbose:
         log_item("to", to_path2)
     File.copy(config=config, from_path=from_path, to_path=to_path2)
-    md_file.write('\n\n{%\n  include-markdown "' + fragment_base + '"\n  heading-offset=1\n%}', wrap_width=0)
+    md_file.write(
+        '\n\n' + indent_prefix + '{%\n' + indent_prefix + '  include-markdown "' +
+        fragment_base + '"\n' + indent_prefix + '  heading-offset=1 preserve_includer_indent=true\n' +
+        indent_prefix + '%}',
+        wrap_width=0
+    )
+
+
+def copy_fragment_new(md_file: MarkdownDocument, from_path: Path, config: Config, indent_prefix: str):
+    if not from_path.exists():
+        copy_template_fragment(from_path=from_path, config=config)
+    from_path = os.path.relpath(from_path.resolve().absolute(),config.output_root.resolve().absolute())
+    include_file = os.path.relpath(from_path, os.path.relpath(md_file.path.parent, config.output_root))
+    md_file.write(
+        '\n\n' + indent_prefix + '{%\n' + indent_prefix + '  include-markdown "' +
+        include_file + '"\n' + indent_prefix + '  heading-offset=1 preserve_includer_indent=true\n' +
+        indent_prefix + '%}',
+        wrap_width=0
+    )

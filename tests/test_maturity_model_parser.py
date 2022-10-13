@@ -22,11 +22,11 @@ class TestMaturityModelParser:
         graph.add((subject, RDFS.comment, Literal("english", lang="en")))
         graph.add((subject, RDFS.comment, Literal("french", lang="fr")))
         graph.add((subject, RDFS.comment, Literal("nolang")))
-        english = get_text_in_language(graph, 'en', subject, RDFS.comment)
+        english = get_text_in_language(graph, 'en', subject, RDFS.comment, '')
         assert english == "english"
-        french = get_text_in_language(graph, 'fr', subject, RDFS.comment)
+        french = get_text_in_language(graph, 'fr', subject, RDFS.comment, '')
         assert french == "french"
-        dutch = get_text_in_language(graph, 'nl', subject, RDFS.comment)
+        dutch = get_text_in_language(graph, 'nl', subject, RDFS.comment, '')
         assert dutch == "nolang"
 
     def test_get_text_in_language2(self):
@@ -34,11 +34,11 @@ class TestMaturityModelParser:
         subject = URIRef("https://test")
         graph.add((subject, RDFS.comment, Literal("english", lang="en")))
         graph.add((subject, RDFS.comment, Literal("french", lang="fr")))
-        english = get_text_in_language(graph, 'en', subject, RDFS.comment)
+        english = get_text_in_language(graph, 'en', subject, RDFS.comment, '')
         assert english == "english"
-        french = get_text_in_language(graph, 'fr', subject, RDFS.comment)
+        french = get_text_in_language(graph, 'fr', subject, RDFS.comment, '')
         assert french == "french"
-        dutch = get_text_in_language(graph, 'nl', subject, RDFS.comment)
+        dutch = get_text_in_language(graph, 'nl', subject, RDFS.comment, '')
         assert dutch == "english"
 
     def test_pages_yaml(self, test_output_dir):

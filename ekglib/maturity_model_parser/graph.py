@@ -1,6 +1,7 @@
 from __future__ import annotations
 import rdflib
 import textwrap
+import re
 from pathlib import Path
 from rdflib import Graph, RDF, OWL, URIRef, RDFS, DCTERMS, SKOS
 from rdflib.term import Node, Literal
@@ -17,7 +18,8 @@ def get_text_in_language(
         graph: Graph,
         lang: str,
         subject: Node,
-        predicate: URIRef
+        predicate: URIRef,
+        indent_prefix: str
 ):
     default_value = None
     for value in graph.objects(subject, predicate):
@@ -26,14 +28,14 @@ def get_text_in_language(
         literal: Literal = value
         literal_lang = literal.language
         if literal_lang == lang:
-            return textwrap.dedent(str(literal)).strip()
+            return textwrap.indent(textwrap.dedent(str(literal)).strip(), indent_prefix)
         if literal_lang is None:
             default_value = literal
         if default_value is None and literal_lang == 'en':
             default_value = literal
     if default_value is None:
         return None
-    return textwrap.dedent(str(default_value)).strip()
+    return textwrap.indent(textwrap.dedent(str(default_value)).strip(), indent_prefix)
 
 
 class MaturityModelGraph:
@@ -109,10 +111,10 @@ class MaturityModelGraph:
         raise value_error(f"{hint} has no label: {subject_uri}")
 
     def tag_line_for(self, node: Node):
-        return get_text_in_language(self.g, self.lang, node, RDFS.comment)
+        return get_text_in_language(self.g, self.lang, node, RDFS.comment, '')
 
-    def description_for(self, node: Node, _hint: str):
-        return get_text_in_language(self.g, self.lang, node, DCTERMS.description)
+    def description_for(self, node: Node, indent_prefix: str):
+        return get_text_in_language(self.g, self.lang, node, DCTERMS.description, indent_prefix)
 
     def capability_number_for(self, capability_node, hint: str):
         for number in self.g.objects(capability_node, MATURITY_MODEL.capabilityNumber):
@@ -234,12 +236,12 @@ class MaturityModelGraph:
             sort_key = f'{capability_number_parts[0]}.{capability_number_parts[1]:0>3}.{capability_number_parts[2]:0>3}'
             self.g.add((subject, MATURITY_MODEL.sortKey, Literal(sort_key)))
 
-    def write_tag_line(self, md: MarkdownDocument, node: Node, _hint: str):
+    def write_tag_line(self, md: MarkdownDocument, node: Node, indent_prefix: str):
         tag_line = self.tag_line_for(node)
         if tag_line:
-            md.write(f'\n_{tag_line}_\n', wrap_width=0)
+            md.write(f'\n{indent_prefix}**_{tag_line}_**\n', wrap_width=0)
 
-    def write_description(self, md: MarkdownDocument, node: Node, hint: str):
-        dct_description = self.description_for(node, hint)
+    def write_description(self, md: MarkdownDocument, node: Node, indent_prefix: str):
+        dct_description = self.description_for(node, indent_prefix)
         if dct_description:
             md.write(dct_description, wrap_width=0)

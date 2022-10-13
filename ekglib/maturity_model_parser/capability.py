@@ -2,7 +2,7 @@ from __future__ import annotations
 from pathlib import Path
 from rdflib.term import Node
 
-from .File import makedirs, copy_fragment
+from .File import makedirs, copy_fragment, copy_fragment_new
 from .config import Config
 from .markdown_document import MarkdownDocument
 from .pages_yaml import PagesYaml
@@ -52,22 +52,37 @@ class MaturityModelCapability:
             link=str(link), text=self.name
         ))
 
-    def copy_fragments(self):
-        copy_fragment(self.md_file, self.fragments_dir / 'background-and-intro.md', self.config)
-        copy_fragment(self.md_file, self.fragments_dir / 'dimensions.md', self.config)
-        copy_fragment(self.md_file, self.fragments_dir / 'levels.md', self.config)
-
     def generate_summary(self):
         # self.md_file.heading(2, "Summary")
+        indent_prefix = "    "
+        self.md_file.new_line(f'\n=== "Summary"\n\n')
         self.md_file.write(
-            f"The capability _{self.name}_ ({self.number})\n"
-            f"is part of the capability area [_{self.area.name}_](../../index.md)\n"
-            f"in the [_{self.area.pillar.name}_](../../index.md).",
+            f"{indent_prefix}The capability _{self.name}_ ({self.number})\n"
+            f"{indent_prefix}is part of the capability area [_{self.area.name}_](../../index.md)\n"
+            f"{indent_prefix}in the [_{self.area.pillar.name}_](../../index.md).",
             wrap_width=0
         )
         self.md_file.write("\n")
-        self.graph.write_tag_line(self.md_file, self.node, self.class_label)
-        self.graph.write_description(self.md_file, self.node, self.class_label)
+        self.graph.write_tag_line(self.md_file, self.node, indent_prefix)
+        self.md_file.write("\n")
+        self.graph.write_description(self.md_file, self.node, indent_prefix)
+
+    def copy_fragments(self):
+        indent_prefix = "    "
+        self.md_file.new_line(f'\n\n=== "Intro"')
+        copy_fragment_new(self.md_file, self.fragments_dir / 'background-and-intro.md', self.config, indent_prefix)
+        self.md_file.new_line(f'\n\n=== "Dimensions"')
+        copy_fragment_new(self.md_file, self.fragments_dir / 'dimensions.md', self.config, indent_prefix)
+        self.md_file.new_line(f'\n\n=== "Levels"')
+        copy_fragment_new(self.md_file, self.fragments_dir / 'levels.md', self.config, indent_prefix)
+        self.md_file.new_line(f'\n\n=== "Value"')
+        copy_fragment_new(self.md_file, self.fragments_dir / 'value.md', self.config, indent_prefix)
+        self.md_file.new_line(f'\n\n=== "Traditional Approach"')
+        copy_fragment_new(self.md_file, self.fragments_dir / 'traditional-approach.md', self.config, indent_prefix)
+        self.md_file.new_line(f'\n\n=== "EKG Approach"')
+        copy_fragment_new(self.md_file, self.fragments_dir / 'ekg-approach.md', self.config, indent_prefix)
+        self.md_file.new_line(f'\n\n=== "Use cases"')
+        copy_fragment_new(self.md_file, self.fragments_dir / 'use-cases.md', self.config, indent_prefix)
 
     @classmethod
     def generate_index_md(cls, area: MaturityModelCapabilityArea):
@@ -83,8 +98,8 @@ class MaturityModelCapability:
         )
         for capability in area.capabilities():
             md_file.heading(2, f"{capability.number}. [{capability.name}](./{capability.local_name}/)")
-            graph.write_tag_line(md_file, capability, MaturityModelCapability.class_label)
-            graph.write_description(md_file, capability, MaturityModelCapability.class_label)
+            graph.write_tag_line(md_file, capability, '')
+            graph.write_description(md_file, capability, '')
 
         md_file.create_md_file()
 

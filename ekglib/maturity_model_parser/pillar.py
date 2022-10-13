@@ -123,22 +123,22 @@ class MaturityModelPillar:
             md_file.new_line('<div class="grid cards annotate" markdown>')
             for index, area in enumerate(pillar.capability_areas()):
                 index2 = index + 1
-                path = relpath(area.full_dir, pillars_root)
+                capability_area_path = relpath(area.full_dir, pillars_root)
                 md_file.indent = card_indent_1
                 md_file.new_line('')
-                md_file.new_line(f"- {icon}{icon_style} __[{area.name}]({path}/index.md)__({index2})", wrap_width=0)
+                md_file.new_line(f"- {icon}{icon_style} __[{area.name}]({capability_area_path}/index.md)__({index2})", wrap_width=0)
                 md_file.indent = card_indent_2
                 md_file.new_line('')
                 md_file.new_line('------')
                 md_file.new_line('')
                 for capability in area.capabilities():
-                    path = relpath(capability.full_dir, pillars_root)
-                    md_file.new_line(f"- [{capability.name}]({path})")
+                    capability_path = relpath(capability.full_dir, pillars_root)
+                    md_file.new_line(f"- [{capability.name}]({capability_path})", wrap_width=0)
                 md_file.new_line('')
                 if area.description is not None:
                     md_file.new_line('------')
                     md_file.new_line(area.description, wrap_width=0)
-                md_file.new_line(f"[{arrow}{icon_style} Learn more]({path}/index.md)\n", wrap_width=0)
+                md_file.new_line(f"[{arrow}{icon_style} Learn more]({capability_area_path}/index.md)\n", wrap_width=0)
             md_file.indent = card_indent_1
             md_file.new_line('</div>\n')
             for index, area in enumerate(pillar.capability_areas()):

@@ -99,9 +99,4 @@ def copy_fragment(md_file: MarkdownDocument, from_path: Path, config: Config):
     if config.verbose:
         log_item("to", to_path2)
     File.copy(config=config, from_path=from_path, to_path=to_path2)
-    md_file.write(
-        "\n\n{% include-markdown \""
-        f"{fragment_base}"
-        "\" heading-offset=1 %}",
-        wrap_width=0
-    )
+    md_file.write('\n\n{%\n  include-markdown "' + fragment_base + '"\n  heading-offset=1\n%}', wrap_width=0)

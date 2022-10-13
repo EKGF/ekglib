@@ -277,7 +277,7 @@ class SPARQLEndpoint:
             log_item(header_name, header_value)
         return self._execute_query()
 
-    def _execute_query(self):
+    def _execute_query(self):  # noqa: C901
         try:
             result = self.sparql_endpoint.query()
             response = result.response

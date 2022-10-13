@@ -8,7 +8,6 @@ from .graph import MaturityModelGraph
 from .markdown_document import MarkdownDocument
 from ..log.various import value_error, log_item
 from ..namespace import MATURITY_MODEL
-from .pillar import MaturityModelPillar
 
 
 class MaturityModel:
@@ -53,7 +52,7 @@ class MaturityModel:
         nodes.sort(key=self.sort_key)
         return nodes
 
-    def pillars_non_cached(self) -> Generator[MaturityModelPillar, Any, None]:
+    def pillars_non_cached(self) -> Generator[MaturityModelPillar, Any, None]:  # noqa: F821
         from .pillar import MaturityModelPillar
         for pillar_node in self.pillar_nodes():
             yield MaturityModelPillar(
@@ -68,7 +67,7 @@ class MaturityModel:
             self._pillars = list(self.pillars_non_cached())
         return self._pillars
 
-    def get_pillars_with_name(self, name: str) -> Generator[MaturityModelPillar, Any, None]:
+    def get_pillars_with_name(self, name: str) -> Generator[MaturityModelPillar, Any, None]:  # noqa: F821
         for pillar in self.pillars():
             if pillar.name == name:
                 yield pillar

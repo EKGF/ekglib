@@ -1,6 +1,6 @@
 from rdflib import Namespace
 
-BASE_IRI_MATURITY_MODEL = "https://maturity.ekgf.org/"
+BASE_IRI_MATURITY_MODEL = "https://maturity.ekgf.org/id/"
 
 MATURITY_MODEL = Namespace("https://raw.githubusercontent.com/EKGF/ontology-maturity-model/main/maturity-model.ttl#")
 USERSTORY = Namespace("https://ekgf.org/ontology/user-story/")

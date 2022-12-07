@@ -6,7 +6,7 @@ from rdflib import URIRef, Graph, RDFS
 from rdflib.term import Literal
 
 import ekglib
-from ekglib import log_item
+from ekglib import log_item, log
 from ekglib.namespace import BASE_IRI_MATURITY_MODEL
 from ekglib.maturity_model_parser import MaturityModelLoader, Config
 from ekglib.maturity_model_parser.File import makedirs
@@ -57,6 +57,7 @@ class TestMaturityModelParser:
         ]
 
     def test_maturity_model_parser_001(self, test_data_dir, test_output_dir):
+        log("Starting test_maturity_model_parser_001:")
         docs_root = Path(f"{test_data_dir}/maturity-model/docs")
         fragments_root = Path(f"{test_data_dir}/maturity-model/docs-fragments")
         config = Config(
@@ -86,15 +87,17 @@ class TestMaturityModelParser:
             area_strategy_actuation = areas[0]
             log_item("area", area_strategy_actuation.node)
             capabilities = list(area_strategy_actuation.capabilities())
+            log_item("# capabilities", len(capabilities))
             assert len(capabilities) == 3
 
     def test_maturity_model_parser_002(self, test_output_dir, test_ekgmm_repo_dir):
+        log("Starting test_maturity_model_parser_002:")
         output_root = Path(f"{test_output_dir}/ekgmm_test_002")
         docs_root = output_root / 'docs'
         makedirs(docs_root, "Test 002 Output")
         config = Config(
             model_name="EKG/Maturity",
-            verbose=False,
+            verbose=True,
             mkdocs=False,
             model_root=Path(test_ekgmm_repo_dir),
             docs_root=docs_root,
@@ -105,9 +108,11 @@ class TestMaturityModelParser:
         loader = MaturityModelLoader(config=config)
         graph = loader.load()
         models = list(graph.model_nodes())
+        log_item("# models", len(models))
         assert len(models) == 1
         model = graph.model_with_name("EKG/Maturity")
         pillars = model.pillars()
+        log_item("# pillars", len(pillars))
         assert len(pillars) == 4
         business_pillars = list(model.get_pillars_with_name("Business Pillar"))
         assert len(business_pillars) == 1
@@ -120,6 +125,7 @@ class TestMaturityModelParser:
         assert len(capabilities) == 3
 
     def test_maturity_model_parser_003(self, test_data_dir, test_output_dir):
+        log("Starting test_maturity_model_parser_003:")
         sys.argv = [
             'pytest',
             '--model-root', f"{test_data_dir}/maturity-model",
@@ -132,6 +138,7 @@ class TestMaturityModelParser:
         assert 0 == ekglib.maturity_model_parser.main()
 
     def test_maturity_model_parser_004(self, test_ekgmm_repo_dir, test_ekgmm_docs_root, test_ekgmm_output_dir):
+        log("Starting test_maturity_model_parser_004:")
         log_item("Git repo dir", test_ekgmm_repo_dir)
         sys.argv = [
             'pytest',

@@ -15,6 +15,7 @@ class MaturityModel:
     class_label_plural: str = "Models"
 
     def __init__(self, graph: MaturityModelGraph, model_node: Node, config: Config):
+        log_item("Loading Model", model_node)
         from .pillar import MaturityModelPillar
         self.md_file = None
         self.graph = graph

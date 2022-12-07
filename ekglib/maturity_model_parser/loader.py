@@ -9,7 +9,7 @@ from rdflib import Graph
 from .config import Config
 from .graph import MaturityModelGraph
 from ..log import error, log_item
-from ..log.various import value_error
+from ..log.various import value_error, log
 from ..main import load_rdf_file_into_graph
 from ..main.main import load_rdf_stream_into_graph
 from ..namespace import BASE_IRI_MATURITY_MODEL
@@ -45,9 +45,12 @@ class MaturityModelLoader:
         self.load_model_files()
         self.rdfs_infer()
         # dump_as_ttl_to_stdout(self.g)
+        log("All {} triples loaded and inferred, processing them now:".format(len(self.g)))
         graph = MaturityModelGraph(self.g, self.config, self.config.verbose, 'en')
         if len(list(graph.model_nodes())) == 0:
             raise value_error("No models loaded")
+        for node in graph.model_nodes():
+            log_item("Loaded model", node)
         graph.rewrite_fragment_references(self.config.fragments_root)
         graph.create_sort_keys()
         return graph
@@ -65,7 +68,10 @@ class MaturityModelLoader:
         # for turtle_file in self.root_directory.rglob("*.ttl"):
         #     log_item("Going to load", turtle_file)
         for turtle_file in self.config.model_root.rglob("*.ttl"):
-            self.load_model_file(Path(turtle_file))
+            if ".venv" in str(turtle_file.resolve()):
+                log_item("Skipping", turtle_file)
+            else:
+                self.load_model_file(Path(turtle_file))
         log_item("# asserted triples", len(self.g))
 
     def load_model_file(self, turtle_file: Path):

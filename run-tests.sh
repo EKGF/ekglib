@@ -5,7 +5,7 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 VIRTUAL_ENV="${SCRIPT_DIR}/.venv"
 
-python_version=3.10.7
+python_version=3.10.8
 
 flag_file="/tmp/ekglib-last-checked-environment.flag"
 
@@ -26,7 +26,7 @@ function shouldCheckEnvironment() {
   #
   # If you added new dependencies then return true
   #
-  [[ "${SCRIPT_DIR}/requirements.txt" -nt "${flag_file}" ]] && return 0
+  [[ "${SCRIPT_DIR}/Pipfile" -nt "${flag_file}" ]] && return 0
   #
   # Add whatever check here that you think should trigger a recheck of the environment
   #
@@ -39,10 +39,10 @@ function checkEnvironment() {
 
   echo "========================== check environment"
 
-  if ! shouldCheckEnvironment ; then
-    echo "Skipping environment check"
-    return 0
-  fi
+#if ! shouldCheckEnvironment ; then
+#    echo "Skipping environment check"
+#    return 0
+#  fi
 
   touch "${flag_file}" || return 1
 
@@ -88,10 +88,9 @@ function checkEnvironment() {
     return 1
   fi
 
-  "${VIRTUAL_ENV}/bin/pip3" install --upgrade pip wheel setuptools
+  "${VIRTUAL_ENV}/bin/pip3" install --upgrade pip pipenv wheel setuptools
   "${VIRTUAL_ENV}/bin/pip3" install flake8 pytest pytest-cov
-  "${VIRTUAL_ENV}/bin/pip3" install -r requirements.txt --no-cache-dir
-  "${VIRTUAL_ENV}/bin/pip3" wheel -r requirements.txt
+  "${VIRTUAL_ENV}/bin/pipenv" install
 
   if ! command -v "${VIRTUAL_ENV}/bin/flake8" >/dev/null 2>&1 ; then
     echo "ERROR: You don't have ${VIRTUAL_ENV}/bin/flake8"

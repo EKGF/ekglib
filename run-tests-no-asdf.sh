@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# This scriptlet creates a Python 3.10.7 virtual environment under the project folder (not to be checked in)
+# This scriptlet creates a Python 3.10.8 virtual environment under the project folder (not to be checked in)
 # and then once it is available it enters it and executes all the tests in the tests folder
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 VIRTUAL_ENV="${SCRIPT_DIR}/.venv"
@@ -17,11 +17,11 @@ else
   python3 -m venv "${VIRTUAL_ENV}" || exit $?
   # shellcheck source=.venv/bin/activate
   source "${VIRTUAL_ENV}/bin/activate" || exit $?
-  "${VIRTUAL_ENV}/bin/pip3" install --upgrade pip wheel setuptools && \
+  "${VIRTUAL_ENV}/bin/pip3" install --upgrade pip setuptools && \
     "${VIRTUAL_ENV}/bin/pip3" install flake8 pytest pytest-cov && \
-    "${VIRTUAL_ENV}/bin/pip3" install -r requirements.txt --no-cache-dir && \
-    "${VIRTUAL_ENV}/bin/pip3" wheel -r requirements.txt \
-    || exit $?
+    "${VIRTUAL_ENV}/bin/pipenv" install || exit $?
+  "${VIRTUAL_ENV}/bin/pipenv" || exit $?
+  "${VIRTUAL_ENV}/bin/pip3" install -e . || exit $?
   echo "Virtual Environment has been initialised successfully, will run the tests now" >&2
 fi
 

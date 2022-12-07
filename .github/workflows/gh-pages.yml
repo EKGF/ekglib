@@ -58,7 +58,7 @@ jobs:
       - name: Remove irrelevant files from gh-pages branch
         run: |
           git rm --quiet -rf .github/ .idea/ .vscode/ .actrc .flake8 .tool-versions act.sh *.code-workspace *.iml
-          git rm --quiet -rf run-tests.sh requirements.txt
+          git rm --quiet -rf *.sh Pipfile
           find . -name '*.py' -exec git rm --quiet --force {} \;
         shell: bash
 

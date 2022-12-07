@@ -61,7 +61,7 @@ setup(
     packages=packages,
     package_data={'': ['*.ttl']},
     platforms=["any"],
-    python_requires=">=3.10.7",
+    python_requires=">=3.10.8",
     setup_requires=['wheel'],
     install_requires=get_install_requirements(),
     classifiers=[

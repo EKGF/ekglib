@@ -4,7 +4,6 @@ tests/*.xlsx
 *.sublime-*
 /docs/_build/
 nosetests.xml
-*.egg-info/
 coverage/
 dist/
 *.pyc

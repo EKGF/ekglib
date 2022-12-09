@@ -18,10 +18,10 @@ else
   # shellcheck source=.venv/bin/activate
   source "${VIRTUAL_ENV}/bin/activate" || exit $?
   "${VIRTUAL_ENV}/bin/pip3" install --upgrade pip setuptools && \
-    "${VIRTUAL_ENV}/bin/pip3" install flake8 pytest pytest-cov && \
-    "${VIRTUAL_ENV}/bin/pipenv" install || exit $?
-  "${VIRTUAL_ENV}/bin/pipenv" || exit $?
-  "${VIRTUAL_ENV}/bin/pip3" install -e . || exit $?
+    "${VIRTUAL_ENV}/bin/pip3" install flake8 pytest pytest-cov poetry || exit $?
+  "${VIRTUAL_ENV}/bin/poetry config virtualenvs.in-project true" || exit $?
+  "${VIRTUAL_ENV}/bin/poetry" install || exit $?
+  "${VIRTUAL_ENV}/bin/poetry" build || exit $?
   echo "Virtual Environment has been initialised successfully, will run the tests now" >&2
 fi
 

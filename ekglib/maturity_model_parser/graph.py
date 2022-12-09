@@ -1,15 +1,14 @@
 from __future__ import annotations
 
+import textwrap
 from os import getcwd
 from os.path import relpath
+from pathlib import Path
+from typing import Optional, Iterable
 
 import rdflib
-import textwrap
-import re
-from pathlib import Path
 from rdflib import Graph, RDF, OWL, URIRef, RDFS, DCTERMS, SKOS
 from rdflib.term import Node, Literal
-from typing import Optional, Iterable
 
 from .config import Config
 from .markdown_document import MarkdownDocument

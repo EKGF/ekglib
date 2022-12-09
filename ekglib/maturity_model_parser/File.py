@@ -7,10 +7,10 @@ from pathlib import Path
 
 import mkdocs_gen_files
 
-from ..log import log_item
-from ..log.various import value_error, log_error
 from .config import Config
 from .markdown_document import MarkdownDocument
+from ..log import log_item
+from ..log.various import value_error
 
 
 class File(object):
@@ -112,7 +112,7 @@ def copy_fragment(md_file: MarkdownDocument, from_path: Path, config: Config, in
 def copy_fragment_new(md_file: MarkdownDocument, from_path: Path, config: Config, indent_prefix: str):
     if not from_path.exists():
         copy_template_fragment(from_path=from_path, config=config)
-    from_path = os.path.relpath(from_path.resolve().absolute(),config.output_root.resolve().absolute())
+    from_path = os.path.relpath(from_path.resolve().absolute(), config.output_root.resolve().absolute())
     include_file = os.path.relpath(from_path, os.path.relpath(md_file.path.parent, config.output_root))
     md_file.write(
         '\n\n' + indent_prefix + '{%\n' + indent_prefix + '  include-markdown "' +

@@ -3,7 +3,6 @@
 #
 from __future__ import annotations
 
-import re
 from pathlib import Path
 from textwrap import fill
 
@@ -12,7 +11,6 @@ import mdutils.tools.TableOfContents
 from mdutils.fileutils.fileutils import MarkDownFile
 from mdutils.tools.Image import Image
 from mdutils.tools.Link import Inline, Reference
-from mdutils.tools.MDList import MDList, MDCheckbox
 from mdutils.tools.TextUtils import TextUtils
 
 from ..log import log_item

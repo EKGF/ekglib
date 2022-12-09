@@ -118,4 +118,3 @@ class MaturityModelCapabilityArea:
         # MaturityModelCapability.generate_index_md(self)
         for capability in self.capabilities():
             capability.generate_markdown()
-

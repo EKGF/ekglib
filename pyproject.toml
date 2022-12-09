@@ -1,0 +1,42 @@
+[tool.poetry]
+name = "ekglib"
+version = "0.0.29"
+description = "A Python Library for various tasks in an EKG DataOps operation."
+authors = ["Jacobus Geluk <jacobus.geluk@agnos.ai>"]
+readme = "README.adoc"
+homepage = "https://ekgf.github.io/ekglib/"
+classifiers = [
+    "Programming Language :: Python :: 3.10",
+    "Development Status :: 2 - Pre-Alpha",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Operating System :: OS Independent",
+    "Natural Language :: English",
+]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+option = "^2.1.0"
+boto3 = "^1.26.27"
+boto3-stubs = "^1.26.27"
+botocore = "^1.29.27"
+pandas = "^1.5.2"
+numpy = "^1.23.5"
+data-science-types = "^0.2.23"
+python-dateutil = "^2.8.2"
+rdflib = "^6.2.0"
+toml = "^0.10.2"
+inflection = "^0.5.1"
+humps = "^0.2.2"
+requests = "^2.28.1"
+SPARQLWrapper = "^2.0.0"
+ldap3 = "^2.9.1"
+stringcase = "^1.2.0"
+mkdocs-gen-files = "^0.4.0"
+mdutils = "^1.4.0"
+owlrl = "^6.0.2"
+openpyxl = "^3.0.10"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

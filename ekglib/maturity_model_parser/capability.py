@@ -61,7 +61,7 @@ class MaturityModelCapability:
         indent_prefix = "    "
         self.graph.write_tag_line(self.md_file, self.node)
         self.md_file.indent = indent_prefix
-        self.md_file.new_line(f'\n=== "Summary"\n\n')
+        self.md_file.new_line('\n=== "Summary"\n\n')
         self.md_file.new_line(
             f"The capability _{self.name}_ ({self.number})\n"
             f"is part of the capability area [_{self.area.name}_](../../index.md)\n"
@@ -75,19 +75,19 @@ class MaturityModelCapability:
 
     def copy_fragments(self):
         indent_prefix = "    "
-        self.md_file.new_line(f'\n\n=== "Intro"')
+        self.md_file.new_line('\n\n=== "Intro"')
         copy_fragment_new(self.md_file, self.fragments_dir / 'background-and-intro.md', self.config, indent_prefix)
-        self.md_file.new_line(f'\n\n=== "Dimensions"')
+        self.md_file.new_line('\n\n=== "Dimensions"')
         copy_fragment_new(self.md_file, self.fragments_dir / 'dimensions.md', self.config, indent_prefix)
-        self.md_file.new_line(f'\n\n=== "Levels"')
+        self.md_file.new_line('\n\n=== "Levels"')
         copy_fragment_new(self.md_file, self.fragments_dir / 'levels.md', self.config, indent_prefix)
-        self.md_file.new_line(f'\n\n=== "Value"')
+        self.md_file.new_line('\n\n=== "Value"')
         copy_fragment_new(self.md_file, self.fragments_dir / 'value.md', self.config, indent_prefix)
-        self.md_file.new_line(f'\n\n=== "Traditional Approach"')
+        self.md_file.new_line('\n\n=== "Traditional Approach"')
         copy_fragment_new(self.md_file, self.fragments_dir / 'traditional-approach.md', self.config, indent_prefix)
-        self.md_file.new_line(f'\n\n=== "EKG Approach"')
+        self.md_file.new_line('\n\n=== "EKG Approach"')
         copy_fragment_new(self.md_file, self.fragments_dir / 'ekg-approach.md', self.config, indent_prefix)
-        self.md_file.new_line(f'\n\n=== "Use cases"')
+        self.md_file.new_line('\n\n=== "Use cases"')
         copy_fragment_new(self.md_file, self.fragments_dir / 'use-cases.md', self.config, indent_prefix)
 
     # @classmethod

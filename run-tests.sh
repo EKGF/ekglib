@@ -88,9 +88,11 @@ function checkEnvironment() {
     return 1
   fi
 
-  "${VIRTUAL_ENV}/bin/pip3" install --upgrade pip pipenv wheel setuptools
+  "${VIRTUAL_ENV}/bin/pip3" install --upgrade pip poetry wheel setuptools
   "${VIRTUAL_ENV}/bin/pip3" install flake8 pytest pytest-cov
-  "${VIRTUAL_ENV}/bin/pipenv" install
+  "${VIRTUAL_ENV}/bin/poetry" config virtualenvs.in-project true
+  "${VIRTUAL_ENV}/bin/poetry" install
+  "${VIRTUAL_ENV}/bin/poetry" build
 
   if ! command -v "${VIRTUAL_ENV}/bin/flake8" >/dev/null 2>&1 ; then
     echo "ERROR: You don't have ${VIRTUAL_ENV}/bin/flake8"

@@ -118,5 +118,3 @@ class MaturityModelPillar:
         else:
             pillar_type_name = config.pillar_dir_name.expect("")
         return config.output_root / pillar_type_name
-
-

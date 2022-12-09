@@ -1,4 +1,6 @@
 import sys
+from os import getcwd
+from os.path import relpath
 
 import option
 from pathlib import Path
@@ -139,13 +141,16 @@ class TestMaturityModelParser:
 
     def test_maturity_model_parser_004(self, test_ekgmm_repo_dir, test_ekgmm_docs_root, test_ekgmm_output_dir):
         log("Starting test_maturity_model_parser_004:")
-        log_item("Git repo dir", test_ekgmm_repo_dir)
+        model_root = str((Path(test_ekgmm_docs_root) / "../metadata").resolve())
+        log_item("Model Root", relpath(model_root, getcwd()))
+        fragments_root = str((Path(test_ekgmm_docs_root) / "../docs-fragments").resolve())
+        log_item("Fragments Root", relpath(fragments_root, getcwd()))
         sys.argv = [
             'pytest',
             '--verbose',
-            '--model-root', test_ekgmm_repo_dir,
+            '--model-root', model_root,
             '--docs-root', test_ekgmm_docs_root,
-            '--fragments-root', str((Path(test_ekgmm_docs_root) / "../docs-fragments").resolve()),
+            '--fragments-root', fragments_root,
             '--output', test_ekgmm_output_dir,
             '--pillar-dir-name', "pillar-dev"
         ]

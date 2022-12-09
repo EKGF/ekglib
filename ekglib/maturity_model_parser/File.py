@@ -1,11 +1,14 @@
 from __future__ import annotations
+
+import io
 import os
+import os.path
 from pathlib import Path
 
 import mkdocs_gen_files
 
 from ..log import log_item
-from ..log.various import value_error
+from ..log.various import value_error, log_error
 from .config import Config
 from .markdown_document import MarkdownDocument
 
@@ -15,11 +18,8 @@ class File(object):
     """
 
     def __init__(self, mkdocs: bool, path: Path):
-        self.file = None
         self.path = path
         self.mkdocs = mkdocs
-        # self.file = self.open(mode='w+')
-        # self.file.close()
 
     @classmethod
     def existing_file(cls, mkdocs: bool, path: Path):
@@ -39,29 +39,31 @@ class File(object):
 
     def rewrite_all_file(self, data):
         makedirs(self.path.parent, "Generated")
-        with self.open(mode='w') as self.file:
-            self.file.write(data)
+        with self.open(mode='w') as somefile:
+            assert isinstance(somefile, io.TextIOWrapper)
+            assert somefile.closed is False
+            somefile.write(data)
 
     def read_all_content(self):
-        with self.open(mode='r') as self.file:
-            return self.file.read()
+        with self.open(mode='r') as somefile:
+            return somefile.read()
 
     def append_end(self, data):
-        with self.open(mode='a') as self.file:
-            self.file.write(data)
+        with self.open(mode='a') as somefile:
+            somefile.write(data)
 
     def append_after_second_line(self, data):
         """Write after the file's first line.
 
         :param str data: is a string containing all the data that is written in the markdown file."""
-        with self.open(mode='r+') as self.file:
-            file_data = self.file.read()  # Save all the file's content
-            self.file.seek(0, 0)  # Place file pointer at the beginning
-            first_line = self.file.readline()  # Read the first line
-            second_line = self.file.readline()  # Read the second line
-            self.file.seek(len(first_line + second_line), 0)  # Place file pointer at the end of the first line
-            self.file.write(data)  # Write data
-            self.file.write('\n' + file_data[len(first_line + second_line):])
+        with self.open(mode='r+') as somefile:
+            file_data = somefile.read()  # Save all the file's content
+            somefile.seek(0, 0)  # Place file pointer at the beginning
+            first_line = somefile.readline()  # Read the first line
+            second_line = somefile.readline()  # Read the second line
+            somefile.seek(len(first_line + second_line), 0)  # Place file pointer at the end of the first line
+            somefile.write(data)  # Write data
+            somefile.write('\n' + file_data[len(first_line + second_line):])
 
     @classmethod
     def copy(cls, config: Config, from_path: Path, to_path: Path):

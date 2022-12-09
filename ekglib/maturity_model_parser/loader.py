@@ -59,12 +59,14 @@ class MaturityModelLoader:
         load_rdf_stream_into_graph(self.g, ontology_stream)
 
     def load_ontologies(self):
+        log_item("Loading", "Ontologies")
         for ontology_file_name in ontology_file_names:
             log_item("Loading Ontology", ontology_file_name)
             stream = resource_stream('ekglib.resources.ontologies', ontology_file_name)
             self.load_ontology_from_stream(stream)
 
     def load_model_files(self):
+        log_item("Loading", "Model Files")
         # for turtle_file in self.root_directory.rglob("*.ttl"):
         #     log_item("Going to load", turtle_file)
         for turtle_file in self.config.model_root.rglob("*.ttl"):
@@ -79,6 +81,7 @@ class MaturityModelLoader:
         load_rdf_file_into_graph(self.g, turtle_file)
 
     def rdfs_infer(self):
+        log_item("Inferring", "Triples")
         owlrl.RDFSClosure.RDFS_Semantics(self.g, True, True, True)
         closure_class = owlrl.return_closure_class(
             owl_closure=True,

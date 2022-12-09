@@ -1,4 +1,8 @@
 from __future__ import annotations
+
+from os.path import relpath
+
+from ekglib.maturity_model_parser.pages_yaml import PagesYaml
 from rdflib.term import Node
 from typing import Generator, Any
 
@@ -15,7 +19,7 @@ class MaturityModel:
     class_label_plural: str = "Models"
 
     def __init__(self, graph: MaturityModelGraph, model_node: Node, config: Config):
-        log_item("Loading Model", model_node)
+        log_item("Generating pages for", model_node)
         from .pillar import MaturityModelPillar
         self.md_file = None
         self.graph = graph
@@ -74,12 +78,74 @@ class MaturityModel:
                 yield pillar
 
     def generate(self):
-        from .pillar import MaturityModelPillar
-        MaturityModelPillar.generate_pillars_pages_yaml(self)
-        MaturityModelPillar.generate_index_md(self)
-        MaturityModelPillar.generate_pillars(self)
+        log_item("Generate model", self.model_node)
+        self.generate_index_md()
+        self.generate_pages_yaml()
+        self.generate_pillars()
         self.generate_capabilities_overview_table()
         # self.generate_capabilities_overview()
+
+    def generate_pillars(self):
+        for pillar in self.pillars():
+            pillar.generate()
+
+    def generate_index_md(self):
+        pillars_root = self.pillars_root
+        index_md = pillars_root / 'index.md'
+        self.md_file = MarkdownDocument(path=index_md, metadata={
+            'title': 'Pillars',
+            'hide': [
+                'navigation',
+                'toc',
+                'title'
+            ]
+        })
+        card_indent_1 = "    "
+        card_indent_2 = "         "
+        icon = ":orange_book:"
+        arrow = ":octicons-arrow-right-24:"
+        icon_style = "{ .lg .middle }"
+        md_file = self.md_file
+        for pillar in self.pillars():
+            md_file.new_line(f'\n=== "{pillar.name}"\n')
+            md_file.indent = card_indent_1
+            md_file.new_line('<div class="grid cards annotate" markdown>')
+            for index, area in enumerate(pillar.capability_areas()):
+                index2 = index + 1
+                capability_area_path = relpath(area.full_dir, pillars_root)
+                md_file.indent = card_indent_1
+                md_file.new_line()
+                md_file.new_line(f"- {icon}{icon_style} __[{area.name}]({capability_area_path}/index.md)__({index2})",
+                                 wrap_width=0)
+                md_file.indent = card_indent_2
+                md_file.new_line()
+                md_file.new_line('------')
+                md_file.new_line()
+                for capability in area.capabilities():
+                    capability_path = relpath(capability.full_dir, pillars_root)
+                    md_file.new_line(f"- [{capability.name}]({capability_path})", wrap_width=0)
+                md_file.new_line()
+                if area.description is not None:
+                    md_file.new_line('------')
+                    md_file.new_line(area.description, wrap_width=0)
+                md_file.new_line(f"[{arrow}{icon_style} Learn more]({capability_area_path}/index.md)\n", wrap_width=0)
+            md_file.indent = card_indent_1
+            md_file.new_line('</div>\n')
+            for index, area in enumerate(pillar.capability_areas()):
+                index2 = index + 1
+                md_file.new_line(f"{index2}.  This is the Capability Area {area.name} in the {pillar.name}")
+
+        md_file.create_md_file()
+
+    def generate_pages_yaml(self):
+        """Generate the .pages.yaml file for the root directory where the pillars get published"""
+        root = self.pillars_root
+        log_item("Generate model pages.yaml", root)
+        makedirs(root, self.class_label_plural)
+        pages_yaml = PagesYaml(root=root, title="Maturity Model")
+        for area in self.pillars():
+            pages_yaml.add(f"{area.name}: {area.local_name}")
+        pages_yaml.write()
 
     def generate_capabilities_overview_table(self):
         overview_md_path = self.config.docs_root / 'intro' / 'overview.md'
@@ -116,7 +182,7 @@ class MaturityModel:
             areas = pillar.capability_areas()
             for area_index, area in enumerate(areas):
                 capabilities = area.capabilities()
-                area_url = f'{pillar_url}/capability-area/{area.local_name}'
+                area_url = f'{pillar_url}/{area.local_name}'
                 if area_index == 0:
                     overview_md.write(
                         '<tr>\n'
@@ -136,7 +202,7 @@ class MaturityModel:
                     wrap_width=0
                 )
                 for capability_index, capability in enumerate(capabilities):
-                    capability_url = f'{area_url}/capability/{capability.local_name}'
+                    capability_url = f'{area_url}/{capability.local_name}'
                     tag_line = capability.tag_line
                     if tag_line is None:
                         tag_line = "... todo ..."
@@ -182,7 +248,7 @@ class MaturityModel:
             "|------|----|------|----------|------------------|\n",
             wrap_width=0
         )
-        for pillar_index, pillar in enumerate(self.pillars):
+        for pillar_index, pillar in enumerate(self.pillars()):
             pillar_url = f'/pillar/{pillar.local_name}'
             overview_md.write(
                 f"|[{pillar.name}]({pillar_url}) {{ .foo }}| ~~ | ~~ | ~~ | ~~ |\n",
@@ -193,7 +259,7 @@ class MaturityModel:
                 capabilities = area.capabilities()
                 last_area = area_index == (len(areas) - 1)
                 pillar_filler = "_ _" if last_area and len(capabilities) == 0 else "   "
-                area_url = f'{pillar_url}/capability-area/{area.local_name}'
+                area_url = f'{pillar_url}/{area.local_name}'
                 overview_md.write(
                     f"|{pillar_filler}|[{area.name}]({area_url}) {{ .foo }}| ~~ |~~ | ~~ |\n",
                     wrap_width=0
@@ -202,7 +268,7 @@ class MaturityModel:
                     last_capability = capability_index == (len(capabilities) - 1)
                     pillar_filler = "_ _" if last_area and last_capability else "   "
                     area_filler = "_ _" if last_capability else "   "
-                    capability_url = f'{area_url}/capability/{capability.local_name}'
+                    capability_url = f'{area_url}/{capability.local_name}'
                     tag_line = capability.tag_line
                     if tag_line is None:
                         tag_line = "... todo ..."

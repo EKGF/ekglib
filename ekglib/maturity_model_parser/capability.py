@@ -1,8 +1,13 @@
 from __future__ import annotations
+
+from os import getcwd
+from os.path import relpath
 from pathlib import Path
+
+from ekglib import log_item
 from rdflib.term import Node
 
-from .File import makedirs, copy_fragment, copy_fragment_new
+from .File import makedirs, copy_fragment_new
 from .config import Config
 from .markdown_document import MarkdownDocument
 from .pages_yaml import PagesYaml
@@ -32,8 +37,9 @@ class MaturityModelCapability:
         self.local_name = self.graph.local_name_for(self.node, self.class_label)
         self.local_type_name = self.graph.local_type_name_for(self.node, self.class_label)
         self.tag_line = self.graph.tag_line_for(self.node)
-        self.full_dir = self.area.full_dir / self.local_type_name / self.local_name
-        self.fragments_dir = capability_area_fragments_dir / self.local_type_name / self.local_name
+        self.full_dir = self.area.full_dir / self.local_name
+        self.fragments_dir = capability_area_fragments_dir / self.local_name
+        log_item(f"{self.class_label} Fragments", relpath(self.fragments_dir, getcwd()))
         self.md_file = None
         makedirs(self.full_dir, self.class_label)
 
@@ -47,25 +53,25 @@ class MaturityModelCapability:
         self.md_file.create_md_file()
 
     def generate_link_from_area_to_capability(self):
-        link = Path('.') / self.local_type_name / self.local_name / 'index.md'
-        self.area.md_file.new_line('- ' + self.area.md_file.new_inline_link(
-            link=str(link), text=self.name
-        ))
+        link = Path('.') / self.local_name / 'index.md'
+        self.area.md_file.new_line(f'- [{self.name}]({link})')
 
     def generate_summary(self):
         # self.md_file.heading(2, "Summary")
         indent_prefix = "    "
+        self.graph.write_tag_line(self.md_file, self.node)
+        self.md_file.indent = indent_prefix
         self.md_file.new_line(f'\n=== "Summary"\n\n')
-        self.md_file.write(
-            f"{indent_prefix}The capability _{self.name}_ ({self.number})\n"
-            f"{indent_prefix}is part of the capability area [_{self.area.name}_](../../index.md)\n"
-            f"{indent_prefix}in the [_{self.area.pillar.name}_](../../index.md).",
+        self.md_file.new_line(
+            f"The capability _{self.name}_ ({self.number})\n"
+            f"is part of the capability area [_{self.area.name}_](../../index.md)\n"
+            f"in the [_{self.area.pillar.name}_](../../index.md).",
             wrap_width=0
         )
-        self.md_file.write("\n")
-        self.graph.write_tag_line(self.md_file, self.node, indent_prefix)
-        self.md_file.write("\n")
-        self.graph.write_description(self.md_file, self.node, indent_prefix)
+        self.md_file.new_line()
+        self.graph.write_tag_line(self.md_file, self.node)
+        self.md_file.new_line()
+        self.graph.write_description(self.md_file, self.node)
 
     def copy_fragments(self):
         indent_prefix = "    "
@@ -84,33 +90,31 @@ class MaturityModelCapability:
         self.md_file.new_line(f'\n\n=== "Use cases"')
         copy_fragment_new(self.md_file, self.fragments_dir / 'use-cases.md', self.config, indent_prefix)
 
-    @classmethod
-    def generate_index_md(cls, area: MaturityModelCapabilityArea):
-        graph = area.graph
-        type_name = graph.local_type_name_for_type(cls.class_iri, cls.class_label)
-        root = area.full_dir / type_name
-        makedirs(root, cls.class_label_plural)
-        md_file = MarkdownDocument(path=root / 'index.md', metadata={
-            "title": f"{area.name} --- {cls.class_label_plural}"
-        })
-        md_file.write(
-            f'An overview of all the capabilities in the area _{area.name}_:\n\n'
-        )
-        for capability in area.capabilities():
-            md_file.heading(2, f"{capability.number}. [{capability.name}](./{capability.local_name}/)")
-            graph.write_tag_line(md_file, capability, '')
-            graph.write_description(md_file, capability, '')
-
-        md_file.create_md_file()
+    # @classmethod
+    # def generate_index_md(cls, area: MaturityModelCapabilityArea):
+    #     graph = area.graph
+    #     type_name = graph.local_type_name_for_type(cls.class_iri, cls.class_label)
+    #     root = area.full_dir / type_name
+    #     makedirs(root, cls.class_label_plural)
+    #     md_file = MarkdownDocument(path=root / 'index.md', metadata={
+    #         "title": f"{area.name} --- {cls.class_label_plural}"
+    #     })
+    #     md_file.write(
+    #         f'An overview of all the capabilities in the area _{area.name}_:\n\n'
+    #     )
+    #     for capability in area.capabilities():
+    #         md_file.heading(2, f"{capability.number}. [{capability.name}](./{capability.local_name}/)")
+    #         graph.write_tag_line(md_file, capability, '')
+    #         graph.write_description(md_file, capability, '')
+    #
+    #     md_file.create_md_file()
 
     @classmethod
     def generate_pages_yaml(cls, area: MaturityModelCapabilityArea):
-        graph = area.graph
-        type_name = graph.local_type_name_for_type(cls.class_iri, cls.class_label)
-        root = area.full_dir / type_name
+        root = area.full_dir
         makedirs(root, cls.class_label_plural)
         pages_yaml = PagesYaml(root=root, title=cls.class_label_plural)
         for capability in area.capabilities():
-            pages_yaml.add(f"{capability.name}: {capability.local_name}")
+            pages_yaml.add(f"{capability.name} - capability: {capability.local_name}")
         pages_yaml.add('...')
         pages_yaml.write()

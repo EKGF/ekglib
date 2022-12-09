@@ -1,6 +1,8 @@
 from __future__ import annotations
 from pathlib import Path
 
+from ekglib import log_item
+
 from .File import File
 
 
@@ -18,7 +20,9 @@ class PagesYaml:
 
     def write(self):
         file = File(False, self.root / '.pages.yaml')
+        log_item("pages.yaml", file.path)
         data = f"title: {self.title}\nnav:"
         for item in self.nav:
             data += f"\n  - {item}"
+        log_item("pages.yaml", data)
         file.rewrite_all_file(data)

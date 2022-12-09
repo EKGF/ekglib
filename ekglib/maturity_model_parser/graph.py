@@ -1,4 +1,8 @@
 from __future__ import annotations
+
+from os import getcwd
+from os.path import relpath
+
 import rdflib
 import textwrap
 import re
@@ -216,10 +220,12 @@ class MaturityModelGraph:
         For each reference to some text-fragment rewrite the path to that markdown file
         relative to the given input directory
         """
+        log_item("Rewriting", "Fragment References")
         predicate = MATURITY_MODEL.backgroundAndIntro
         for (subject, objekt) in self.g.subject_objects(predicate):
             log_item("Subject", subject)
-            log_item("Fragments Root", fragments_root)
+            log_item("Object", objekt)
+            log_item("Fragments Root", relpath(fragments_root, getcwd()))
             fragment_path = fragments_root / objekt
             log_item("Fragment Path", fragment_path)
             if not fragment_path.exists():
@@ -236,12 +242,12 @@ class MaturityModelGraph:
             sort_key = f'{capability_number_parts[0]}.{capability_number_parts[1]:0>3}.{capability_number_parts[2]:0>3}'
             self.g.add((subject, MATURITY_MODEL.sortKey, Literal(sort_key)))
 
-    def write_tag_line(self, md: MarkdownDocument, node: Node, indent_prefix: str):
+    def write_tag_line(self, md: MarkdownDocument, node: Node):
         tag_line = self.tag_line_for(node)
         if tag_line:
-            md.write(f'\n{indent_prefix}**_{tag_line}_**\n', wrap_width=0)
+            md.new_line(f'_{tag_line}_', wrap_width=0)
 
-    def write_description(self, md: MarkdownDocument, node: Node, indent_prefix: str):
-        dct_description = self.description_for(node, indent_prefix)
+    def write_description(self, md: MarkdownDocument, node: Node):
+        dct_description = self.description_for(node, md.indent)
         if dct_description:
-            md.write(dct_description, wrap_width=0)
+            md.new_line(dct_description, wrap_width=0)

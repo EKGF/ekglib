@@ -1,0 +1,86 @@
+Metadata-Version: 2.1
+Name: ekglib
+Version: 0.0.28
+Summary: A Python Library for various tasks in an EKG DataOps operation
+Home-page: https://ekgf.github.io/ekglib/
+Author: Jacobus Geluk
+Author-email: jacobus.geluk@agnos.ai
+Platform: any
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Development Status :: 2 - Pre-Alpha
+Classifier: License :: OSI Approved :: GNU General Public License v3 (GPLv3)
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Operating System :: OS Independent
+Classifier: Natural Language :: English
+Requires-Python: >=3.10.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+
+= ekglib
+:icons: font
+:description: A Python Library for various tasks in an EKG DataOps operation.
+ifdef::env-github,env-browser[:outfilesuffix: .adoc]
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+WARNING: This is a pre-alpha project. Everything in this repo is subject to heavy change.
+
+image:https://github.com/EKGF/ekglib/workflows/Build%20&%20Test/badge.svg[Build & Test]
+
+View the Project on Github https://github.com/EKGF/ekglib[here].
+
+== Metadata Parsers
+
+- link:ekglib/concept_parser/[Concept Parser]
+- link:ekglib/persona_parser/[Persona Parser]
+- link:ekglib/dataops_rule_parser/[Story Validate Rule Parser]
+- link:ekglib/dataops_rules_capture/[Story Vaidate Rules Capture]
+- link:ekglib/dataops_rules_execute/[Story Validate Rules Executor]
+- link:ekglib/use_case_parser/[Use Case Parser]
+- link:ekglib/user_story_parser/[User Story Parser]
+
+== Capture Steps
+
+- link:ekglib/xlsx_parser/[Xlsx Parser]
+- link:ekglib/ldap_parser/[LDAP Parser]
+
+== Installation
+
+[source]
+----
+pip3 install -r requirements.txt
+----
+
+python3 was not linked, so had to:
+
+[source]
+----
+brew link --overwrite python
+----
+
+== Tests
+To run the tests, run:
+
+[source]
+----
+./run-tests.sh
+----
+
+Tun run a single test, from root run:
+
+[source]
+----
+./run-tests.sh <name of test>
+----
+
+== Packaging
+
+[source]
+----
+pip3 wheel -r requirements.txt
+----

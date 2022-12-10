@@ -1,0 +1,160 @@
+@prefix : <https://ekgf.org/ontology/concept/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix obda: <https://w3id.org/obda/vocabulary#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<https://ekgf.org/ontology/concept/> a owl:Ontology ;
+	owl:imports <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ;
+	rdfs:comment "The EKGF Concept Ontology"@en ;
+	rdfs:label "EKGF Concept Ontology"@en .
+# 
+# 
+# #################################################################
+# #
+# #    Annotation properties
+# #
+# #################################################################
+# 
+# 
+# http://purl.org/dc/elements/1.1/creator
+
+<http://purl.org/dc/elements/1.1/creator> a owl:AnnotationProperty .
+# 
+# http://purl.org/dc/elements/1.1/date
+
+<http://purl.org/dc/elements/1.1/date> a owl:AnnotationProperty .
+# 
+# 
+# 
+# #################################################################
+# #
+# #    Object Properties
+# #
+# #################################################################
+# 
+# 
+# https://ekgf.org/ontology/concept/hasConcept
+
+:hasConcept a owl:ObjectProperty ;
+	rdfs:range :Concept ;
+	<http://purl.org/dc/elements/1.1/creator> <http://orcid.org/0000-0003-2309-5068> ;
+	<http://purl.org/dc/elements/1.1/date> "2020-04-23T10:53:20Z"^^xsd:dateTime .
+# 
+# https://ekgf.org/ontology/concept/predicate
+
+:predicate a owl:ObjectProperty ;
+	rdfs:domain :PropertyConcept ;
+	rdfs:range rdfs:Resource ;
+	owl:propertyDisjointWith :rdfsClass ;
+	<http://purl.org/dc/elements/1.1/creator> <http://orcid.org/0000-0003-2309-5068> ;
+	<http://purl.org/dc/elements/1.1/date> "2020-04-28T14:40:47Z"^^xsd:dateTime ;
+	rdfs:comment "a (business) property concept should ultimately be tied to an owl:DatatypeProperty"@en ;
+	rdfs:label "has predicate"@en .
+# 
+# https://ekgf.org/ontology/concept/raw
+
+:raw a owl:ObjectProperty ;
+	rdfs:domain :Concept ;
+	rdfs:range rdf:Property ;
+	<http://purl.org/dc/elements/1.1/creator> <http://orcid.org/0000-0003-2309-5068> ;
+	<http://purl.org/dc/elements/1.1/date> "2020-06-14T12:13:31Z"^^xsd:dateTime ;
+	rdfs:comment "The raw predicate that this concept usually gets represented with in the \"raw\" data that we capture from the originating source. Could be multiple predicates in case this concept occurs in multiple sources."@en .
+# 
+# https://ekgf.org/ontology/concept/rdfsClass
+
+:rdfsClass a owl:ObjectProperty ;
+	rdfs:domain :ClassConcept ;
+	rdfs:range rdfs:Class ;
+	<http://purl.org/dc/elements/1.1/creator> <http://orcid.org/0000-0003-2309-5068> ;
+	<http://purl.org/dc/elements/1.1/date> "2020-06-21T12:22:44Z"^^xsd:dateTime .
+# 
+# 
+# 
+# #################################################################
+# #
+# #    Data properties
+# #
+# #################################################################
+# 
+# 
+# https://ekgf.org/ontology/concept/key
+
+:key a owl:DatatypeProperty , owl:FunctionalProperty ;
+	rdfs:domain :Concept ;
+	<http://purl.org/dc/elements/1.1/creator> <http://orcid.org/0000-0003-2309-5068> ;
+	<http://purl.org/dc/elements/1.1/date> "2020-04-23T10:39:51Z"^^xsd:dateTime ;
+	rdfs:comment """The \"key\" of a concept in lower camel case.
+This key is being used in APIs as parameters or in JSON schemas as a key etc.
+Example: legalEntityId and not \"Legal Entity Id\" or \"legal-entity-id\"."""@en .
+# 
+# https://ekgf.org/ontology/concept/rawStripPrefix
+
+:rawStripPrefix a owl:DatatypeProperty ;
+	<http://purl.org/dc/elements/1.1/creator> <http://orcid.org/0000-0003-2309-5068> ;
+	<http://purl.org/dc/elements/1.1/date> "2020-06-14T12:53:16Z"^^xsd:dateTime .
+# 
+# https://ekgf.org/ontology/concept/type
+
+:type a owl:DatatypeProperty , owl:FunctionalProperty ;
+	rdfs:domain :Concept ;
+	<http://purl.org/dc/elements/1.1/creator> <http://orcid.org/0000-0003-2309-5068> ;
+	<http://purl.org/dc/elements/1.1/date> "2020-04-23T10:41:16Z"^^xsd:dateTime .
+# 
+# 
+# 
+# #################################################################
+# #
+# #    Classes
+# #
+# #################################################################
+# 
+# 
+# http://www.w3.org/1999/02/22-rdf-syntax-ns#Property
+
+rdf:Property a owl:Class .
+# 
+# http://www.w3.org/2000/01/rdf-schema#Resource
+
+rdfs:Resource a owl:Class .
+# 
+# https://ekgf.org/ontology/concept/ClassConcept
+
+:ClassConcept a owl:Class ;
+	rdfs:subClassOf :Concept ;
+	<http://purl.org/dc/elements/1.1/creator> <http://orcid.org/0000-0003-2309-5068> ;
+	<http://purl.org/dc/elements/1.1/date> "2020-04-22T17:57:15Z"^^xsd:dateTime ;
+	rdfs:comment """A ClassConcept can be tied to an rdfs:Class (usually an OWL Class).
+The concept:type value must be xsd:anyURI in that case and the
+concept:rdfsClass property holds the reference to the RDFS/OWL Class."""@en .
+# 
+# https://ekgf.org/ontology/concept/Concept
+
+:Concept a owl:Class ;
+	<http://purl.org/dc/elements/1.1/creator> <http://orcid.org/0000-0003-2309-5068> ;
+	<http://purl.org/dc/elements/1.1/date> "2020-04-22T17:56:44Z"^^xsd:dateTime .
+# 
+# https://ekgf.org/ontology/concept/PropertyConcept
+
+:PropertyConcept a owl:Class ;
+	rdfs:subClassOf :Concept ;
+	<http://purl.org/dc/elements/1.1/creator> <http://orcid.org/0000-0003-2309-5068> ;
+	<http://purl.org/dc/elements/1.1/date> "2020-04-22T17:57:45Z"^^xsd:dateTime .
+# 
+# https://ekgf.org/ontology/concept/ShapeConcept
+
+:ShapeConcept a owl:Class ;
+	rdfs:subClassOf :Concept ;
+	<http://purl.org/dc/elements/1.1/creator> <http://orcid.org/0000-0003-2309-5068> ;
+	<http://purl.org/dc/elements/1.1/date> "2020-04-22T17:57:23Z"^^xsd:dateTime .
+# 
+# https://ekgf.org/ontology/concept/TaxonomyConcept
+
+:TaxonomyConcept a owl:Class ;
+	rdfs:subClassOf :Concept ;
+	<http://purl.org/dc/elements/1.1/creator> <http://orcid.org/0000-0003-2309-5068> ;
+	<http://purl.org/dc/elements/1.1/date> "2020-04-22T17:57:37Z"^^xsd:dateTime .
+# 
+# Generated by the OWL API (version 4.5.9.2019-02-01T07:24:44Z) https://github.com/owlcs/owlapi

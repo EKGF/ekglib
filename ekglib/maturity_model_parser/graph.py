@@ -157,13 +157,13 @@ class MaturityModelGraph:
         return self.has_type(subject_iri, MATURITY_MODEL.Level)
 
     def has_type_capability_area(self, subject_iri):
-        if self.verbose:
-            log_item("Type of", f"{subject_iri} == {self.get_type(subject_iri)}")
+        # if self.verbose:
+        #     log_item("Type of", f"{subject_iri} == {self.get_type(subject_iri)}")
         return self.has_type(subject_iri, MATURITY_MODEL.CapabilityArea)
 
     def has_type_capability(self, subject_iri):
-        if self.verbose:
-            log_item("Type of", f"{subject_iri} == {self.get_type(subject_iri)}")
+        # if self.verbose:
+        #     log_item("Type of", f"{subject_iri} == {self.get_type(subject_iri)}")
         return self.has_type(subject_iri, MATURITY_MODEL.Capability)
 
     def subjects_of_type(self, type_uri: URIRef) -> Iterable[Node]:

@@ -93,15 +93,15 @@ class MaturityModel:
         pillars_root = self.pillars_root
         index_md = pillars_root / 'index.md'
         self.md_file = MarkdownDocument(path=index_md, metadata={
-            'title': 'Pillars',
+            'title': 'Maturity Model',
             'hide': [
                 'navigation',
                 'toc',
                 'title'
             ]
         })
-        card_indent_1 = "    "
-        card_indent_2 = "         "
+        card_indent_1 = ' ' * 4
+        card_indent_2 = ' ' * 8
         icon = ":orange_book:"
         arrow = ":octicons-arrow-right-24:"
         icon_style = "{ .lg .middle }"
@@ -115,20 +115,22 @@ class MaturityModel:
                 capability_area_path = relpath(area.full_dir, pillars_root)
                 md_file.indent = card_indent_1
                 md_file.new_line()
-                md_file.new_line(f"- {icon}{icon_style} __[{area.name}]({capability_area_path}/index.md)__({index2})",
-                                 wrap_width=0)
+                md_file.new_line_no_wrap(
+                    f"- {icon}{icon_style} __[{area.name}]({capability_area_path}/index.md)__({index2})"
+                )
                 md_file.indent = card_indent_2
                 md_file.new_line()
                 md_file.new_line('------')
                 md_file.new_line()
                 for capability in area.capabilities():
                     capability_path = relpath(capability.full_dir, pillars_root)
-                    md_file.new_line(f"- [{capability.name}]({capability_path})", wrap_width=0)
+                    md_file.new_line(f"- [{capability.name}]({capability_path}/index.md)", wrap_width=0)
                 md_file.new_line()
                 if area.description is not None:
-                    md_file.new_line('------')
                     md_file.new_line(area.description, wrap_width=0)
-                md_file.new_line(f"[{arrow}{icon_style} Learn more]({capability_area_path}/index.md)\n", wrap_width=0)
+                md_file.new_line_no_wrap(
+                    f"[{arrow}{icon_style} Learn more]({capability_area_path}/index.md)<br/><br/>\n"
+                )
             md_file.indent = card_indent_1
             md_file.new_line('</div>\n')
             for index, area in enumerate(pillar.capability_areas()):

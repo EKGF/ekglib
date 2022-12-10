@@ -1,4 +1,8 @@
 from __future__ import annotations
+
+from os import getcwd
+from os.path import relpath
+
 import owlrl
 import rdflib
 from io import BytesIO
@@ -77,7 +81,7 @@ class MaturityModelLoader:
         log_item("# asserted triples", len(self.g))
 
     def load_model_file(self, turtle_file: Path):
-        log_item("Loading Model File", turtle_file)
+        log_item("Loading Model File", relpath(turtle_file, getcwd()))
         load_rdf_file_into_graph(self.g, turtle_file)
 
     def rdfs_infer(self):

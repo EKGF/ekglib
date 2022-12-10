@@ -176,6 +176,9 @@ class MarkdownDocument:
 
         return self.file_data_text
 
+    def new_line_no_wrap(self, text=''):
+        self.new_line(text, wrap_width=0)
+
     def new_line(self, text='', wrap_width=120):
         """Add a new line to Markdown file. The text is saved to the global variable file_data_text.
 

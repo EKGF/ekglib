@@ -39,7 +39,7 @@ class MaturityModelCapabilityArea:
         self.local_name = self.graph.local_name_for(self.node, self.class_label)
         self.local_type_name = self.graph.local_type_name_for(self.node, self.class_label)
         self.description = self.graph.description_for(self.node, '')
-        log_item("Area Description", self.description)
+        # log_item("Area Description", self.description)
         self.full_dir = self.pillar.full_dir / self.local_name
         self.full_path = self.full_dir / 'index.md'
         self.fragments_dir = pillar_fragments_dir / self.local_name
@@ -91,7 +91,7 @@ class MaturityModelCapabilityArea:
 
     def sort_key(self, element):
         for sort_key in self.graph.g.objects(element, MATURITY_MODEL.sortKey):
-            log_item("Sort key of", f"{sort_key} -> {element}")
+            # log_item("Sort key of", f"{sort_key} -> {element}")
             return str(sort_key)
         sort_key = str(element)
         log_item("No sort key for", element)

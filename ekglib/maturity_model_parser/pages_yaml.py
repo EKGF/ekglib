@@ -24,5 +24,5 @@ class PagesYaml:
         data = f"title: {self.title}\nnav:"
         for item in self.nav:
             data += f"\n  - {item}"
-        log_item("pages.yaml", data)
+        # log_item("pages.yaml", data)
         file.rewrite_all_file(data)

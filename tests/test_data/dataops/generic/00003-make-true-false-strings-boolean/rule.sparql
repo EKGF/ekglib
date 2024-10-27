@@ -1,0 +1,24 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+DELETE {
+  GRAPH ?g {
+    ?s ?p ?o1
+  }
+}
+INSERT {
+
+  GRAPH ?g {
+    ?s ?p ?o2 .
+  }
+}
+WHERE {
+  GRAPH ?g {
+    ?s ?p ?o1
+  }
+
+  FILTER(isLiteral(?o1))
+  FILTER(STR(?o1) = "True" || STR(?o1) = "False")
+
+  BIND(xsd:boolean(?o1) AS ?o2)
+}

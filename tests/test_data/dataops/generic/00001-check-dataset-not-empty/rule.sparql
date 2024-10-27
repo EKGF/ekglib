@@ -1,0 +1,6 @@
+PREFIX legal-entity:  <https://ekgf.org/ontology/legal-entity/>
+ASK {
+  GRAPH ?g {
+    ?s legal-entity:madeUpPredicate ?o .
+  }
+}

@@ -1,0 +1,2 @@
+PREFIX kggraph: <https://placeholder.kg/graph/>
+SELECT * WHERE { GRAPH kggraph:foo { ?s ?p ?o }}

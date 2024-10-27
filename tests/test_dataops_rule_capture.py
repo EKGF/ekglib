@@ -1,10 +1,13 @@
 import sys
 
+import pytest
+
 import ekglib
 
 
 class TestDataopsRulesCapture:
 
+    @pytest.mark.object_store
     def test_dataops_rule_capture(self, kgiri_base, test_data_dir, local_s3_port):
         sys.argv = [
             'pytest',

@@ -3,10 +3,13 @@ import unittest
 from tempfile import TemporaryDirectory
 from unittest import mock
 
+import pytest
+
 from ekglib.ldap_parser_to_file import main as ldap_parser_to_file
 from ekglib.log import log_item
 
 
+@pytest.mark.ldap
 def test_export_from_ldapclient_dot_com(test_data_dir, kgiri_base, tmpdir):
     """Generic test that should always work since ldapclient.com is always up and running
     """
@@ -38,7 +41,8 @@ def test_export_from_ldapclient_dot_com(test_data_dir, kgiri_base, tmpdir):
 
 # This no longer works, see:
 # https://www.sonicwall.com/support/knowledge-base/cannot-connect-to-ldap-server-on-port-389-3268-and-636/170504922409869/
-@unittest.skip
+@unittest.skip("Skipping test no longer works")
+@pytest.mark.ldap
 def test_export_from_d_trust_dot_de(test_data_dir, kgiri_base):
     """Generic test that should always work since directory.d-trust.de is always up and running.
        This is the LDAP server of the "Bundesdruckerei" (government printer/publisher), see
@@ -102,7 +106,7 @@ def test_export_from_d_trust_dot_de(test_data_dir, kgiri_base):
 #             for line in (file.readlines()[-8:]):
 #                 print(line, end='')
 #
-
+@pytest.mark.ldap
 def test_export_from_forumsys_dot_com(test_data_dir, kgiri_base):
     """Generic test that should always work since ldap.forumsys.com is always up and running
     """
@@ -133,6 +137,7 @@ def test_export_from_forumsys_dot_com(test_data_dir, kgiri_base):
                 print(line, end='')
 
 
+@pytest.mark.ldap
 def test_export_from_local_ldap_mock_server_all_naming_contexts(
         kgiri_base, ldap_naming_context, ldap_bind_dn, ldap_bind_auth, local_ldap_port, test_output_dir
 ):
@@ -169,6 +174,7 @@ def test_export_from_local_ldap_mock_server_all_naming_contexts(
             print(line, end='')
 
 
+@pytest.mark.ldap
 def test_export_from_local_ldap_mock_server_one_naming_context(
         kgiri_base, ldap_naming_context, ldap_bind_dn, ldap_bind_auth, local_ldap_port, test_output_dir
 ):

@@ -18,18 +18,22 @@ class TestXlsxProcessor:
     def test_parse_date(self):
         actual = convert_to_date("2019.01.10")
         expected = date(2019, 1, 10)
+        assert expected is not None
         assert expected == actual
         actual2 = parse_literal(actual)
+        assert actual2 is not None
         expected2 = Literal(actual, datatype=XSD.date)
         assert expected2 == actual2
         assert expected2.datatype == actual2.datatype
 
     def test_parse_column_name(self):
         actual = ekglib.parse_column_name('Reference ID')
+        assert actual is not None
         expected = 'referenceId'
         assert expected == actual
 
     def test_single_column_sheet_generates_string_value_triple(self, kgiri_base, test_data_dir):
+        assert "https://kg.your-company.kom" == kgiri_base
         args = argparse.Namespace(
             input=f'{test_data_dir}/single_sheet_single_column.xlsx',
             verbose=True,
@@ -45,8 +49,11 @@ class TestXlsxProcessor:
         )
         set_kgiri_base(kgiri_base)
         parser = ekglib.XlsxParser(args)
+        assert parser is not None
 
         rdf_string_value = ekglib.RAW.StringValue
+        assert "URIRef" == type(rdf_string_value).__name__
+        assert "https://ekgf.org/ontology/raw/StringValue" == rdf_string_value.toPython()
         actual = set(parser.g.triples((
             None,
             RDF.type,

@@ -58,9 +58,9 @@ def numpy_type_2_xsd_type(value: Any) -> (Any, URIRef):
         return value, XSD.string
     if isinstance(value, bool):
         return value, XSD.boolean
-    if np.issubdtype(type(value), np.integer):
+    if np.issubdtype(value, np.integer):
         return value, Literal(value).datatype
-    if np.issubdtype(type(value), np.float):
+    if np.issubdtype(value, np.floating):
         return value, Literal(value).datatype
     elif isinstance(value, Timestamp):  # has to come before the test for type date below
         date_time: datetime = value
@@ -311,7 +311,8 @@ class XlsxParser:
 
            'count', 'unique', 'top', 'freq', 'mean', 'std', 'min', '25%', '50%', '75%', 'max'
         """
-        data_profile = df.describe(include='all', datetime_is_numeric=True)
+        # data_profile = df.describe(include='all', datetime_is_numeric=True)
+        data_profile = df.describe(include='all')
         data_profile.columns = self.column_names
         # log_item('Data Profile', data_profile)
         data_profile_transposed = data_profile.transpose()

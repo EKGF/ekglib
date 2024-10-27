@@ -1,10 +1,13 @@
 import sys
 
+import pytest
+
 import ekglib
 
 
 class TestDataopsRulesExecutor:
 
+    @pytest.mark.triple_store
     def test_dataops_rules_execute(self, kgiri_base, test_data_dir, local_sparql_port):
         sys.argv = [
             'pytest',

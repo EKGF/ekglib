@@ -7,12 +7,8 @@ import ekglib
 
 class TestExport:
 
-    # TODO: Make more generic, test whether a SPARQL and S3 endpoint is available
-    # @unittest.skipUnless(
-    #     os.uname()[1] == 'agnosmac01.local',
-    #     f"Can only run when SPARQL and S3 endpoints are available on {os.uname()[1]}"
-    # )
-    @pytest.mark.xfail
+    @pytest.mark.triple_store
+    @pytest.mark.object_store
     def test_export(self, kgiri_base, local_sparql_port, local_s3_port):
         sys.argv = [
             'pytest',

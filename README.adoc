@@ -35,7 +35,7 @@ View the Project on Github https://github.com/EKGF/ekglib[here].
 
 [source]
 ----
-pip3 install -r requirements.txt
+./setup.sh
 ----
 
 python3 was not linked, so had to:

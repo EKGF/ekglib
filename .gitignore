@@ -33,6 +33,8 @@ test-ldap-*.nt
 README.html
 raw-data-*.ttl
 /xlsx-test3.ttl
-venv*/
-.venv/
-
+.venv
+.mypy_cache
+.pytest_cache
+.ruff_cache
+.tox

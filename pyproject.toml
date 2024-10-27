@@ -1,42 +1,211 @@
-[tool.poetry]
+[project]
 name = "ekglib"
-version = "0.0.29"
+version = "0.0.30"
 description = "A Python Library for various tasks in an EKG DataOps operation."
-authors = ["Jacobus Geluk <jacobus.geluk@agnos.ai>"]
-readme = "README.adoc"
-homepage = "https://ekgf.github.io/ekglib/"
+authors = [{ name = "Jacobus Geluk", email = "jacobus.geluk@agnos.ai" }]
+license = { file = "LICENSE" }
 classifiers = [
-    "Programming Language :: Python :: 3.10",
     "Development Status :: 2 - Pre-Alpha",
-    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Operating System :: OS Independent",
     "Natural Language :: English",
 ]
+requires-python = ">=3.13"
+dependencies = [
+    "option",
+    "boto3",
+    "boto3-stubs",
+    "botocore",
+    "pandas",
+    "pandas-stubs",
+    "numpy",
+    "data-science-types",
+    "python-dateutil",
+    "rdflib",
+    "toml",
+    "inflection",
+    "humps",
+    "requests",
+    "SPARQLWrapper",
+    "ldap3",
+    "stringcase",
+    "mkdocs-gen-files",
+    "mdutils",
+    "owlrl",
+    "openpyxl",
+    "setuptools",
+]
 
-[tool.poetry.dependencies]
-python = "^3.10"
-option = "^2.1.0"
-boto3 = "^1.26.27"
-boto3-stubs = "^1.26.27"
-botocore = "^1.29.27"
-pandas = "^1.5.2"
-numpy = "^1.23.5"
-data-science-types = "^0.2.23"
-python-dateutil = "^2.8.2"
-rdflib = "^6.2.0"
-toml = "^0.10.2"
-inflection = "^0.5.1"
-humps = "^0.2.2"
-requests = "^2.28.1"
-SPARQLWrapper = "^2.0.0"
-ldap3 = "^2.9.1"
-stringcase = "^1.2.0"
-mkdocs-gen-files = "^0.4.0"
-mdutils = "^1.4.0"
-owlrl = "^6.0.2"
-openpyxl = "^3.0.10"
+[dependency-groups]
+dev = [
+    "uv",
+    "tox",
+    "ruff",
+    "pytest",
+    "pytest-cov",
+    "black",
+    "isort",
+    "mypy",
+    "pylint",
+    "pyright",
+    "mkdocs",
+    "mkdocs-material",
+    "mkdocs-gen-files",
+    "mdutils",
+    "pytest-timeout>=2.3.1",
+    "flake8>=7.1.1",
+]
+
+# See https://packaging.python.org/en/latest/specifications/declaring-project-metadata/#urls
+# See https://peps.python.org/pep-0753/#well-known-labels
+[project.urls]
+homepage = "https://github.com/ekgf/ekglib"
+documentation = "https://ekgf.github.io/ekglib/"
+repository = "https://github.com/ekgf/ekglib.git"
+
+[project.scripts]
+ekglib = "ekglib.cli:main"
+ekglib-xlsx-parser = "ekglib.xlsx_parser
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv]
+# See https://docs.astral.sh/uv/concepts/projects/#configuring-project-packaging
+package = true
+default-groups = ["dev"]
+# No need to install tools like tox or ruff here, run those via
+# `uv run <tool>` or `uvx <tool>` instead.
+dev-dependencies = [
+    "pyright",
+    "ipykernel",
+]
+link-mode = "copy"
+
+[tool.black]
+line-length = 120
+target-version = ['py312']
+
+[tool.mypy]
+files = ["ekglib"]
+mypy_path = "ekglib"
+explicit_package_bases = true
+warn_unused_ignores = false
+
+# [[tool.mypy.overrides]]
+# module = []
+# ignore_missing_imports = true
+
+[tool.pylint.messages_control]
+ignore = ["setup.py", "__init__.py"]
+disable = "all"
+enable = [
+    "empty-docstring",
+    "missing-class-docstring",
+    "missing-function-docstring",
+    "missing-module-docstring",
+]
+
+[tool.isort]
+profile = "black"
+known_first_party = ["ekglib"]
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+pythonpath = [".", "ekglib"]
+addopts = "-rA --doctest-modules --strict-markers --verbose --junitxml=junit/test-results.xml --cov-report=html --maxfail=2 --showlocals --tb=short --durations=5"
+norecursedirs = ["build", "dist", "docs", "htmlcov", ".tox", ".vscode", ".idea", ".git", ".github", ".venv", ".mypy_cache", ".pytest_cache", ".ruff_cache", "junit"]
+log_cli_level = "DEBUG"
+log_cli = true
+junit_family = "xunit1"
+timeout = 10
+testpaths = ["tests"]
+
+[tool.coverage.run]
+branch = true
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "def __str__",
+    "if TYPE_CHECKING"
+]
+# Regexes for lines to exclude from consideration
+exclude_also = [
+    # Don't complain about missing debug-only code:
+    "def __repr__",
+    "if self\\.debug",
+
+    # Don't complain if tests don't hit defensive assertion code:
+    "raise AssertionError",
+    "raise NotImplementedError",
+
+    # Don't complain if non-runnable code isn't run:
+    "if 0:",
+    "if __name__ == .__main__.:",
+
+    # Don't complain about abstract methods, they're not supposed to be run:"
+    "@(abc\\.)?abstractmethod"
+]
+
+[tool.pyright]
+include = ["src", "tests"]
+exclude = [
+    "**/node_modules", 
+    "**/dist", 
+    "**/build", 
+    "**/htmlcov", 
+    "**/docs", 
+    "**/junit", 
+    "**/coverage", 
+    "**/.venv", 
+    "**/.mypy_cache", 
+    "**/.pytest_cache", 
+    "**/.tox", 
+    "**/.git",
+    "**/.idea",
+    "**/.vscode",
+    "typings",
+    "**/__pycache__",
+]
+ignore = []
+stubPath = "typings"
+venv = ".venv"
+verboseOutput = true
+reportMissingImports = "error"
+reportMissingTypeStubs = false
+reportMissingParameterType = false
+pythonVersion = "3.12"
+useLibraryCodeForTypes = true
+strictListInference = true
+strictDictionaryInference = true
+strictSetInference = true
+analyzeUnannotatedFunctions = true
+
+reportUntypedFunctionDecorator = true
+reportUntypedClassDecorator = true
+
+executionEnvironments = [{ root = "ekglib", pythonPath = "ekglib" }]
+
+[tool.hatch.build]
+skip-excluded-dirs = true
+
+[tool.hatch.envs.default]
+installer = "uv"
+
+[tool.hatch.build.targets.wheel]
+only-include = ["ekglib"]
+sources = ["ekglib"]
+
+[tool.hatch.build.targets.sdist]
+include = ["ekglib/*.py", "tests/*.py", "typings/*.py"]
+exclude = [".venv"]
+
+
+

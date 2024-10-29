@@ -5,6 +5,7 @@
 		}
 	],
 	"settings": {
-		"makefile.configureOnOpen": false
+		"makefile.configureOnOpen": false,
+		"CodeGPT.apiKey": "CodeGPT Plus Beta"
 	}
 }

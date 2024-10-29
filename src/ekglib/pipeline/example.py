@@ -47,11 +47,18 @@ def async_step(name: str) -> Callable[..., Callable[..., AsyncGenerator[S, R]]]:
             try:
                 while True:
                     value = yield
-                    if value is not None:  # Add this check
-                        async for result in gen:
-                            if next:
-                                await asyncio.gather(*(nxt.asend(result) for nxt in next))
-                            yield result
+                    if value is not None:
+                        # Send the value to the generator
+                        await gen.asend(value)
+                        # Process all results from the generator
+                        try:
+                            while True:
+                                result = await gen.__anext__()
+                                if next:
+                                    await asyncio.gather(*(nxt.asend(result) for nxt in next))
+                                yield result
+                        except StopAsyncIteration:
+                            pass
             finally:
                 print(f"Finished {name}")
                 if next:

@@ -8,101 +8,101 @@ from io import BytesIO
 R = Any  # Type received by the generator
 S = Any  # Type sent by the generator
 
-def async_source(name: str) -> Callable[..., Callable[..., AsyncGenerator[S, None]]]:
+def async_source(func: Callable[..., AsyncGenerator[S, None]]) -> Callable[..., AsyncGenerator[S, None]]:
     """Async source decorator that outputs data of type S."""
-    def decorator(func: Callable[..., AsyncGenerator[S, None]]) -> Callable[..., AsyncGenerator[S, None]]:
-        @functools.wraps(func)
-        async def wrapper(*args: Any, next: Optional[List[AsyncGenerator[Any, S]]] = None) -> AsyncGenerator[S, None]:
-            print(f"Starting {name}")
+    @functools.wraps(func)
+    async def wrapper(*args: Any, next: Optional[List[AsyncGenerator[Any, S]]] = None) -> AsyncGenerator[S, None]:
+        name = func.__doc__.split('\n')[0] if func.__doc__ else func.__name__
+        print(f"Starting {name}")
+        if next:
+            # Prime each next step
+            await asyncio.gather(*(nxt.asend(None) for nxt in next))
+        
+        gen = func(*args)
+        async for value in gen:
             if next:
-                # Prime each next step
-                await asyncio.gather(*(nxt.asend(None) for nxt in next))
-            
-            gen = func(*args)
-            async for value in gen:
-                if next:
-                    # Send value to next steps
-                    await asyncio.gather(*(nxt.asend(value) for nxt in next))
-                yield value
-            
+                # Send value to next steps
+                await asyncio.gather(*(nxt.asend(value) for nxt in next))
+            yield value
+        
+        print(f"Finished {name}")
+        if next:
+            # Close next steps
+            await asyncio.gather(*(nxt.aclose() for nxt in next))
+    return wrapper
+
+def async_step(func: Callable[..., AsyncGenerator[S, R]]) -> Callable[..., AsyncGenerator[S, R]]:
+    """Async step decorator that receives data of type R and outputs data of type S."""
+    @functools.wraps(func)
+    async def wrapper(*args: Any, next: Optional[List[AsyncGenerator[Any, S]]] = None) -> AsyncGenerator[S, R]:
+        name = func.__doc__.split('\n')[0] if func.__doc__ else func.__name__
+        print(f"Starting {name}")
+        if next:
+            await asyncio.gather(*(nxt.asend(None) for nxt in next))
+        
+        gen = func(*args)
+        await gen.asend(None)  # Prime the generator
+        
+        try:
+            while True:
+                value = yield
+                if value is not None:
+                    # Send the value to the generator
+                    await gen.asend(value)
+                    # Process all results from the generator
+                    try:
+                        while True:
+                            result = await gen.__anext__()
+                            if next:
+                                await asyncio.gather(*(nxt.asend(result) for nxt in next))
+                            yield result
+                    except StopAsyncIteration:
+                        pass
+        finally:
             print(f"Finished {name}")
             if next:
-                # Close next steps
                 await asyncio.gather(*(nxt.aclose() for nxt in next))
-        return wrapper
-    return decorator
+    return wrapper
 
-def async_step(name: str) -> Callable[..., Callable[..., AsyncGenerator[S, R]]]:
-    """Async step decorator that receives data of type R and outputs data of type S."""
-    def decorator(func: Callable[..., AsyncGenerator[S, R]]) -> Callable[..., AsyncGenerator[S, R]]:
-        @functools.wraps(func)
-        async def wrapper(*args: Any, next: Optional[List[AsyncGenerator[Any, S]]] = None) -> AsyncGenerator[S, R]:
-            print(f"Starting {name}")
-            if next:
-                await asyncio.gather(*(nxt.asend(None) for nxt in next))
-            
-            gen = func(*args)
-            await gen.asend(None)  # Prime the generator
-            
-            try:
-                while True:
-                    value = yield
-                    if value is not None:
-                        # Send the value to the generator
-                        await gen.asend(value)
-                        # Process all results from the generator
-                        try:
-                            while True:
-                                result = await gen.__anext__()
-                                if next:
-                                    await asyncio.gather(*(nxt.asend(result) for nxt in next))
-                                yield result
-                        except StopAsyncIteration:
-                            pass
-            finally:
-                print(f"Finished {name}")
-                if next:
-                    await asyncio.gather(*(nxt.aclose() for nxt in next))
-        return wrapper
-    return decorator
-
-def async_sink(name: str) -> Callable[..., Callable[..., AsyncGenerator[None, R]]]:
+def async_sink(func: Callable[..., AsyncGenerator[None, R]]) -> Callable[..., AsyncGenerator[None, R]]:
     """Async sink decorator that receives data of type R."""
-    def decorator(func: Callable[..., AsyncGenerator[None, R]]) -> Callable[..., AsyncGenerator[None, R]]:
-        @functools.wraps(func)
-        async def wrapper(*args: Any, next: Optional[List[AsyncGenerator[Any, None]]] = None) -> AsyncGenerator[None, R]:
-            print(f"Starting {name}")
-            gen = func(*args)
-            await gen.asend(None)  # Prime the generator
-            try:
-                while True:
-                    value = yield
-                    if value is not None:  # Add this check
-                        await gen.asend(value)
-            finally:
-                print(f"Finished {name}")
-                await gen.aclose()
-        return wrapper
-    return decorator
+    @functools.wraps(func)
+    async def wrapper(*args: Any, next: Optional[List[AsyncGenerator[Any, None]]] = None) -> AsyncGenerator[None, R]:
+        name = func.__doc__.split('\n')[0] if func.__doc__ else func.__name__
+        print(f"Starting {name}")
+        gen = func(*args)
+        await gen.asend(None)  # Prime the generator
+        try:
+            while True:
+                value = yield
+                if value is not None:
+                    await gen.asend(value)
+        finally:
+            print(f"Finished {name}")
+            await gen.aclose()
+    return wrapper
 
-@async_source("Read CSV from Bytes")
+# Example usage with docstrings:
+@async_source
 async def read_csv_from_bytes(csv_bytes: bytes) -> AsyncGenerator[pd.DataFrame, None]:
+    """Read CSV from Bytes"""
     df = await asyncio.to_thread(pd.read_csv, BytesIO(csv_bytes))
     print(f"DataFrame read from CSV: \n{df.head()}")
     yield df
 
-@async_step("Process Each Row")
+@async_step
 async def process_each_row() -> AsyncGenerator[pd.Series, pd.DataFrame]:
-    df: pd.DataFrame = yield
+    """Process Each Row"""
     while True:
+        df: pd.DataFrame = yield
         if df is not None:
             for _, row in df.iterrows():
                 print(f"Processing row: {row}")
                 yield row
-        df = yield
 
-@async_sink("Process Row Sink")
+@async_sink
 async def process_row(row_processor: Callable[[pd.Series], None]) -> AsyncGenerator[None, pd.Series]:
+    """Process Row Sink"""
     try:
         while True:
             row: pd.Series = yield

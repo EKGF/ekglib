@@ -12,7 +12,7 @@ def find_packages2(path='.'):
     return ret
 
 
-with open("README.adoc", "r") as fh:
+with open('README.adoc', 'r') as fh:
     long_description = fh.read()
 
 
@@ -39,37 +39,39 @@ def get_install_requirements():
         return []
         # If a version/range is specified in the Pipfile honor it
         # otherwise just list the package
-    return ["{0}{1}".format(pkg, ver) if ver != "*"
-            else pkg for pkg, ver in required_packages]
+    return [
+        '{0}{1}'.format(pkg, ver) if ver != '*' else pkg
+        for pkg, ver in required_packages
+    ]
 
 
-version = find_version("ekglib/__init__.py")
+version = find_version('ekglib/__init__.py')
 
-print("ekglib version is " + version)
+print('ekglib version is ' + version)
 
 packages = find_packages(exclude=['tests'])
 
 setup(
-    name="ekglib",
+    name='ekglib',
     version=version,
-    author="Jacobus Geluk",
-    author_email="jacobus.geluk@agnos.ai",
-    description="A Python Library for various tasks in an EKG DataOps operation",
+    author='Jacobus Geluk',
+    author_email='jacobus.geluk@agnos.ai',
+    description='A Python Library for various tasks in an EKG DataOps operation',
     long_description=long_description,
-    long_description_content_type="text/markdown",
-    url="https://ekgf.github.io/ekglib/",
+    long_description_content_type='text/markdown',
+    url='https://ekgf.github.io/ekglib/',
     packages=packages,
     package_data={'': ['*.ttl']},
-    platforms=["any"],
-    python_requires=">=3.10.8",
+    platforms=['any'],
+    python_requires='>=3.10.8',
     setup_requires=['wheel'],
     install_requires=get_install_requirements(),
     classifiers=[
-        "Programming Language :: Python :: 3.10",
-        "Development Status :: 2 - Pre-Alpha",
-        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
-        "Topic :: Software Development :: Libraries :: Python Modules",
-        "Operating System :: OS Independent",
-        "Natural Language :: English",
-    ]
+        'Programming Language :: Python :: 3.10',
+        'Development Status :: 2 - Pre-Alpha',
+        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+        'Topic :: Software Development :: Libraries :: Python Modules',
+        'Operating System :: OS Independent',
+        'Natural Language :: English',
+    ],
 )

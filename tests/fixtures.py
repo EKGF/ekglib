@@ -26,7 +26,7 @@ def test_output_dir():
 def test_ekgmm_repo_dir():
     if os.path.isdir('../../ekg-maturity'):
         return '../../ekg-maturity'
-    pytest.skip("../../ekg-maturity directory does not exist")
+    pytest.skip('../../ekg-maturity directory does not exist')
     return ''
 
 
@@ -34,7 +34,7 @@ def test_ekgmm_repo_dir():
 def test_ekgmm_docs_root():
     if os.path.isdir('../../ekg-maturity/docs'):
         return '../../ekg-maturity/docs'
-    pytest.skip("../../ekg-maturity/docs directory does not exist")
+    pytest.skip('../../ekg-maturity/docs directory does not exist')
     return ''
 
 
@@ -42,14 +42,15 @@ def test_ekgmm_docs_root():
 def test_ekgmm_output_dir():
     if os.path.isdir('../../ekg-maturity/docs'):
         return '../../ekg-maturity/docs'
-    pytest.skip("../../ekg-maturity/docs directory does not exist")
+    pytest.skip('../../ekg-maturity/docs directory does not exist')
     return ''
 
 
 def require_port(number, name):
     from ekglib.main.main import is_port_in_use
+
     if not is_port_in_use(number):
-        pytest.skip(f"{name} mock server not running on localhost:{number}")
+        pytest.skip(f'{name} mock server not running on localhost:{number}')
     return number
 
 
@@ -85,7 +86,7 @@ def value_for_test(directory, name, default=None):
         except:  # noqa: E722
             os.mkdir(dirFs)
         with open(value_file, 'w') as f:
-            f.write("{}\n".format(default))
+            f.write('{}\n'.format(default))
     with open(value_file, 'r') as f:
         return f.readline().strip('\n')
 
@@ -108,7 +109,7 @@ def value_list_for_test(directory, name, defaults=None):
             os.mkdir(dirFs)
         with open(value_file, 'w') as f:
             for item in defaults:
-                f.write("{}\n".format(item))
+                f.write('{}\n'.format(item))
     with open(value_file, 'r') as f:
         return f.read().splitlines()
 
@@ -136,30 +137,32 @@ def ldap_bind_dn(test_data_dir):
 @pytest.fixture
 def xlsx_ignored_values(test_data_dir):
     return value_list_for_test(
-        test_data_dir, 'xlsx-ignored-values', [
-            '-Not Visible-',
-            'None',
-            'none',
-            '--'
-        ])
+        test_data_dir, 'xlsx-ignored-values', ['-Not Visible-', 'None', 'none', '--']
+    )
 
 
 @pytest.fixture
 def xlsx_ignored_prefixes(test_data_dir):
     return value_list_for_test(
-        test_data_dir, 'xlsx-ignored-prefixes', [
+        test_data_dir,
+        'xlsx-ignored-prefixes',
+        [
             'External Auditors/',
             'Accounting Standard/',
             'World/',
             'Monitoring Internal Audit/',
             'Companies/',
             'Company/',
-        ])
+        ],
+    )
 
 
 @pytest.fixture
 def xlsx_skip_sheets(test_data_dir):
     return value_list_for_test(
-        test_data_dir, 'xlsx-skip-sheets', [
+        test_data_dir,
+        'xlsx-skip-sheets',
+        [
             '2. How To Guide',
-        ])
+        ],
+    )

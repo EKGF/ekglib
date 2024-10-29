@@ -4,16 +4,21 @@ import textwrap
 
 import ekglib
 
+from tests.fixtures import kgiri_base, test_data_dir  # noqa
 
 class TestPersonaParser:
     def test_persona_parser(self, kgiri_base, test_data_dir):
         output_file = f'{test_data_dir}/test-persona-001.ttl.txt'
         sys.argv = [
             'pytest',
-            '--input', f'{test_data_dir}/test-persona-001.ttl',
-            '--output', output_file,
-            '--kgiri-base', kgiri_base,
-            '--kgiri-base-replace', 'https://placeholder.kg',
+            '--input',
+            f'{test_data_dir}/test-persona-001.ttl',
+            '--output',
+            output_file,
+            '--kgiri-base',
+            kgiri_base,
+            '--kgiri-base-replace',
+            'https://placeholder.kg',
         ]
         ekglib.persona_parser.parse.main()
         with open(output_file) as f:

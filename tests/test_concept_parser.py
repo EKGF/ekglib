@@ -4,19 +4,24 @@ import textwrap
 
 import ekglib
 
+from tests.fixtures import test_data_dir
+
 
 class TestConceptParser:
-
     def test_concepts_processor(self, test_data_dir):
         # other tests force an IRI replace, this covers the case when replacing is disabled
         kgiri_base_no_replace = 'https://placeholder.kg'
         output_file = f'{test_data_dir}/test-concept-001.ttl.txt'
         sys.argv = [
             'pytest',
-            '--input', f'{test_data_dir}/test-concept-001.ttl',
-            '--output', output_file,
-            '--kgiri-base', kgiri_base_no_replace,
-            '--kgiri-base-replace', kgiri_base_no_replace
+            '--input',
+            f'{test_data_dir}/test-concept-001.ttl',
+            '--output',
+            output_file,
+            '--kgiri-base',
+            kgiri_base_no_replace,
+            '--kgiri-base-replace',
+            kgiri_base_no_replace,
         ]
         ekglib.concept_parser.parse.main()
         with open(output_file) as f:

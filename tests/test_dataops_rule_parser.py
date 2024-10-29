@@ -3,19 +3,25 @@ import textwrap
 
 import ekglib
 
+from tests.fixtures import kgiri_base, test_data_dir # noqa
 
 class TestDataopsRuleParser:
-
     def test_dataops_rule_parser(self, kgiri_base, test_data_dir):
         output = f'{test_data_dir}/dataops/test-dataops-rule.ttl.txt'
         sys.argv = [
             'pytest',
-            '--input', f'{test_data_dir}/dataops/generic/00001-check-dataset-not-empty/rule.ttl',
-            '--ontologies-root', f'{test_data_dir}/ontologies',
-            '--output', output,
-            '--data-source-code', 'abc',
-            '--kgiri-base', kgiri_base,
-            '--kgiri-base-replace', 'https://placeholder.kg'
+            '--input',
+            f'{test_data_dir}/dataops/generic/00001-check-dataset-not-empty/rule.ttl',
+            '--ontologies-root',
+            f'{test_data_dir}/ontologies',
+            '--output',
+            output,
+            '--data-source-code',
+            'abc',
+            '--kgiri-base',
+            kgiri_base,
+            '--kgiri-base-replace',
+            'https://placeholder.kg',
         ]
         ekglib.dataops_rule_parser.parse.main()
         with open(output) as f:

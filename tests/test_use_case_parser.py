@@ -4,18 +4,23 @@ import textwrap
 
 import ekglib
 
+from tests.fixtures import kgiri_base, test_data_dir # noqa
+
 
 class TestUseCaseParser:
-
     def test_use_case_parser(self, kgiri_base, test_data_dir):
         output_file = f'{test_data_dir}/test-use-case-001.ttl.txt'
         sys.argv = [
             'pytest',
-            '--input', f'{test_data_dir}/test-use-case-001.ttl',
-            '--output', output_file,
-            '--kgiri-base', kgiri_base,
-            '--kgiri-base-replace', 'https://placeholder.kg',
-            '--verbose'
+            '--input',
+            f'{test_data_dir}/test-use-case-001.ttl',
+            '--output',
+            output_file,
+            '--kgiri-base',
+            kgiri_base,
+            '--kgiri-base-replace',
+            'https://placeholder.kg',
+            '--verbose',
         ]
         ekglib.use_case_parser.parse.main()
 

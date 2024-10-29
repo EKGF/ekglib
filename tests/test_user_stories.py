@@ -5,19 +5,23 @@ import textwrap
 from ekglib.user_story_parser.parse import main
 from ekglib.exceptions import PrefixException
 
+from tests.fixtures import kgiri_base, test_data_dir  # noqa
 
 class TestUserStoryParser:
-
     def test_user_story_parser(self, kgiri_base, test_data_dir):
         test_output = f'{test_data_dir}/test-user-story-001.ttl.txt'
 
         sys.argv = [
             'pytest',
-            '--input', f'{test_data_dir}/test-user-story-001.ttl',
-            '--output', test_output,
-            '--kgiri-base', kgiri_base,
-            '--kgiri-base-replace', 'https://placeholder.kg',
-            '--verbose'
+            '--input',
+            f'{test_data_dir}/test-user-story-001.ttl',
+            '--output',
+            test_output,
+            '--kgiri-base',
+            kgiri_base,
+            '--kgiri-base-replace',
+            'https://placeholder.kg',
+            '--verbose',
         ]
         main()
         with open(test_output) as f:
@@ -72,11 +76,15 @@ class TestUserStoryParser:
         kgiri_base_replace = 'https://ekg.acme.com'
         sys.argv = [
             'pytest',
-            '--input', f'{test_data_dir}/test-user-story-002.ttl',
-            '--output', test_output,
-            '--kgiri-base', kgiri_base,
-            '--kgiri-base-replace', kgiri_base_replace,
-            '--verbose'
+            '--input',
+            f'{test_data_dir}/test-user-story-002.ttl',
+            '--output',
+            test_output,
+            '--kgiri-base',
+            kgiri_base,
+            '--kgiri-base-replace',
+            kgiri_base_replace,
+            '--verbose',
         ]
         main()
         with open(test_output) as f:
@@ -130,9 +138,11 @@ class TestUserStoryParser:
         sys
         sys.argv = [
             'pytest',
-            '--input', f'{test_data_dir}/test-user-story-001.ttl',
-            '--output', test_output,
-            '--verbose'
+            '--input',
+            f'{test_data_dir}/test-user-story-001.ttl',
+            '--output',
+            test_output,
+            '--verbose',
         ]
         try:
             main()
@@ -143,13 +153,15 @@ class TestUserStoryParser:
     def test_user_story_parser_with_base_iris_from_env(self, test_data_dir):
         test_output = f'{test_data_dir}/test-user-story-001.ttl.txt'
         # setting manually as these ovverride the defaults
-        os.environ['EKG_KGIRI_BASE'] = "https://localhost:8080"
-        os.environ['EKG_KGIRI_BASE_REPLACE'] = "https://placeholder.kg"
+        os.environ['EKG_KGIRI_BASE'] = 'https://localhost:8080'
+        os.environ['EKG_KGIRI_BASE_REPLACE'] = 'https://placeholder.kg'
         sys.argv = [
             'pytest',
-            '--input', f'{test_data_dir}/test-user-story-001.ttl',
-            '--output', test_output,
-            '--verbose'
+            '--input',
+            f'{test_data_dir}/test-user-story-001.ttl',
+            '--output',
+            test_output,
+            '--verbose',
         ]
         main()
         del os.environ['EKG_KGIRI_BASE']

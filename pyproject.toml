@@ -1,6 +1,6 @@
 [project]
 name = "ekglib"
-version = "0.0.30"
+dynamic = ["version"]
 description = "A Python Library for various tasks in an EKG DataOps operation."
 authors = [{ name = "Jacobus Geluk", email = "jacobus.geluk@agnos.ai" }]
 license = { file = "LICENSE" }
@@ -16,48 +16,49 @@ classifiers = [
 ]
 requires-python = ">=3.13"
 dependencies = [
-    "option",
-    "boto3",
     "boto3-stubs",
+    "boto3",
     "botocore",
-    "pandas",
-    "pandas-stubs",
-    "numpy",
     "data-science-types",
+    "humps",
+    "inflection",
+    "ldap3",
+    "mdutils",
+    "mkdocs-gen-files",
+    "numpy",
+    "openpyxl",
+    "option",
+    "owlrl",
+    "pandas-stubs",
+    "pandas",
     "python-dateutil",
     "rdflib",
-    "toml",
-    "inflection",
-    "humps",
     "requests",
-    "SPARQLWrapper",
-    "ldap3",
-    "stringcase",
-    "mkdocs-gen-files",
-    "mdutils",
-    "owlrl",
-    "openpyxl",
     "setuptools",
+    "SPARQLWrapper",
+    "stringcase",
+    "toml",
 ]
 
 [dependency-groups]
 dev = [
-    "uv",
-    "tox",
-    "ruff",
-    "pytest",
-    "pytest-cov",
     "black",
+    "flake8>=7.1.1",
+    "hatch",
     "isort",
+    "mdutils",
+    "mkdocs-gen-files",
+    "mkdocs-material",
+    "mkdocs",
     "mypy",
     "pylint",
     "pyright",
-    "mkdocs",
-    "mkdocs-material",
-    "mkdocs-gen-files",
-    "mdutils",
+    "pytest-cov",
     "pytest-timeout>=2.3.1",
-    "flake8>=7.1.1",
+    "pytest",
+    "ruff",
+    "tox",
+    "uv",
 ]
 
 # See https://packaging.python.org/en/latest/specifications/declaring-project-metadata/#urls
@@ -68,8 +69,9 @@ documentation = "https://ekgf.github.io/ekglib/"
 repository = "https://github.com/ekgf/ekglib.git"
 
 [project.scripts]
-ekglib = "ekglib.cli:main"
-ekglib-xlsx-parser = "ekglib.xlsx_parser
+xlsx-parser = "ekglib.xlsx_parser:main"
+user-story-parser = "ekglib.user_story_parser:user_story_processor"
+pipeline-example = "ekglib.pipeline.example:main"
 
 [build-system]
 requires = ["hatchling"]
@@ -84,6 +86,7 @@ default-groups = ["dev"]
 dev-dependencies = [
     "pyright",
     "ipykernel",
+    "ruff"
 ]
 link-mode = "copy"
 
@@ -92,8 +95,8 @@ line-length = 120
 target-version = ['py312']
 
 [tool.mypy]
-files = ["ekglib"]
-mypy_path = "ekglib"
+files = ["src"]
+mypy_path = "src"
 explicit_package_bases = true
 warn_unused_ignores = false
 
@@ -117,7 +120,7 @@ known_first_party = ["ekglib"]
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-pythonpath = [".", "ekglib"]
+pythonpath = [".", "src"]
 addopts = "-rA --doctest-modules --strict-markers --verbose --junitxml=junit/test-results.xml --cov-report=html --maxfail=2 --showlocals --tb=short --durations=5"
 norecursedirs = ["build", "dist", "docs", "htmlcov", ".tox", ".vscode", ".idea", ".git", ".github", ".venv", ".mypy_cache", ".pytest_cache", ".ruff_cache", "junit"]
 log_cli_level = "DEBUG"
@@ -191,21 +194,51 @@ analyzeUnannotatedFunctions = true
 reportUntypedFunctionDecorator = true
 reportUntypedClassDecorator = true
 
-executionEnvironments = [{ root = "ekglib", pythonPath = "ekglib" }]
+executionEnvironments = [{ root = "src", pythonPath = "src" }]
+
+[tool.ruff.lint]
+preview = true
+extend-select = ["C901"]
+
+[tool.ruff.lint.extend-per-file-ignores]
+"docs/.hooks/*" = ["INP001", "T201"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["foo", "bar"]
+
+[tool.ruff.format]
+preview = true
+quote-style = "single"
+
+[tool.hatch.version]
+path = "src/ekglib/__about__.py"
 
 [tool.hatch.build]
 skip-excluded-dirs = true
+sources = ["src"]
+directory = "dist"
+
+[tool.hatch.envs.hatch-static-analysis]
+config-path = "ruff_defaults.toml"
 
 [tool.hatch.envs.default]
+# See https://hatch.pypa.io/1.12/how-to/environment/select-installer/
 installer = "uv"
 
+[tool.hatch.envs.docs]
+dependencies = [
+  "mkdocs"
+]
+
 [tool.hatch.build.targets.wheel]
-only-include = ["ekglib"]
-sources = ["ekglib"]
+packages = ["src/ekglib"]
+only-packages = true
 
 [tool.hatch.build.targets.sdist]
-include = ["ekglib/*.py", "tests/*.py", "typings/*.py"]
-exclude = [".venv"]
+packages = ["src/ekglib"]
+include = ["src/ekglib/*.py", "tests/*.py", "typings/*.py"]
+exclude = ["*.adoc", ".editorconfig"]
+only-packages = true
 
 
 

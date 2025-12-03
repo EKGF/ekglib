@@ -45,14 +45,18 @@ jobs:
 
       - name: Converting AsciiDoc files to HTML
         run: |
-          find . -name "*.adoc" | xargs asciidoctor -b html --attribute=nofooter
-          for FILE in `find . -name "README.html"`; do
-            mv "$FILE" "`dirname $FILE`/index.html";
-          done
-          for FILE in `find . -name "*.html"`; do
-            git add -f "$FILE";
-          done
-          find . -name "*.adoc" | xargs git rm -f --cached
+          if find . -name "*.adoc" -print -quit | grep -q .; then
+            find . -name "*.adoc" -print0 | xargs -0 asciidoctor -b html --attribute=nofooter
+            for FILE in `find . -name "README.html"`; do
+              mv "$FILE" "`dirname $FILE`/index.html";
+            done
+            for FILE in `find . -name "*.html"`; do
+              git add -f "$FILE";
+            done
+            find . -name "*.adoc" -print0 | xargs -0 git rm -f --cached
+          else
+            echo "No .adoc files found, skipping AsciiDoc conversion"
+          fi
         shell: bash
 
       - name: Remove irrelevant files from gh-pages branch
@@ -70,8 +74,12 @@ jobs:
       - name: Commiting changes to gh-pages branch
         if: ${{ ! contains(github.actor, '/act') }}
         run: |
-          MSG="Build .adoc files for GitHub Pages from commit `cat /tmp/commit-hash.txt`"
-          git -c user.name="Github Action" -c user.email="github-actions@github.com" commit -m "$MSG" 1>/dev/null
-          set -x
-          git push -f --verbose --set-upstream origin gh-pages 1>/dev/null
+          MSG="Build documentation for GitHub Pages from commit `cat /tmp/commit-hash.txt`"
+          if git diff --quiet --cached; then
+            echo "No changes to commit, skipping commit and push"
+          else
+            git -c user.name="Github Action" -c user.email="github-actions@github.com" commit -m "$MSG" 1>/dev/null
+            set -x
+            git push -f --verbose --set-upstream origin gh-pages 1>/dev/null
+          fi
         shell: bash

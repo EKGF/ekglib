@@ -38,9 +38,9 @@ jobs:
           git checkout --orphan gh-pages main 1>/dev/null
         shell: bash
 
-      - name: Prepare Markdown documentation
+      - name: Clean gh-pages branch and prepare documentation
         run: |
-          # Copy README files from src/ekglib/*/ to root-level directories
+          # Copy README files from src/ekglib/*/ to root-level directories first
           # This fixes the URL structure: files at concept_parser/README.md 
           # will be served as https://ekgf.github.io/ekglib/concept_parser/
           # instead of https://ekgf.github.io/ekglib/ekglib/concept_parser/
@@ -55,18 +55,12 @@ jobs:
               fi
             done
           fi
+          # Now remove all files from git index, then add only what we want
+          git rm -rf --cached . 2>/dev/null || true
           # Add root README.md and LICENSE
           git add -f README.md LICENSE 2>/dev/null || true
           # Add all the module directories that were copied
           find . -maxdepth 1 -type d \( -name "*_parser" -o -name "*_export" -o -name "dataops_*" -o -name "maturity_model_parser" -o -name "step_export" \) -exec git add -f {} \; 2>/dev/null || true
-        shell: bash
-
-      - name: Remove irrelevant files from gh-pages branch
-        run: |
-          git rm --quiet -rf .github/ .idea/ .vscode/ .actrc .tool-versions *.sh *.code-workspace *.iml 2>/dev/null || true
-          git rm --quiet -rf src/ tests/ dist/ .venv/ ekglib.egg-info/ junit/ 2>/dev/null || true
-          find . -name '*.py' -exec git rm --quiet --force {} \; 2>/dev/null || true
-          find . -name '__pycache__' -type d -exec git rm --quiet -rf {} \; 2>/dev/null || true
         shell: bash
 
       - name: Showing contents of gh-pages branch when running locally

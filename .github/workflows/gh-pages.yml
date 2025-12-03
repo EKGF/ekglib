@@ -40,17 +40,33 @@ jobs:
 
       - name: Prepare Markdown documentation
         run: |
-          # Markdown files are already in the repository, no conversion needed
-          # GitHub Pages can serve Markdown files directly
-          echo "Markdown documentation files are ready for GitHub Pages"
-          # Add all Markdown files
-          find . -name "*.md" -exec git add -f {} \;
+          # Copy README files from src/ekglib/*/ to root-level directories
+          # This fixes the URL structure: files at concept_parser/README.md 
+          # will be served as https://ekgf.github.io/ekglib/concept_parser/
+          # instead of https://ekgf.github.io/ekglib/ekglib/concept_parser/
+          if [ -d "src/ekglib" ]; then
+            # Copy each subdirectory's README.md to root-level directory
+            find src/ekglib -type d -mindepth 1 -maxdepth 1 | while read -r dir; do
+              dirname=$(basename "$dir")
+              if [ -f "$dir/README.md" ]; then
+                mkdir -p "$dirname"
+                # Copy and fix relative links: ../../ becomes ../ (one level up to root)
+                sed 's|\[ekglib\](\.\./\.\./)|[ekglib](../)|g' "$dir/README.md" > "$dirname/README.md"
+              fi
+            done
+          fi
+          # Add root README.md and LICENSE
+          git add -f README.md LICENSE 2>/dev/null || true
+          # Add all the module directories that were copied
+          find . -maxdepth 1 -type d \( -name "*_parser" -o -name "*_export" -o -name "dataops_*" -o -name "maturity_model_parser" -o -name "step_export" \) -exec git add -f {} \; 2>/dev/null || true
         shell: bash
 
       - name: Remove irrelevant files from gh-pages branch
         run: |
           git rm --quiet -rf .github/ .idea/ .vscode/ .actrc .tool-versions *.sh *.code-workspace *.iml 2>/dev/null || true
+          git rm --quiet -rf src/ tests/ dist/ .venv/ ekglib.egg-info/ junit/ 2>/dev/null || true
           find . -name '*.py' -exec git rm --quiet --force {} \; 2>/dev/null || true
+          find . -name '__pycache__' -type d -exec git rm --quiet -rf {} \; 2>/dev/null || true
         shell: bash
 
       - name: Showing contents of gh-pages branch when running locally

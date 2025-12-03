@@ -23,37 +23,76 @@ A Python Library for various tasks in an EKG DataOps operation.
 
 ## Metadata Parsers
 
-- [Concept Parser](ekglib/concept_parser/)
-- [Persona Parser](ekglib/persona_parser/)
-- [Story Validate Rule Parser](ekglib/dataops_rule_parser/)
-- [Story Vaidate Rules Capture](ekglib/dataops_rules_capture/)
-- [Story Validate Rules Executor](ekglib/dataops_rules_execute/)
-- [Use Case Parser](ekglib/use_case_parser/)
-- [User Story Parser](ekglib/user_story_parser/)
+- [Concept Parser](concept_parser/)
+- [Persona Parser](persona_parser/)
+- [Story Validate Rule Parser](dataops_rule_parser/)
+- [Story Vaidate Rules Capture](dataops_rules_capture/)
+- [Story Validate Rules Executor](dataops_rules_execute/)
+- [Use Case Parser](use_case_parser/)
+- [User Story Parser](user_story_parser/)
 
 ## Capture Steps
 
-- [Xlsx Parser](ekglib/xlsx_parser/)
-- [LDAP Parser](ekglib/ldap_parser/)
+- [Xlsx Parser](xlsx_parser/)
+- [LDAP Parser](ldap_parser/)
 
 ---
 
 ## Installation
 
-```bash
-./setup.sh
-```
+**Using `uv` (recommended)**
 
-<details>
-<summary>⚠️ Troubleshooting: Python3 not linked</summary>
-
-If `python3` was not linked, run:
+If you are using `uv` to manage your project, add `ekglib` as a dependency:
 
 ```bash
-brew link --overwrite python
+uv add ekglib
 ```
 
-</details>
+You can then run the provided CLI tools via `uv`:
+
+```bash
+uv run xlsx-parser --help
+uv run user-story-parser --help
+uv run pipeline-example --help
+```
+
+To install the CLI tools as global commands (similar to `pipx`):
+
+```bash
+uv tool install ekglib
+
+xlsx-parser --help
+user-story-parser --help
+pipeline-example --help
+```
+
+**Using `pip`**
+
+If you prefer to use `pip` directly:
+
+```bash
+python -m pip install ekglib
+```
+
+The console scripts will then be available on your `PATH`:
+
+```bash
+xlsx-parser --help
+user-story-parser --help
+pipeline-example --help
+```
+
+---
+
+## Development setup (from source)
+
+If you cloned this repository and want to work on `ekglib` itself:
+
+```bash
+uv sync
+```
+
+This will create and populate a virtual environment using `uv` based on `pyproject.toml`.
 
 ---
 
@@ -62,13 +101,13 @@ brew link --overwrite python
 To run all tests:
 
 ```bash
-./run-tests.sh
+uv run pytest
 ```
 
 To run a single test:
 
 ```bash
-./run-tests.sh <name of test>
+uv run pytest tests/<path-to-test> -k <name-of-test>
 ```
 
 ---

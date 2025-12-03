@@ -1,6 +1,6 @@
 from rdflib import Namespace, URIRef, Literal, Graph
 from six import string_types
-from typing import Optional
+from typing import Any, Optional
 
 from ..exceptions import PrefixException
 

@@ -2,7 +2,7 @@
 name = "ekglib"
 dynamic = ["version"]
 description = "A Python Library for various tasks in an EKG DataOps operation."
-authors = [{ name = "Jacobus Geluk", email = "jacobus.geluk@agnos.ai" }]
+authors = [{ name = "Jacobus Geluk", email = "jacobus.geluk@ekgf.org" }]
 license = { file = "LICENSE" }
 classifiers = [
     "Development Status :: 2 - Pre-Alpha",
@@ -34,7 +34,6 @@ dependencies = [
     "python-dateutil",
     "rdflib",
     "requests",
-    "setuptools",
     "SPARQLWrapper",
     "stringcase",
     "toml",
@@ -42,19 +41,14 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-    "black",
-    "flake8>=7.1.1",
     "hatch",
-    "isort",
     "mdutils",
     "mkdocs-gen-files",
     "mkdocs-material",
     "mkdocs",
     "mypy",
-    "pylint",
-    "pyright",
     "pytest-cov",
-    "pytest-timeout>=2.3.1",
+    "pytest-timeout>=2.4.0",
     "pytest",
     "ruff",
     "tox",
@@ -81,42 +75,18 @@ build-backend = "hatchling.build"
 # See https://docs.astral.sh/uv/concepts/projects/#configuring-project-packaging
 package = true
 default-groups = ["dev"]
-# No need to install tools like tox or ruff here, run those via
-# `uv run <tool>` or `uvx <tool>` instead.
-dev-dependencies = [
-    "pyright",
-    "ipykernel",
-    "ruff"
-]
 link-mode = "copy"
-
-[tool.black]
-line-length = 120
-target-version = ['py312']
 
 [tool.mypy]
 files = ["src"]
 mypy_path = "src"
 explicit_package_bases = true
 warn_unused_ignores = false
+strict = true
 
 # [[tool.mypy.overrides]]
 # module = []
 # ignore_missing_imports = true
-
-[tool.pylint.messages_control]
-ignore = ["setup.py", "__init__.py"]
-disable = "all"
-enable = [
-    "empty-docstring",
-    "missing-class-docstring",
-    "missing-function-docstring",
-    "missing-module-docstring",
-]
-
-[tool.isort]
-profile = "black"
-known_first_party = ["ekglib"]
 
 [tool.pytest.ini_options]
 minversion = "6.0"
@@ -157,44 +127,20 @@ exclude_also = [
     "@(abc\\.)?abstractmethod"
 ]
 
-[tool.pyright]
-include = ["src", "tests"]
-exclude = [
-    "**/node_modules", 
-    "**/dist", 
-    "**/build", 
-    "**/htmlcov", 
-    "**/docs", 
-    "**/junit", 
-    "**/coverage", 
-    "**/.venv", 
-    "**/.mypy_cache", 
-    "**/.pytest_cache", 
-    "**/.tox", 
-    "**/.git",
-    "**/.idea",
-    "**/.vscode",
-    "typings",
-    "**/__pycache__",
+# Suppress import-untyped errors for third-party libraries without stubs
+[[tool.mypy.overrides]]
+module = [
+    "six.*",
+    "humps.*",
+    "mdutils.*",
+    "requests.*",
+    "stringcase.*",
+    "dateutil.*",
+    "owlrl.*",
+    "ldap3.*",
+    "pyasn1.*",
 ]
-ignore = []
-stubPath = "typings"
-venv = ".venv"
-verboseOutput = true
-reportMissingImports = "error"
-reportMissingTypeStubs = false
-reportMissingParameterType = false
-pythonVersion = "3.12"
-useLibraryCodeForTypes = true
-strictListInference = true
-strictDictionaryInference = true
-strictSetInference = true
-analyzeUnannotatedFunctions = true
-
-reportUntypedFunctionDecorator = true
-reportUntypedClassDecorator = true
-
-executionEnvironments = [{ root = "src", pythonPath = "src" }]
+ignore_missing_imports = true
 
 [tool.ruff.lint]
 preview = true
@@ -237,7 +183,7 @@ only-packages = true
 [tool.hatch.build.targets.sdist]
 packages = ["src/ekglib"]
 include = ["src/ekglib/*.py", "tests/*.py", "typings/*.py"]
-exclude = ["*.adoc", ".editorconfig"]
+exclude = [".editorconfig"]
 only-packages = true
 
 

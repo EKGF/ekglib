@@ -36,12 +36,17 @@ jobs:
         run: |
           uv sync --all-extras --dev
 
-      - name: Lint with flake8
+      - name: Format check with ruff
         run: |
-          # stop the build if there are Python syntax errors or undefined names
-          uv run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-          uv run flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+          uv run ruff format --check .
+
+      - name: Lint with ruff
+        run: |
+          uv run ruff check .
+
+      - name: Type check with mypy
+        run: |
+          uv run mypy src
 
       - name: Test with pytest
         run: |
@@ -52,7 +57,7 @@ jobs:
             --tb=short
 
       - name: Upload pytest test results
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: test-results-${{ matrix.python_version }}
           path: test-results-${{ matrix.python_version }}.html

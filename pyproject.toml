@@ -49,6 +49,7 @@ dev = [
     "mkdocs",
     "mypy",
     "pytest-cov",
+    "pytest-html",
     "pytest-timeout>=2.4.0",
     "pytest",
     "ruff",

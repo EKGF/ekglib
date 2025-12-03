@@ -1,19 +1,16 @@
-= Rule Parser
-:icons: font
+# Rule Parser
 
-WARNING: TODO
+> **Warning:** TODO
 
-[source]
-----
+```bash
 python3 -m ekglib.dataops_rule_parser --help
-----
+```
 
-[source]
-----
+```text
 usage: python3 -m ekglib.dataops_rule_parser [-h] [--verbose]
-                                               [--input INPUT]
-                                               [--output OUTPUT]
-                                               [--ontologies-root ONTOLOGIES_ROOT]
+  [--input INPUT]
+  [--output OUTPUT]
+  [--ontologies-root ONTOLOGIES_ROOT]
 
 Adds any referenced SPARQL file to the graph as text and writes a new Turtle
 file
@@ -29,9 +26,10 @@ optional arguments:
                         The root directory where ontologies can be found
 
 Currently only supports turtle.
-----
+```
 
-== Links
+## Links
 
-- link:../../[ekglib]
-- link:https://ekgf.org[EKGF]
+- [ekglib](../../)
+- [EKGF](https://ekgf.org)
+

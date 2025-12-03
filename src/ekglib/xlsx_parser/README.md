@@ -1,24 +1,21 @@
-= Xlsx Parser
-:icons: font
+# Xlsx Parser
 
 Capture all information from a given .xlsx file and store it as RDF "raw data"
 
-== Usage
+## Usage
 
-[source]
-----
+```bash
 python3 -m ekglib.xlsx_parser --help
-----
+```
 
-[source]
-----
+```text
 usage: python3 -m ekglib.xlsx_parser [-h] [--input INPUT] [--output OUTPUT]
-                                     [--key-column-number KEY_COLUMN_NUMBER]
-                                     [--ignored-values [IGNORED_VALUES [IGNORED_VALUES ...]]]
-                                     [--ignored-prefixes [IGNORED_PREFIXES [IGNORED_PREFIXES ...]]]
-                                     [--verbose] [--kgiri-base KGIRI_BASE]
-                                     [--kgiri-prefix KGIRI_PREFIX]
-                                     [--data-source-code DATA_SOURCE_CODE]
+  [--key-column-number KEY_COLUMN_NUMBER]
+  [--ignored-values [IGNORED_VALUES [IGNORED_VALUES ...]]]
+  [--ignored-prefixes [IGNORED_PREFIXES [IGNORED_PREFIXES ...]]]
+  [--verbose] [--kgiri-base KGIRI_BASE]
+  [--kgiri-prefix KGIRI_PREFIX]
+  [--data-source-code DATA_SOURCE_CODE]
 
 Capture all information from the given .xlsx file and store it as RDF "raw
 data"
@@ -52,9 +49,10 @@ Data Source:
                         EKG_DATA_SOURCE_CODE)
 
 Currently only supports turtle.
-----
+```
 
-== Links
+## Links
 
-- link:../../[ekglib]
-- link:https://ekgf.org[EKGF]
+- [ekglib](../../)
+- [EKGF](https://ekgf.org)
+

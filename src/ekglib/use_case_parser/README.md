@@ -1,17 +1,14 @@
-= Use Case Parser
-:icons: font
+# Use Case Parser
 
-== Usage
+## Usage
 
-[source]
-----
+```bash
 python3 -m ekglib.use_case_parser --help
-----
+```
 
-[source]
-----
+```text
 usage: python3 -m ekglib.use_case_parser [-h] [--verbose] [--input INPUT]
-                                         [--output OUTPUT]
+  [--output OUTPUT]
 
 Checks a use case RDF file
 
@@ -25,9 +22,10 @@ optional arguments:
                         The output file
 
 Currently only supports turtle.
-----
+```
 
-== Links
+## Links
 
-- link:../../[ekglib]
-- link:https://ekgf.org[EKGF]
+- [ekglib](../../)
+- [EKGF](https://ekgf.org)
+

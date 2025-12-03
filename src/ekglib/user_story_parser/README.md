@@ -1,15 +1,12 @@
-= User Story Parser
-:icons: font
+# User Story Parser
 
-[source]
-----
+```bash
 python3 -m ekglib.user_story_parser --help
-----
+```
 
-[source]
-----
+```text
 usage: python3 -m ekglib.user_story_parser [-h] [--verbose] [--input INPUT]
-                                           [--output OUTPUT]
+  [--output OUTPUT]
 
 Adds any referenced SPARQL file to the graph as text and writes a new Turtle
 file
@@ -24,9 +21,10 @@ optional arguments:
 
 Currently only supports turtle.
 
-----
+```
 
-== Links
+## Links
 
-- link:../../[ekglib]
-- link:https://ekgf.org[EKGF]
+- [ekglib](../../)
+- [EKGF](https://ekgf.org)
+

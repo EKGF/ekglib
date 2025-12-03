@@ -1,19 +1,16 @@
-= Concept Parser
-:icons: font
+# Concept Parser
 
 The Concept Parser reads the given Turtle input file and loads each concept into
 an in-memory graph (based on `rdflib` with a reasoner based on `owlrl`).
 The inferred results will be written to the given output file.
 
-NOTE: This is an extremly basic implementation, much more to come here.
+> **Note:** This is an extremly basic implementation, much more to come here.
 
-[source]
-----
+```bash
 python3 -m ekglib.concept_parser --help
-----
+```
 
-[source]
-----
+```text
 usage: python3 -m ekglib.concepts [-h] [--verbose] [--input INPUT] [--output OUTPUT] [--kgiri-base KGIRI_BASE]
 
 Checks a use case RDF file
@@ -31,9 +28,10 @@ KGIRI:
                         A root level URL to be used for all KGIRI types (default is EKG_KGIRI_BASE=https://kg.your-company.kom/)
 
 Currently only supports turtle.
-----
+```
 
-== Links
+## Links
 
-- link:../../[ekglib]
-- link:https://ekgf.org[EKGF]
+- [ekglib](../../)
+- [EKGF](https://ekgf.org)
+

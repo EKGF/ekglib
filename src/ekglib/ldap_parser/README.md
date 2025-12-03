@@ -1,25 +1,22 @@
-= LDAP Parser
-:icons: font
+# LDAP Parser
 
-WARNING: TODO
+> **Warning:** TODO
 
 Connects with a given LDAP server, reads all entries and converts those entries to "raw RDF".
 
-== Capture to file
+## Capture to file
 
-[source]
-----
+```bash
 python3 -m ekglib.ldap_parser_to_file --help
-----
+```
 
-[source]
-----
+```text
 usage: python3 -m ekglib.ldap_parser_to_file [-h] --output OUTPUT [--verbose]
-               [--ldap-search-filter LDAP_SEARCH_FILTER]
-               --ldap-bind-dn LDAP_BIND_DN --ldap-bind-auth LDAP_BIND_AUTH
-               --ldap-host LDAP_HOST --ldap-port LDAP_PORT [--ldap-log]
-               [--kgiri-base KGIRI_BASE]  [--kgiri-base-replace KGIRI_BASE_REPLACE]
-               --data-source-code DATA_SOURCE_CODE
+  [--ldap-search-filter LDAP_SEARCH_FILTER]
+  --ldap-bind-dn LDAP_BIND_DN --ldap-bind-auth LDAP_BIND_AUTH
+  --ldap-host LDAP_HOST --ldap-port LDAP_PORT [--ldap-log]
+  [--kgiri-base KGIRI_BASE]  [--kgiri-base-replace KGIRI_BASE_REPLACE]
+  --data-source-code DATA_SOURCE_CODE
 
 Capture all information from the given LDAP endpoint and store it as RDF "raw data" file
 
@@ -52,26 +49,24 @@ Data Source:
                         The code of the dataset (can also be set with env var EKG_DATA_SOURCE_CODE)
 
 Currently only supports N-Triples output.
-----
+```
 
-== Capture to S3
+## Capture to S3
 
-[source]
-----
+```bash
 python3 -m ekglib.ldap_parser_to_s3 --help
-----
+```
 
-[source]
-----
+```text
 usage: python3 -m ekglib.ldap_parser_to_s3 [-h] [--verbose]
-                [--ldap-search-filter LDAP_SEARCH_FILTER]
-                --ldap-naming-context LDAP_SEARCH_BASE --ldap-host LDAP_HOST
-                --ldap-port LDAP_PORT [--kgiri-base KGIRI_BASE]
-                --data-source-code DATA_SOURCE_CODE
-                --s3-endpoint S3_ENDPOINT --s3-bucket S3_BUCKET
-                [--s3-create-bucket] --aws-region AWS_REGION
-                --aws-access-key-id AWS_ACCESS_KEY_ID
-                --aws-secret-access-key AWS_SECRET_ACCESS_KEY
+  [--ldap-search-filter LDAP_SEARCH_FILTER]
+  --ldap-naming-context LDAP_SEARCH_BASE --ldap-host LDAP_HOST
+  --ldap-port LDAP_PORT [--kgiri-base KGIRI_BASE]
+  --data-source-code DATA_SOURCE_CODE
+  --s3-endpoint S3_ENDPOINT --s3-bucket S3_BUCKET
+  [--s3-create-bucket] --aws-region AWS_REGION
+  --aws-access-key-id AWS_ACCESS_KEY_ID
+  --aws-secret-access-key AWS_SECRET_ACCESS_KEY
 
 Capture all information from the given LDAP endpoint and store it in S3 as an RDF "raw data" file
 
@@ -109,9 +104,10 @@ Object Store:
                         The AWS secret access key, default can be set via env var AWS_SECRET_ACCESS_KEY
 
 Currently only supports N-Triples output.
-----
+```
 
-== Links
+## Links
 
-- link:../../[ekglib]
-- link:https://ekgf.org[EKGF]
+- [ekglib](../../)
+- [EKGF](https://ekgf.org)
+

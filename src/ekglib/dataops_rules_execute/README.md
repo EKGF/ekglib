@@ -1,22 +1,19 @@
-= Story Validate Rules Executor
-:icons: font
+# Story Validate Rules Executor
 
-[source]
-----
+```bash
 python3 -m ekglib.dataops_rules_executor --help
-----
+```
 
-[source]
-----
+```text
 usage: python3 -m ekglib.dataops_rules_executor [-h] [--verbose]
-                                                  [--dataops-root STORY_RULE_ROOT]
-                                                  [--static-datasets-root STATIC_DATASETS_ROOT]
-                                                  [--dataset-code DATASET_CODE]
-                                                  [--branch BRANCH]
-                                                  [--sparql-endpoint SPARQL_ENDPOINT]
-                                                  [--sparql-database SPARQL_DATABASE]
-                                                  [--sparql-userid SPARQL_USERID]
-                                                  [--sparql-passwd SPARQL_PASSWD]
+  [--dataops-root STORY_RULE_ROOT]
+  [--static-datasets-root STATIC_DATASETS_ROOT]
+  [--dataset-code DATASET_CODE]
+  [--branch BRANCH]
+  [--sparql-endpoint SPARQL_ENDPOINT]
+  [--sparql-database SPARQL_DATABASE]
+  [--sparql-userid SPARQL_USERID]
+  [--sparql-passwd SPARQL_PASSWD]
 
 Processes each rule.ttl file in the given directory and executes it against
 the given SPARQL endpoint
@@ -44,9 +41,10 @@ optional arguments:
                         The SPARQL password
 
 Currently only supports turtle.
-----
+```
 
-== Links
+## Links
 
-- link:../../[ekglib]
-- link:https://ekgf.org[EKGF]
+- [ekglib](../../)
+- [EKGF](https://ekgf.org)
+

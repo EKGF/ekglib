@@ -1,31 +1,28 @@
-= Rules Capture
-:icons: font
+# Rules Capture
 
-WARNING: TODO
+> **Warning:** TODO
 
 Captures all rule files from a given directory and uploads
 the resulting file to S3 (i.e. "the object store").
 
-[source]
-----
+```bash
 python3 -m ekglib.dataops_rules_capture --help
-----
+```
 
-[source]
-----
+```text
 usage: python3 -m ekglib.dataops_rules_capture [-h] [--verbose]
-        --dataops-root              RULE_ROOT
-        --ontologies-root           ONTOLOGIES_ROOT
-        --data-source-code          DATA_SOURCE_CODE
-        --git-branch                GIT_BRANCH
-        --kgiri-base                KGIRI_BASE
-        --kgiri-base-replace        KGIRI_BASE_REPLACE
-        --s3-endpoint               S3_ENDPOINT
-        --s3-bucket                 S3_BUCKET
-        --s3-create-bucket
-        --aws-region                AWS_REGION
-        --aws-access-key-id         AWS_ACCESS_KEY_ID
-        --aws-secret-access-key     AWS_SECRET_ACCESS_KEY
+  --dataops-root              RULE_ROOT
+  --ontologies-root           ONTOLOGIES_ROOT
+  --data-source-code          DATA_SOURCE_CODE
+  --git-branch                GIT_BRANCH
+  --kgiri-base                KGIRI_BASE
+  --kgiri-base-replace        KGIRI_BASE_REPLACE
+  --s3-endpoint               S3_ENDPOINT
+  --s3-bucket                 S3_BUCKET
+  --s3-create-bucket
+  --aws-region                AWS_REGION
+  --aws-access-key-id         AWS_ACCESS_KEY_ID
+  --aws-secret-access-key     AWS_SECRET_ACCESS_KEY
 
 Captures all rule files from a given directory and uploads the
 resulting file to S3
@@ -76,9 +73,10 @@ Object Store:
                         var AWS_SECRET_ACCESS_KEY (default: None)
 
 Currently only supports turtle.
-----
+```
 
-== Links
+## Links
 
-- link:../../[ekglib]
-- link:https://ekgf.org[EKGF]
+- [ekglib](../../)
+- [EKGF](https://ekgf.org)
+

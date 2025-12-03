@@ -1,29 +1,26 @@
-= Step Export
-:icons: font
+# Step Export
 
-WARNING: TODO
+> **Warning:** TODO
 
 Export the given named graph from the given staging database to the given S3 bucket.
 
-[source]
-----
+```bash
 python3 -m ekglib.step_export --help
-----
+```
 
-[source]
-----
+```text
 usage: python3 -m ekglib.step_export [-h] [--verbose]
-                                     [--dataset-code DATASET_CODE]
-                                     [--branch BRANCH]
-                                     [--sparql-endpoint SPARQL_ENDPOINT]
-                                     [--sparql-database SPARQL_DATABASE]
-                                     [--sparql-userid SPARQL_USERID]
-                                     [--sparql-passwd SPARQL_PASSWD]
-                                     [--s3-endpoint S3_ENDPOINT]
-                                     [--s3-region S3_REGION]
-                                     [--s3-bucket S3_BUCKET]
-                                     [--s3-access-key S3_ACCESS_KEY]
-                                     [--s3-secret-key S3_SECRET_KEY]
+  [--dataset-code DATASET_CODE]
+  [--branch BRANCH]
+  [--sparql-endpoint SPARQL_ENDPOINT]
+  [--sparql-database SPARQL_DATABASE]
+  [--sparql-userid SPARQL_USERID]
+  [--sparql-passwd SPARQL_PASSWD]
+  [--s3-endpoint S3_ENDPOINT]
+  [--s3-region S3_REGION]
+  [--s3-bucket S3_BUCKET]
+  [--s3-access-key S3_ACCESS_KEY]
+  [--s3-secret-key S3_SECRET_KEY]
 
 Export the given named graph from the given staging database to the given S3
 bucket
@@ -55,9 +52,10 @@ optional arguments:
                         The AWS_SECRET_ACCESS_KEY
 
 Currently only supports turtle.
-----
+```
 
-== Links
+## Links
 
-- link:../../[ekglib]
-- link:https://ekgf.org[EKGF]
+- [ekglib](../../)
+- [EKGF](https://ekgf.org)
+

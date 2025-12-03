@@ -7,7 +7,6 @@ from pathlib import Path
 from textwrap import fill
 
 import mdutils.tools.Table
-import mdutils.tools.TableOfContents
 from mdutils.fileutils.fileutils import MarkDownFile
 from mdutils.tools.Image import Image
 from mdutils.tools.Link import Inline, Reference
@@ -63,7 +62,7 @@ class MarkdownDocument:
         self.textUtils = TextUtils
         self.indent = ''
         self.file_data_text = ''
-        self._table_titles = []
+        self._table_titles: list[str] = []
         self.reference = Reference()
         self.image = Image(reference=self.reference)
         metadata['generated'] = True
@@ -98,7 +97,7 @@ class MarkdownDocument:
 
         return file_data
 
-    def heading(self, level: int, title: str, link: str = None):
+    def heading(self, level: int, title: str, link: str | None = None):
         hdr = '#' * level
         if link:
             self.write(f'\n{self.indent}{hdr} [{title}]({link})\n\n')

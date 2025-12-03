@@ -113,7 +113,7 @@ def copy_fragment(
         + fragment_base
         + '"\n'
         + indent_prefix
-        + '  heading-offset=1 preserve_includer_indent=true\n'
+        + '  heading-offset=1\n'
         + indent_prefix
         + '%}',
         wrap_width=0,
@@ -125,11 +125,11 @@ def copy_fragment_new(
 ):
     if not from_path.exists():
         copy_template_fragment(from_path=from_path, config=config)
-    from_path = os.path.relpath(
+    from_path_str = os.path.relpath(
         from_path.resolve().absolute(), config.output_root.resolve().absolute()
     )
     include_file = os.path.relpath(
-        from_path, os.path.relpath(md_file.path.parent, config.output_root)
+        from_path_str, os.path.relpath(md_file.path.parent, config.output_root)
     )
     md_file.write(
         '\n\n'
@@ -140,7 +140,7 @@ def copy_fragment_new(
         + include_file
         + '"\n'
         + indent_prefix
-        + '  heading-offset=1 preserve_includer_indent=true\n'
+        + '  heading-offset=1\n'
         + indent_prefix
         + '%}',
         wrap_width=0,

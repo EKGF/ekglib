@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from os import getcwd
 from os.path import relpath
+from pathlib import Path
+from typing import Any
 
 from ekglib.maturity_model_parser.pages_yaml import PagesYaml
 from rdflib.term import Node
@@ -35,16 +37,20 @@ class MaturityModelPillar:
         self.name = self.graph.name_for(self.node, self.class_label)
         self.local_name = self.graph.local_name_for(self.node, self.class_label)
 
-        self.pillars_root = MaturityModelPillar.pillars_root(graph=graph, config=config)
+        pillars_root_result = MaturityModelPillar.pillars_root(
+            graph=graph, config=config
+        )
+        # Store result in instance attribute (shadowing the staticmethod name)
+        object.__setattr__(self, 'pillars_root', pillars_root_result)
         self.local_type_name = self.graph.local_type_name_for(
             self.node, self.class_label
         )
-        self.full_dir = self.pillars_root / self.local_name
+        self.full_dir: Path = self.pillars_root / self.local_name  # type: ignore[operator]
         self.fragments_dir = (
             self.config.fragments_root / self.local_type_name / self.local_name
         )
         log_item(f'{self.class_label} Fragments', relpath(self.fragments_dir, getcwd()))
-        self._capability_areas = list()
+        self._capability_areas: list[Any] = list()
         makedirs(self.full_dir, self.class_label)
 
     def generate(self):
@@ -106,7 +112,7 @@ class MaturityModelPillar:
             capability_area_path = relpath(area.full_dir, self.full_dir)
             md_file.new_line()
             md_file.new_line(
-                f'- {icon}{icon_style} __[{area.name}]({capability_area_path}/)__',
+                f'- {icon}{icon_style} __[{area.name}]({capability_area_path}/index.md)__',
                 wrap_width=0,
             )
             md_file.indent = '    '
@@ -118,12 +124,13 @@ class MaturityModelPillar:
             md_file.new_line()
             for capability in area.capabilities():
                 md_file.write(
-                    f'- [{capability.name}]({capability_area_path}/{capability.local_name}/)\n',
+                    f'- [{capability.name}]({capability_area_path}/{capability.local_name}/index.md)\n',
                     wrap_width=0,
                 )
             md_file.new_line()
             md_file.write(
-                f'[{arrow}{icon_style} Learn more]({area.local_name})\n', wrap_width=0
+                f'[{arrow}{icon_style} Learn more]({area.local_name}/index.md)\n',
+                wrap_width=0,
             )
             md_file.indent = ''
         md_file.new_line()

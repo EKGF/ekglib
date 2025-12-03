@@ -29,11 +29,12 @@ function checkEnvironment() {
   fi
 
   # Install dependencies into the test venv
-  # Use uv pip install to install project, runtime dependencies, and dev dependencies
+  # Use uv sync to install project, runtime dependencies, and dev dependencies
+  # UV_PROJECT_ENVIRONMENT tells uv to use our test venv instead of .venv
   echo "Installing dependencies into test venv..."
   (
     unset VIRTUAL_ENV
-    uv pip install --python "${TEST_VENV_DIR}/bin/python" -e . --group dev || return 1
+    UV_PROJECT_ENVIRONMENT="${TEST_VENV_DIR}" uv sync || return 1
   ) || return 1
 
   source "${VIRTUAL_ENV}/bin/activate"

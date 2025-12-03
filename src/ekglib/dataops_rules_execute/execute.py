@@ -2,9 +2,8 @@
 import argparse
 import textwrap
 
-from typing import Optional
 
-from rdflib import Graph, ConjunctiveGraph, URIRef, RDF
+from rdflib import Graph, URIRef, RDF
 from SPARQLWrapper.Wrapper import QueryResult
 
 from ..data_source import set_cli_params as data_source_set_cli_params
@@ -217,9 +216,9 @@ class DataopsRulesExecute:
                         <{data_source_code_p_iri}> "{self.data_source_code}" ;
                         <{pipeline_produced_dataset_p_iri}> <{dataset_iri}> .
             """
-        tail_detail = f"""\
-                }}
-            }}
+        tail_detail = """\
+                }
+            }
             
         """
         result_detail = f"""\

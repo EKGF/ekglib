@@ -4,7 +4,6 @@ import urllib
 from typing import Optional
 
 import requests
-from rdflib import Graph
 from requests.exceptions import StreamConsumedError
 from requests.utils import iter_slices
 

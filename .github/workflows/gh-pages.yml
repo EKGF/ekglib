@@ -49,8 +49,8 @@ jobs:
 
       - name: Remove irrelevant files from gh-pages branch
         run: |
-          git rm --quiet -rf .github/ .idea/ .vscode/ .actrc .flake8 .tool-versions *.sh *.code-workspace *.iml
-          find . -name '*.py' -exec git rm --quiet --force {} \;
+          git rm --quiet -rf .github/ .idea/ .vscode/ .actrc .tool-versions *.sh *.code-workspace *.iml 2>/dev/null || true
+          find . -name '*.py' -exec git rm --quiet --force {} \; 2>/dev/null || true
         shell: bash
 
       - name: Showing contents of gh-pages branch when running locally

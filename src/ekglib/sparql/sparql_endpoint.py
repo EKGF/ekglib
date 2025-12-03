@@ -1,7 +1,7 @@
 import argparse
 import csv
 import urllib
-from typing import Optional
+from typing import Any, Optional
 
 import requests
 from requests.exceptions import StreamConsumedError
@@ -24,7 +24,7 @@ except ImportError:
     )
 
 
-def dump(obj):
+def dump(obj: Any) -> None:
     for attr in dir(obj):
         print('obj.%s = %r' % (attr, getattr(obj, attr)))
 

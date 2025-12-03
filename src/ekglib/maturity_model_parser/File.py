@@ -36,7 +36,7 @@ class File(object):
         else:
             return open(self.path, mode, encoding='UTF-8')
 
-    def rewrite_all_file(self, data):
+    def rewrite_all_file(self, data: str) -> None:
         makedirs(self.path.parent, 'Generated')
         with self.open(mode='w') as somefile:
             assert isinstance(somefile, io.TextIOWrapper)

@@ -113,7 +113,7 @@ class UserStoryParser:
         log_item('Created', output_file)
 
 
-def main():
+def main() -> int:
     parser = argparse.ArgumentParser(
         prog='python3 -m ekglib.user_story_parser',
         description='Adds any referenced SPARQL file to the graph as text and writes a new Turtle file',

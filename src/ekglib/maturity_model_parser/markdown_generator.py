@@ -41,5 +41,5 @@ class MaturityModelMarkdownGenerator:
         makedirs(self.full_dir, MaturityModel.class_label)
         self.full_path = self.full_dir / 'index.md'
 
-    def generate(self):
+    def generate(self) -> None:
         self.model.generate()

@@ -3,7 +3,7 @@ from __future__ import annotations
 from os import getcwd
 from os.path import relpath
 from pathlib import Path
-from typing import Any
+from typing import Any, Generator, TYPE_CHECKING
 
 from ekglib.maturity_model_parser.pages_yaml import PagesYaml
 from rdflib.term import Node
@@ -14,6 +14,9 @@ from .graph import MaturityModelGraph
 from .markdown_document import MarkdownDocument
 from ..log import log_item
 from ..namespace import MATURITY_MODEL
+
+if TYPE_CHECKING:
+    from .capability_area import MaturityModelCapabilityArea
 
 
 class MaturityModelPillar:
@@ -53,7 +56,7 @@ class MaturityModelPillar:
         self._capability_areas: list[Any] = list()
         makedirs(self.full_dir, self.class_label)
 
-    def generate(self):
+    def generate(self) -> None:
         self.generate_index_md()
         self.generate_pages_yaml()
         self.generate_capability_areas()
@@ -62,12 +65,12 @@ class MaturityModelPillar:
         for area in self.capability_areas():
             area.generate_markdown()
 
-    def generate_index_md(self):
+    def generate_index_md(self) -> None:
         self.md_file = MarkdownDocument(
             path=self.full_dir / 'index.md', metadata={'title': self.name}
         )
 
-    def generate_pages_yaml(self):
+    def generate_pages_yaml(self) -> None:
         """Generate the .pages.yaml file for the root directory of a pillar"""
         makedirs(self.full_dir, self.class_label_plural)
         pages_yaml = PagesYaml(root=self.full_dir, title=self.name)
@@ -78,7 +81,7 @@ class MaturityModelPillar:
             pages_yaml.add(f'{area.name}: {area.local_name}')
         pages_yaml.write()
 
-    def copy_fragments(self):
+    def copy_fragments(self) -> None:
         copy_fragment(
             self.md_file,
             self.fragments_dir / 'background-and-intro.md',
@@ -86,10 +89,12 @@ class MaturityModelPillar:
             '',
         )
 
-    def capability_area_nodes(self):
+    def capability_area_nodes(self) -> Generator[Node, None, None]:
         return self.graph.capability_areas_of_pillar(self.node)
 
-    def capability_areas_not_cached(self):
+    def capability_areas_not_cached(
+        self,
+    ) -> Generator['MaturityModelCapabilityArea', None, None]:
         from .capability_area import MaturityModelCapabilityArea
 
         for area in self.capability_area_nodes():
@@ -97,7 +102,7 @@ class MaturityModelPillar:
                 self, area, self.fragments_dir, self.config
             )
 
-    def capability_areas(self):
+    def capability_areas(self) -> list['MaturityModelCapabilityArea']:
         if len(self._capability_areas) == 0:
             self._capability_areas = list(self.capability_areas_not_cached())
         return self._capability_areas

@@ -151,7 +151,7 @@ class DataopsRuleParser:
         load_rdf_file_into_graph(rule_graph, self.rule_file)
         return rule_graph
 
-    def set_key(self):
+    def set_key(self) -> str:
         return self.rule_file.parent.parent.stem
 
     def set_iri(self):
@@ -274,7 +274,7 @@ def runit(args, stream) -> int:
     return processor.dump(stream)
 
 
-def main():
+def main() -> int:
     parser = argparse.ArgumentParser(
         prog='python3 -m ekglib.dataops_rule_parser',
         description='Adds any referenced SPARQL file to the graph as text and writes a new Turtle file',

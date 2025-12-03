@@ -25,7 +25,7 @@ class MarkDownFileForMkDocs(object):
             self.file = mkdocs_gen_files.open(self.file_name, 'w+', encoding='UTF-8')
             self.file.close()
 
-    def rewrite_all_file(self, data):
+    def rewrite_all_file(self, data: str) -> None:
         """Rewrite all the data of a Markdown file by ``data``.
 
         :param str data: is a string containing all the data that is written in the markdown file."""

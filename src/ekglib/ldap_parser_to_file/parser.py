@@ -8,7 +8,7 @@ from ..ldap_parser import LdapParser
 from ..log import log_item
 
 
-def main():
+def main() -> int:
     args = argparse.ArgumentParser(
         prog='python3 -m ekglib.ldap_parser_to_file',
         description='Capture all information from the given LDAP endpoint and store it as RDF "raw data" file',

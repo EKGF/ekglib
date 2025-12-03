@@ -179,7 +179,7 @@ class MarkdownDocument:
     def new_line_no_wrap(self, text=''):
         self.new_line(text, wrap_width=0)
 
-    def new_line(self, text='', wrap_width=120):
+    def new_line(self, text: str = '', wrap_width: int = 120) -> str:
         """Add a new line to Markdown file. The text is saved to the global variable file_data_text.
 
         :param text: is a string containing the paragraph text. Optionally, the paragraph text is returned.
@@ -221,7 +221,7 @@ class MarkdownDocument:
 
         return self.file_data_text
 
-    def write(self, text='', wrap_width=120):
+    def write(self, text: str = '', wrap_width: int = 120) -> None:
         """Write text in ``file_Data_text`` string.
 
         :param text: a text a string.
@@ -261,14 +261,14 @@ class MarkdownDocument:
         self.___update_file_data(md_code)
         return md_code
 
-    def should_add_indent(self):
+    def should_add_indent(self) -> bool:
         if len(self.indent) == 0:
             return False
         if len(self.file_data_text) == 0:
             return True
         return self.file_data_text[-1] == '\n'
 
-    def ___update_file_data(self, file_data):
+    def ___update_file_data(self, file_data: str) -> None:
         if self.should_add_indent():
             self.file_data_text += self.indent
 

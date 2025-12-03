@@ -122,7 +122,7 @@ class DataopsRulesCapture:
         return 0 if result else 1
 
 
-def main():
+def main() -> int:
     parser = argparse.ArgumentParser(
         prog='python3 -m ekglib.dataops_rules_capture',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,

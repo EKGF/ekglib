@@ -157,7 +157,7 @@ class MaturityModelGraph:
                 continue
             return node_type
 
-    def has_type(self, subject_uri, type_uri):
+    def has_type(self, subject_uri: Node, type_uri: Node) -> bool:
         return (subject_uri, RDF.type, type_uri) in self.g
 
     def has_type_pillar(self, subject_iri):

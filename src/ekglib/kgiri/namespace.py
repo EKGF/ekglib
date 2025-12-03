@@ -29,17 +29,17 @@ def complete_ns_iri_ending(iri):
     return iri
 
 
-def set_ekg_namespace(key: str, iri: str):
+def set_ekg_namespace(key: str, iri: str) -> None:
     global EKG_NS
 
     EKG_NS[key] = Namespace(complete_ns_iri_ending(iri))
 
 
-def set_ekg_namespace_with_base(key: str, base: str, suffix: str):
+def set_ekg_namespace_with_base(key: str, base: str, suffix: str) -> None:
     set_ekg_namespace(key, complete_ns_iri_ending(base) + suffix)
 
 
-def set_kgiri_base(ekg_kgiri_base: Optional[str]):
+def set_kgiri_base(ekg_kgiri_base: Optional[str]) -> None:
     global kgiri_base
 
     if not ekg_kgiri_base:
@@ -57,7 +57,7 @@ def set_kgiri_base(ekg_kgiri_base: Optional[str]):
     _log_item('kgiri_base', kgiri_base)
 
 
-def set_kgiri_base_replace(ekg_kgiri_base_replace: Optional[str]):
+def set_kgiri_base_replace(ekg_kgiri_base_replace: Optional[str]) -> None:
     global kgiri_base_replace
     global kgiri_replace_enabled
 
@@ -78,7 +78,7 @@ def set_kgiri_base_replace(ekg_kgiri_base_replace: Optional[str]):
     _log_item('kgiri replacement', 'enabled' if kgiri_replace_enabled else 'diabled')
 
 
-def kgiri_replace(value):
+def kgiri_replace(value: Any) -> Any:
     if (
         kgiri_replace_enabled
         and isinstance(value, URIRef)
@@ -91,7 +91,7 @@ def kgiri_replace(value):
         return value
 
 
-def kgiri_replace_iri_in_graph(g: Graph):
+def kgiri_replace_iri_in_graph(g: Graph) -> None:
     if not kgiri_replace_enabled:
         return
     for s, p, o in g:
@@ -99,7 +99,7 @@ def kgiri_replace_iri_in_graph(g: Graph):
         g.add((kgiri_replace(s), kgiri_replace(p), kgiri_replace(o)))
 
 
-def kgiri_replace_iri_in_literal(value: Literal):
+def kgiri_replace_iri_in_literal(value: Literal) -> Literal:
     if not kgiri_replace_enabled or kgiri_base_replace is None or kgiri_base is None:
         return value
     return Literal(str(value).replace(str(kgiri_base_replace), str(kgiri_base)))

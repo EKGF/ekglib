@@ -381,7 +381,14 @@ class XlsxParser:
             self._data_profile_metric(column_iri, '75%', dpt_row, '75pct')
             self._data_profile_metric(column_iri, 'max', dpt_row)
 
-    def _data_profile_metric(self, column_iri, key, dpt_row, term=None, datatype=None):
+    def _data_profile_metric(
+        self,
+        column_iri: URIRef,
+        key: str,
+        dpt_row: pd.DataFrame,
+        term: str | None = None,
+        datatype: Any | None = None,
+    ) -> None:
         if key not in dpt_row.columns:
             return
         metric = dpt_row[key].values[0]
@@ -580,7 +587,7 @@ class _KeyColumnNumberAction(argparse.Action):
         setattr(namespace, self.dest, values)
 
 
-def main():
+def main() -> int:
     args = argparse.ArgumentParser(
         prog='python3 -m ekglib.xlsx_parser',
         description='Capture all information from the given .xlsx file and store it as RDF "raw data"',

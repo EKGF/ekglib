@@ -7,7 +7,7 @@ from ..kgiri import set_kgiri_base, set_cli_params as kgiri_set_cli_params
 from ..s3 import set_cli_params as s3_set_cli_params
 
 
-def main():
+def main() -> int:
     args = argparse.ArgumentParser(
         prog='python3 -m ekglib.ldap_parser_to_s3',
         description='Capture all information from the given LDAP endpoint and store it in S3 as an RDF "raw data" file',

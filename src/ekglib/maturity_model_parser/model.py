@@ -45,7 +45,7 @@ class MaturityModel:
         makedirs(self.full_dir, self.class_label)
         self._pillars: list[Any] = list()
 
-    def sort_key(self, element):
+    def sort_key(self, element: Node) -> str:
         for sort_key in self.graph.g.objects(
             subject=element, predicate=MATURITY_MODEL.sortKey
         ):
@@ -55,7 +55,7 @@ class MaturityModel:
         log_item('No sort key for', element)
         return sort_key
 
-    def pillar_nodes_unsorted(self):
+    def pillar_nodes_unsorted(self) -> Generator[Node, None, None]:
         found = 0
         for pillar in self.graph.g.subjects(
             predicate=MATURITY_MODEL.pillarInModel, object=self.model_node
@@ -66,7 +66,7 @@ class MaturityModel:
         if found == 0:
             raise value_error(f'Model has no pillars: <{self.model_node}>')
 
-    def pillar_nodes(self):
+    def pillar_nodes(self) -> list[Node]:
         nodes = list(self.pillar_nodes_unsorted())
         nodes.sort(key=self.sort_key)
         return nodes
@@ -82,7 +82,7 @@ class MaturityModel:
                 config=self.config,
             )
 
-    def pillars(self):
+    def pillars(self) -> list['MaturityModelPillar']:
         if len(self._pillars) == 0:
             self._pillars = list(self.pillars_non_cached())
         return self._pillars
@@ -94,7 +94,7 @@ class MaturityModel:
             if pillar.name == name:
                 yield pillar
 
-    def generate(self):
+    def generate(self) -> None:
         log_item('Generate model', self.model_node)
         self.generate_index_md()
         self.generate_pages_yaml()
@@ -106,7 +106,7 @@ class MaturityModel:
         for pillar in self.pillars():
             pillar.generate()
 
-    def generate_index_md(self):
+    def generate_index_md(self) -> None:
         pillars_root = self.pillars_root
         index_md = pillars_root / 'index.md'
         self.md_file = MarkdownDocument(
@@ -160,7 +160,7 @@ class MaturityModel:
 
         md_file.create_md_file()
 
-    def generate_pages_yaml(self):
+    def generate_pages_yaml(self) -> None:
         """Generate the .pages.yaml file for the root directory where the pillars get published"""
         root = self.pillars_root
         log_item('Generate model pages.yaml', root)

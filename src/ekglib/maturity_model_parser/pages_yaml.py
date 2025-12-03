@@ -15,7 +15,7 @@ class PagesYaml:
     def add(self, item: str):
         self.nav.append(item)
 
-    def write(self):
+    def write(self) -> None:
         file = File(False, self.root / '.pages.yaml')
         log_item('pages.yaml', file.path)
         data = f'title: {self.title}\nnav:'

@@ -47,7 +47,7 @@ class PersonaParser:
         log_item('Created', output_file)
 
 
-def main():
+def main() -> int:
     parser = argparse.ArgumentParser(
         prog='python3 -m ekglib.personas',
         description='Checks a use case RDF file',

@@ -3,7 +3,7 @@ from __future__ import annotations
 from os import getcwd
 from os.path import relpath
 from pathlib import Path
-from typing import Any
+from typing import Any, Generator, TYPE_CHECKING
 
 from ekglib.maturity_model_parser.pages_yaml import PagesYaml
 from rdflib.term import Node
@@ -13,6 +13,9 @@ from .config import Config
 from .markdown_document import MarkdownDocument
 from ..log.various import log_item
 from ..namespace import MATURITY_MODEL
+
+if TYPE_CHECKING:
+    from .capability import MaturityModelCapability
 
 
 class MaturityModelCapabilityArea:
@@ -57,13 +60,13 @@ class MaturityModelCapabilityArea:
         self.generate_capabilities()
         self.md_file.create_md_file()
 
-    def generate_index_md(self):
+    def generate_index_md(self) -> None:
         self.md_file = MarkdownDocument(
             path=self.full_path,
             metadata={'title': f'{self.class_label} &mdash; {self.name}'},
         )
 
-    def generate_pages_yaml(self):
+    def generate_pages_yaml(self) -> None:
         """Generate the .pages.yaml file for the root directory of a capability area"""
         makedirs(self.full_dir, self.class_label_plural)
         pages_yaml = PagesYaml(root=self.full_dir, title=self.name)
@@ -101,12 +104,14 @@ class MaturityModelCapabilityArea:
         log_item('No sort key for', element)
         return sort_key
 
-    def capability_nodes(self):
+    def capability_nodes(self) -> list[Node]:
         nodes = list(self.capabiliy_nodes_unsorted())
         nodes.sort(key=self.sort_key)
         return nodes
 
-    def capabilities_non_cached(self):
+    def capabilities_non_cached(
+        self,
+    ) -> Generator['MaturityModelCapability', None, None]:
         from .capability import MaturityModelCapability
 
         for capability_node in self.capability_nodes():
@@ -114,7 +119,7 @@ class MaturityModelCapabilityArea:
                 self, capability_node, self.fragments_dir, self.config
             )
 
-    def capabilities(self):
+    def capabilities(self) -> list['MaturityModelCapability']:
         if len(self._capabilities) == 0:
             self._capabilities = list(self.capabilities_non_cached())
         return self._capabilities

@@ -38,7 +38,7 @@ def run_with_args(args) -> int:
     return run_with_config(config)
 
 
-def main():
+def main() -> int:
     parser = argparse.ArgumentParser(
         prog='python3 -m ekglib.maturity_model_parser',
         description='Generates Markdown files for all capabilities found in the given directory',

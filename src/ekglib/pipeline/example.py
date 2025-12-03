@@ -158,7 +158,7 @@ Charlie,35,San Francisco"""
         pass
 
 
-def main():
+def main() -> None:
     try:
         asyncio.run(run_pipeline())
     except KeyboardInterrupt:

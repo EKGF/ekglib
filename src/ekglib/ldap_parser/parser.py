@@ -525,7 +525,7 @@ class LdapEntry:
         self.g.namespace_manager.bind('raw', RAW)
         self.g.namespace_manager.bind('dataops', DATAOPS)
 
-    def _add(self, triple):
+    def _add(self, triple: tuple[Any, Any, Any]) -> None:
         if self.verbose:
             s, p, o = triple
             log(f'<{s}> <{p}> {o}')

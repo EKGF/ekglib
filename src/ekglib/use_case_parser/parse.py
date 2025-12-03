@@ -49,7 +49,7 @@ class UseCaseParser:
         log_item('Created', output_file)
 
 
-def main():
+def main() -> int:
     parser = argparse.ArgumentParser(
         prog='python3 -m ekglib.use_case_parser',
         description='Checks a use case RDF file',

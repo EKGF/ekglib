@@ -77,7 +77,7 @@ class MaturityModelCapability:
         self.md_file.new_line()
         self.graph.write_description(self.md_file, self.node)
 
-    def copy_fragments(self):
+    def copy_fragments(self) -> None:
         indent_prefix = '    '
         self.md_file.new_line('\n\n=== "Intro"')
         copy_fragment_new(
@@ -143,7 +143,7 @@ class MaturityModelCapability:
     #     md_file.create_md_file()
 
     @classmethod
-    def generate_pages_yaml(cls, area: MaturityModelCapabilityArea):
+    def generate_pages_yaml(cls, area: 'MaturityModelCapabilityArea') -> None:
         root = area.full_dir
         makedirs(root, cls.class_label_plural)
         pages_yaml = PagesYaml(root=root, title=cls.class_label_plural)

@@ -39,7 +39,7 @@ class Exporter:
         return 0
 
 
-def main():
+def main() -> int:
     parser = argparse.ArgumentParser(
         prog='python3 -m ekglib.step_export',
         description='Export the given named graph from the given staging database to the given S3 bucket',

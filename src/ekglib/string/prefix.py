@@ -117,7 +117,7 @@ def common_suffix(
         return ''
 
 
-def remove_prefix(text, prefix_):
+def remove_prefix(text: str, prefix_: str) -> str:
     if text.startswith(prefix_):
         text = text.strip()
         if len(prefix_) == len(text):
@@ -128,7 +128,7 @@ def remove_prefix(text, prefix_):
     return text
 
 
-def strip_end(text, suffix):
+def strip_end(text: str, suffix: str) -> str:
     text = text.strip()
     if not text.endswith(suffix):
         return text

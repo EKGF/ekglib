@@ -32,7 +32,9 @@ class TestXlsxProcessor:
         expected = 'referenceId'
         assert expected == actual
 
-    @pytest.mark.xfail(reason="PrefixException when removing prefix that equals string - needs investigation")
+    @pytest.mark.xfail(
+        reason='PrefixException when removing prefix that equals string - needs investigation'
+    )
     def test_single_column_sheet_generates_string_value_triple(
         self, kgiri_base, test_data_dir
     ):

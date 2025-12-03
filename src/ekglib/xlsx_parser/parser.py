@@ -11,7 +11,7 @@ import rdflib
 import stringcase
 from dateutil.parser import parse, ParserError
 from pandas import isna
-from pandas._libs.lib import Decimal  # noqa
+from pandas._libs.lib import Decimal  # type: ignore[attr-defined]  # noqa
 from pandas._libs.tslibs.timestamps import Timestamp  # noqa
 from rdflib import RDF, Literal, URIRef, RDFS, PROV, XSD
 from six import string_types
@@ -90,9 +90,9 @@ def numpy_type_2_xsd_type(value: Any) -> tuple[Any, URIRef | None]:
         ):
             return date_time.date(), XSD.date
         return value, XSD.dateTime
-    if np.issubdtype(value, np.integer):
+    if np.issubdtype(type(value), np.integer):  # type: ignore[attr-defined]
         return value, Literal(value).datatype
-    if np.issubdtype(value, np.floating):
+    if np.issubdtype(type(value), np.floating):  # type: ignore[attr-defined]
         return value, Literal(value).datatype
     if isinstance(value, date):
         return value, XSD.date
@@ -292,7 +292,7 @@ class XlsxParser:
             )
         }
         for i in range(1, number_of_columns):
-            converters[i] = lambda value, j=i: self.parse_value(value, j)
+            converters[i] = lambda value, j=i: self.parse_value(value, j)  # type: ignore[misc]
         df = xlsx.parse(
             sheet_name=sheet_name,
             index_col=None,

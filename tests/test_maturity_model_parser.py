@@ -15,7 +15,6 @@ from ekglib.maturity_model_parser.File import makedirs
 from ekglib.maturity_model_parser.graph import get_text_in_language
 from ekglib.maturity_model_parser.pages_yaml import PagesYaml
 
-from tests.fixtures import test_data_dir, test_output_dir, test_ekgmm_repo_dir, test_ekgmm_docs_root, test_ekgmm_output_dir # noqa
 
 class TestMaturityModelParser:
     def test_get_text_in_language1(self):

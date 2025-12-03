@@ -4,8 +4,6 @@ import textwrap
 
 import ekglib
 
-from tests.fixtures import kgiri_base, test_data_dir # noqa
-
 
 class TestUseCaseParser:
     def test_use_case_parser(self, kgiri_base, test_data_dir):

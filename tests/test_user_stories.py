@@ -5,7 +5,6 @@ import textwrap
 from ekglib.user_story_parser.parse import main
 from ekglib.exceptions import PrefixException
 
-from tests.fixtures import kgiri_base, test_data_dir  # noqa
 
 class TestUserStoryParser:
     def test_user_story_parser(self, kgiri_base, test_data_dir):

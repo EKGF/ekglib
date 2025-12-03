@@ -11,7 +11,6 @@ from ekglib.kgiri import set_kgiri_base
 from ekglib.string import argv_list
 from ekglib.xlsx_parser.parser import convert_to_date, main, parse_literal
 
-from tests.fixtures import test_data_dir, kgiri_base # noqa
 
 class TestXlsxProcessor:
     test_data_dir: str

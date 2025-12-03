@@ -4,8 +4,6 @@ import textwrap
 
 import ekglib
 
-from tests.fixtures import test_data_dir
-
 
 class TestConceptParser:
     def test_concepts_processor(self, test_data_dir):

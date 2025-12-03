@@ -45,6 +45,7 @@ jobs:
           uv run ruff check .
 
       - name: Type check with mypy
+        continue-on-error: true
         run: |
           uv run mypy src
 

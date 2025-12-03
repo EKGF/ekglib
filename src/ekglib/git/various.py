@@ -1,7 +1,8 @@
 import os
+from argparse import ArgumentParser
 
 
-def set_cli_params(parser):
+def set_cli_params(parser: ArgumentParser) -> None:
     git_branch = os.getenv('GIT_BRANCH', os.getenv('BRANCH_NAME', 'main'))
     parser.add_argument(
         '--git-branch',

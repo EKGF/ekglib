@@ -1,13 +1,15 @@
 import getpass
 import os
+from argparse import ArgumentParser
+from typing import Any
 
 
-def dump(obj):
+def dump(obj: Any) -> None:
     for attr in dir(obj):
         print('obj.%s = %r' % (attr, getattr(obj, attr)))
 
 
-def set_cli_params(parser):
+def set_cli_params(parser: ArgumentParser) -> None:
     ekg_sparql_endpoint = os.getenv(
         'EKG_SPARQL_ENDPOINT', 'http://host.docker.internal:5820'
     )

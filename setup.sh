@@ -64,26 +64,15 @@ function recreate_venv() {
         rm -rf "${LOCAL_VENV_DIR}" || return $?
     fi
 
-    # First install a standard virtual environment using the system python
-    # so that we can then install uv as a tool into it and run that to
-    # recreate a version of the virtual environment that uv likes.
-    python3 -m venv --clear --system-site-packages "${LOCAL_VENV_DIR}" || return $?
-
-    if [[ ! -x "${LOCAL_VENV_DIR}/bin/pip3" ]] ; then
-        echo -e "${red_bold}ERROR: Could not create the virtual environment, pip3 is not executable.${end_color}" >&2
+    # Check if uv is available
+    if ! command -v uv &> /dev/null ; then
+        echo -e "${red_bold}ERROR: uv is not installed. Please install it first:${end_color}" >&2
+        echo -e "${red_bold}  curl -LsSf https://astral.sh/uv/install.sh | sh${end_color}" >&2
         return 1
     fi
 
-    "${LOCAL_VENV_DIR}/bin/pip3" install --upgrade pip || return $?
-    "${LOCAL_VENV_DIR}/bin/pip3" install --upgrade uv || return $?
-
-    # Now recreate the virtual environment using uv
-    "${LOCAL_VENV_DIR}/bin/uv" venv --allow-existing --system-site-packages "${LOCAL_VENV_DIR}" || return $?
-
-    if [[ ! -x "${LOCAL_VENV_DIR}/bin/uv" ]] ; then
-        echo -e "${red_bold}ERROR: Could not create the virtual environment, uv is not executable.${end_color}" >&2
-        return 1
-    fi
+    # Create virtual environment using uv
+    uv venv --system-site-packages "${LOCAL_VENV_DIR}" || return $?
 
     return 0
 }
@@ -100,7 +89,7 @@ function install_stuff() {
     # Install the dependencies using uv, which will also install all the tools
     # mentioned under [dependency-groups.dev] in the pyproject.toml file.
     subheading "uv sync"
-    "${LOCAL_VENV_DIR}/bin/uv" sync || return $?
+    uv sync || return $?
 
     return 0
 }
@@ -160,6 +149,7 @@ function last_message() {
     echo -e " - ${blue_bold}uv sync${end_color} to install the dependencies"
     echo -e " - ${blue_bold}tox${end_color} or ${blue_bold}uv run tox${end_color} to run all jobs like tests, linting, etc."
     echo -e " - ${blue_bold}pytest${end_color} or ${blue_bold}uv run pytest${end_color} to run tests"
+    echo -e " - ${blue_bold}ruff format${end_color} or ${blue_bold}uv run ruff format${end_color} to format code"
     echo -e " - ${blue_bold}ruff check${end_color} or ${blue_bold}uv run ruff check${end_color} to run the ruff linter"
     echo ""
     echo "NOTE: Running these commands outside the context of an active virtual environment requires ~/.local/bin to be in your PATH"

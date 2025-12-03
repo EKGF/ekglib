@@ -3,6 +3,7 @@ from __future__ import annotations
 from os import getcwd
 from os.path import relpath
 from pathlib import Path
+from typing import Any
 
 from ekglib.maturity_model_parser.pages_yaml import PagesYaml
 from rdflib.term import Node
@@ -33,7 +34,7 @@ class MaturityModelCapabilityArea:
         self.pillar = pillar
         self.node = area_node
         self.config = config
-        self._capabilities = list()
+        self._capabilities: list[Any] = list()
 
         self.name = self.graph.name_for(self.node, self.class_label)
         self.local_name = self.graph.local_name_for(self.node, self.class_label)

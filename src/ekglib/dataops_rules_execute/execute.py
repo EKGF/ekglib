@@ -1,6 +1,8 @@
-# flake8: noqa
+# noqa
 import argparse
 import textwrap
+
+from typing import Optional
 
 from rdflib import Graph, ConjunctiveGraph, URIRef, RDF
 from SPARQLWrapper.Wrapper import QueryResult
@@ -23,7 +25,7 @@ class DataopsRulesExecute:
     against the given SPARQL s3_endpoint.
     """
 
-    def __init__(self, args, sparql_endpoint: SPARQLEndpoint = None):
+    def __init__(self, args, sparql_endpoint: SPARQLEndpoint | None = None):
         self.args = args
         self.verbose = args.verbose
         self.data_source_code = args.data_source_code
@@ -31,7 +33,14 @@ class DataopsRulesExecute:
         self.rule_type = URIRef(args.rule_type)
         self.sparql_endpoint = sparql_endpoint
         if self.rules_file is None:
-            self.g = self._query_all_rules().convert()
+            result = self._query_all_rules()
+            if result is None:
+                self.g = Graph()
+            else:
+                converted = result.convert()
+                if not isinstance(converted, Graph):
+                    raise ValueError(f'Expected Graph, got {type(converted)}')
+                self.g = converted
         else:
             self.g = Graph().parse(self.rules_file, format='ttl')
         log_item('Found # rules', len(list(self.g.subjects(RDF.type, self.rule_type))))
@@ -49,7 +58,9 @@ class DataopsRulesExecute:
         for index, key in enumerate(sorted(self.g.objects(None, RULE.term('sortKey')))):
             log_item(f'Rule {index + 1}', key)
 
-    def _query_all_rules(self) -> Graph:
+    def _query_all_rules(self) -> QueryResult | None:
+        if self.sparql_endpoint is None:
+            raise ValueError('sparql_endpoint is required')
         log_item('Get Dataops Rules', self.data_source_code)
         return self.sparql_endpoint.execute_construct(
             f"""\
@@ -84,7 +95,7 @@ class DataopsRulesExecute:
         rule_iris = list(self.g.objects(None, RULE.sortKey))
         max_rules = len(rule_iris)
         rc = 0
-        for index, key in enumerate(sorted(rule_iris)):
+        for index, key in enumerate(sorted(rule_iris, key=str)):
             for rule_iri in self.g.subjects(RULE.sortKey, key):
                 rc += self.execute_rule(rule_iri, index, max_rules, key)
         return rc

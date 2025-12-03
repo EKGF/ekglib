@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 from os.path import relpath
+from pathlib import Path
+from typing import Generator, Any, TYPE_CHECKING
 
 from ekglib.maturity_model_parser.pages_yaml import PagesYaml
 from rdflib.term import Node
-from typing import Generator, Any
 
 from .File import makedirs
 from .config import Config
@@ -12,6 +13,9 @@ from .graph import MaturityModelGraph
 from .markdown_document import MarkdownDocument
 from ..log.various import value_error, log_item
 from ..namespace import MATURITY_MODEL
+
+if TYPE_CHECKING:
+    from .pillar import MaturityModelPillar
 
 
 class MaturityModel:
@@ -34,9 +38,12 @@ class MaturityModel:
             self.model_node, self.class_label
         )
         self.full_dir = self.config.output_root / self.local_type_name
-        self.pillars_root = MaturityModelPillar.pillars_root(graph=graph, config=config)
+        pillars_root_result = MaturityModelPillar.pillars_root(
+            graph=graph, config=config
+        )
+        self.pillars_root: Path = pillars_root_result  # type: ignore[assignment]
         makedirs(self.full_dir, self.class_label)
-        self._pillars = list()
+        self._pillars: list[Any] = list()
 
     def sort_key(self, element):
         for sort_key in self.graph.g.objects(
@@ -64,7 +71,7 @@ class MaturityModel:
         nodes.sort(key=self.sort_key)
         return nodes
 
-    def pillars_non_cached(self) -> Generator[MaturityModelPillar, Any, None]:  # noqa: F821
+    def pillars_non_cached(self) -> Generator['MaturityModelPillar', Any, None]:
         from .pillar import MaturityModelPillar
 
         for pillar_node in self.pillar_nodes():
@@ -82,7 +89,7 @@ class MaturityModel:
 
     def get_pillars_with_name(
         self, name: str
-    ) -> Generator[MaturityModelPillar, Any, None]:  # noqa: F821
+    ) -> Generator['MaturityModelPillar', Any, None]:
         for pillar in self.pillars():
             if pillar.name == name:
                 yield pillar

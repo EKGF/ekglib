@@ -1,3 +1,4 @@
+import argparse
 import gzip
 import os
 import textwrap
@@ -16,7 +17,7 @@ from ..s3 import S3ObjectStore
 from ..sparql import SPARQLEndpoint, iter_raw
 
 
-def set_cli_params(parser):
+def set_cli_params(parser: argparse.ArgumentParser) -> None:
     ekg_dataset_code = os.getenv('EKG_DATASET_CODE', None)
     # git_branch = os.getenv('GIT_BRANCH', os.getenv('BRANCH_NAME', 'main'))
     group = parser.add_argument_group('Dataset')
@@ -39,12 +40,19 @@ def set_cli_params(parser):
 # TODO: externalize s3os
 #
 def export_dataset(
-    sparql_endpoint: SPARQLEndpoint = None,
-    s3_endpoint: S3ObjectStore = None,
-    data_source_code: str = None,
-    graph_iri: rdflib.URIRef = None,
+    sparql_endpoint: SPARQLEndpoint | None = None,
+    s3_endpoint: S3ObjectStore | None = None,
+    data_source_code: str | None = None,
+    graph_iri: rdflib.URIRef | None = None,
     mime=MIME_NTRIPLES,
 ) -> bool:
+    if (
+        sparql_endpoint is None
+        or s3_endpoint is None
+        or data_source_code is None
+        or graph_iri is None
+    ):
+        raise ValueError('All parameters are required')
     log_rule(data_source_code)
     log_item('Exporting Dataset', data_source_code)
     log_item('Named Graph IRI', graph_iri.n3())
@@ -89,10 +97,12 @@ def _s3_file_name(mime, data_source_code):
 def export_graph(
     graph: Graph,
     s3_file_name: str,
-    s3_endpoint: S3ObjectStore = None,
-    data_source_code: str = None,
+    s3_endpoint: S3ObjectStore | None = None,
+    data_source_code: str | None = None,
 ) -> bool:
     """Export the content of the given rdflib.Graph as a Turtle file to the given S3 bucket"""
+    if s3_endpoint is None:
+        raise ValueError('s3_endpoint is required')
     log_rule(f'Uploading in-memory graph as {s3_file_name} to S3')
     if Path(s3_file_name).suffix == '.gz':
         content_encoding = 'gzip'
@@ -101,7 +111,7 @@ def export_graph(
     uploader = s3_endpoint.uploader_for(
         s3_file_name,
         mime=MIME_TURTLE,
-        content_encoding=content_encoding,
+        content_encoding=content_encoding if content_encoding else None,
         dataset_code=data_source_code,
     )
     #
@@ -109,10 +119,10 @@ def export_graph(
     # to support streaming.
     #
     chunk_max_size = 5 * 1024 * 1024  # 5Mb is minimum
-    serializer = plugin.get('ttl', plugin.Serializer)(graph)
+    serializer = plugin.get('ttl', plugin.Serializer)(graph)  # type: ignore[attr-defined]
     buf = BytesIO()
     with gzip.GzipFile(mode='wb', fileobj=buf) as stream:
-        serializer.serialize(stream, encoding='UTF-8')
+        serializer.serialize(stream, encoding='UTF-8')  # type: ignore[arg-type]
     chunk = bytearray(chunk_max_size)
     chunk_size = chunk_max_size
     buf.seek(0)
@@ -178,7 +188,14 @@ def datasets_produced_by_pipeline(
         """)  # noqa: W293
 
     log_item('Query', _query())
-    g = sparql_endpoint.execute_construct(_query()).convert()
+    result = sparql_endpoint.execute_construct(_query())
+    if result is None:
+        g = Graph()
+    else:
+        converted = result.convert()
+        if not isinstance(converted, Graph):
+            raise ValueError(f'Expected Graph, got {type(converted)}')
+        g = converted
 
     def datasets():
         for dataset_iri, graph_iri in g.subject_objects(DATASET.inGraph):

@@ -1,54 +1,55 @@
 from __future__ import print_function
 
 import sys
+from typing import Any
 
-from rdflib import RDF, RDFS
+from rdflib import Graph, RDF, RDFS
 
 from ..kgiri.namespace import EKG_NS  # Do a deep import
 from ..string import remove_prefix
 
 
-def eprint(*args, **kwargs):
+def eprint(*args: Any, **kwargs: Any) -> None:
     print(*args, file=sys.stderr, **kwargs)
 
 
-def warning(msg):
+def warning(msg: str) -> None:
     log('WARNING: {0}'.format(msg))
 
 
-def error(msg):
+def error(msg: str) -> None:
     """Log an error and exit the whole program immediately, use log_error for less drastic approach"""
     log_error(msg)
     exit(1)
 
 
-def log_error(msg):
+def log_error(msg: str) -> None:
     eprint('\rERROR: {0}'.format(msg))
 
 
-def value_error(*args):
+def value_error(*args: Any) -> ValueError:
     """Log an error and return a ValueError exception that you can raise yourself"""
     line = args[0].format(*args[1:])
     eprint(line)
     return ValueError(line)
 
 
-def log(msg):
+def log(msg: str) -> None:
     print(f'\r{msg}')
 
 
-def log_item(item, msg):
+def log_item(item: str, msg: Any) -> None:
     log(' - {:<26}: [{:}]'.format(item, msg))
 
 
-def log_exception(e: Exception = None):
+def log_exception(e: Exception | None = None):
     if e:
         log_item('Exception', f'{repr(e)}: {e.args}')
     else:
         log_list('Exception', sys.exc_info())
 
 
-def log_dump(item, object_):
+def log_dump(item: str, object_: Any) -> None:
     log_item(item, object_)
     log('   - {:<24}: [{:}]'.format('type', type(object_)))
     if isinstance(object_, dict):
@@ -56,17 +57,17 @@ def log_dump(item, object_):
             log('   - {:<24}: [{:}]'.format(key, value))
 
 
-def log_rule(msg):
+def log_rule(msg: str) -> None:
     log_item('*************************', f'************************************ {msg}')
 
 
-def log_list(item, list_):
+def log_list(item: str, list_: Any) -> None:
     log(' - {:<26}: {:}'.format(item, f'{len(list_)} elements'))
     for index, list_item in enumerate(list_):
         log('   - {:<24}: [{:}]'.format(index + 1, list_item))
 
 
-def log_iri(item, iri):
+def log_iri(item: str, iri: str) -> None:
     kgiri = EKG_NS['KGIRI']
     kggraph = EKG_NS['KGGRAPH']
     if iri.startswith(kgiri):
@@ -77,7 +78,7 @@ def log_iri(item, iri):
         log_item(item, iri)
 
 
-def log_resource(graph, subject):
+def log_resource(graph: Graph, subject: Any) -> None:
     log_iri('IRI', subject)
     for rdfs_type in graph.objects(subject, RDF.type):
         log_iri('Type', rdfs_type)

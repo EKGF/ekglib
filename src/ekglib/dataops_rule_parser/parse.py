@@ -57,7 +57,7 @@ class DataopsRuleParser:
 
     g: rdflib.Graph
 
-    def __init__(self, args, input_file_name=None, rule_file_iri: URIRef = None):
+    def __init__(self, args, input_file_name=None, rule_file_iri: URIRef | None = None):
         self.args = args
         self.verbose = args.verbose
         self.rule_file = Path(input_file_name)

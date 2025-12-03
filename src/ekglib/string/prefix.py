@@ -3,11 +3,12 @@
 # https://codereview.stackexchange.com/questions/145757/finding-a-common-prefix-suffix-in-a-list-tuple-of-strings
 #
 from itertools import zip_longest
+from typing import Union
 
 from ekglib.exceptions.exceptions import PrefixException
 
 
-def all_same(items: (tuple, list, str)) -> bool:
+def all_same(items: Union[tuple, list, str]) -> bool:
     """
     A helper function to test if
     all items in the given iterable
@@ -33,7 +34,9 @@ def all_same(items: (tuple, list, str)) -> bool:
     return all(item == items[0] for item in items)
 
 
-def common_prefix(strings: (list, tuple), _min: int = 0, _max: int = 100) -> str:
+def common_prefix(
+    strings: Union[list[str], tuple[str, ...]], _min: int = 0, _max: int = 100
+) -> str:
     """
     Given a list or tuple of strings, find the common prefix_
     among them. If a common prefix_ is not found, an empty string
@@ -66,9 +69,15 @@ def common_prefix(strings: (list, tuple), _min: int = 0, _max: int = 100) -> str
                 return prefix
             else:
                 return ''
+    if _min <= len(prefix) <= _max:
+        return prefix
+    else:
+        return ''
 
 
-def common_suffix(strings: (list, tuple), _min: int = 0, _max: int = 100) -> str:
+def common_suffix(
+    strings: Union[list[str], tuple[str, ...]], _min: int = 0, _max: int = 100
+) -> str:
     """
     Given a list or tuple of strings, find the common suffix
     among them. If a common suffix is not found, an empty string
@@ -102,6 +111,10 @@ def common_suffix(strings: (list, tuple), _min: int = 0, _max: int = 100) -> str
                 return suffix[::-1]
             else:
                 return ''
+    if _min <= len(suffix) <= _max:
+        return suffix[::-1]
+    else:
+        return ''
 
 
 def remove_prefix(text, prefix_):

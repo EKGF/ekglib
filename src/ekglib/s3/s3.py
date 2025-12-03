@@ -101,8 +101,8 @@ class S3ObjectStore:
         self,
         key,
         mime=MIME_NTRIPLES,
-        content_encoding: str = None,
-        dataset_code: str = None,
+        content_encoding: str | None = None,
+        dataset_code: str | None = None,
     ):
         return S3Uploader(
             self,
@@ -119,8 +119,8 @@ class S3Uploader:
         s3_object_store,
         key,
         mime=MIME_NTRIPLES,
-        content_encoding=None,
-        dataset_code: str = None,
+        content_encoding: str | None = None,
+        dataset_code: str | None = None,
     ):
         self.args = s3_object_store.args
         self.verbose = self.args.verbose
@@ -141,7 +141,7 @@ class S3Uploader:
         )
         self.id = self.mpu.id
         log_item('Multipart Upload Id', self.mpu.id)
-        self.parts = []
+        self.parts: list['S3Part'] = []
 
     def part(self, chunk: bytes):
         part = S3Part(self, len(self.parts) + 1)
@@ -193,7 +193,7 @@ class S3Part:
 
     def upload(self, chunk: bytes):
         log_item('Type of chunk', type(chunk))
-        log_item('Uploading Part', f'size={len(chunk)} last 10 bytes={chunk[-10:]}')
+        log_item('Uploading Part', f'size={len(chunk)} last 10 bytes={chunk[-10:]!r}')
         response = self.uploader.object_store.s3_client.upload_part(
             Body=chunk,
             Bucket=self.uploader.object_store.s3_bucket_name,

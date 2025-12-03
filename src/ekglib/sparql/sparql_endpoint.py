@@ -1,3 +1,4 @@
+import argparse
 import csv
 import urllib
 from typing import Optional
@@ -17,6 +18,7 @@ try:
         EndPointNotFound,
         Unauthorized,
     )
+    from SPARQLWrapper.Wrapper import QueryResult
 except ImportError:
     raise Exception(
         "SPARQLWrapper not found! install with 'pip3 install SPARQLWrapper'"
@@ -28,7 +30,7 @@ def dump(obj):
         print('obj.%s = %r' % (attr, getattr(obj, attr)))
 
 
-def set_cli_params(parser):
+def set_cli_params(parser: argparse.ArgumentParser) -> None:
     parser.add_argument_group('SPARQL')
     parser.add_argument('--sparql_endpoint-s3_endpoint', help='The SPARQL s3_endpoint')
     parser.add_argument('--sparql_endpoint-database', help='The SPARQL database')
@@ -85,7 +87,9 @@ def iter_raw(r: requests.Response, chunk_size: int = 1):
 class SPARQLResponse:
     sparql_endpoint: 'SPARQLEndpoint'
 
-    def __init__(self, sparql_endpoint, response: requests.Response, mime: str = None):
+    def __init__(
+        self, sparql_endpoint, response: requests.Response, mime: str | None = None
+    ):
         self.sparql_endpoint = sparql_endpoint
         self.response = response
         self.mime = mime
@@ -206,7 +210,7 @@ class SPARQLEndpoint:
         return self.execute_sparql_query2(sparql_statement)
 
     def execute_sparql_query2(
-        self, sparql_statement, graph_iri: str = None, mime: str = MIME_CSV
+        self, sparql_statement, graph_iri: str | None = None, mime: str = MIME_CSV
     ) -> Optional[SPARQLResponse]:
         if self.verbose:
             log_item('Executing', sparql_statement)
@@ -272,7 +276,9 @@ class SPARQLEndpoint:
         #     print(f.read().decode('utf-8'))
         return self._execute_query()
 
-    def execute_construct(self, sparql_construct_statement: str) -> Optional[Graph]:
+    def execute_construct(
+        self, sparql_construct_statement: str
+    ) -> Optional[QueryResult]:
         self.sparql_endpoint.clearCustomHttpHeader('Accept')
         self.sparql_endpoint.setMethod(GET)
         self.sparql_endpoint.setReturnFormat(

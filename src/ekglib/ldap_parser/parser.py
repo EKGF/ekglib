@@ -74,7 +74,7 @@ def _log_who_am_i(conn):
 class LdapParser:
     skip_rdf_generation = False  # set to true to test/debug the overall flow of the app
 
-    def __init__(self, args, stream: typing.BinaryIO = None):
+    def __init__(self, args, stream: typing.BinaryIO | None = None):
         self.processed_entries = 0
         self.returned_entries = 0
         logging.info('Starting LDAP parser')
@@ -87,7 +87,7 @@ class LdapParser:
         self.add_namespaces()
         self.bind_dn = args.ldap_bind_dn
         self.bind_auth = args.ldap_bind_auth
-        self.paged_size = 250
+        self.paged_size: int | None = 250
         self.search_filter = args.ldap_search_filter
         self.stream = stream
         self.ldap_host = args.ldap_host

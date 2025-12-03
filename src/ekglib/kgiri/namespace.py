@@ -70,15 +70,22 @@ def set_kgiri_base_replace(ekg_kgiri_base_replace: Optional[str]):
     kgiri_base_replace = iri
     set_ekg_namespace('KGIRI_BASE_REPLACE', kgiri_base_replace)
 
-    kgiri_replace_enabled = kgiri_base_replace and kgiri_base_replace != kgiri_base
+    kgiri_replace_enabled = bool(
+        kgiri_base_replace and kgiri_base_replace != kgiri_base
+    )
 
     _log_item('kgiri_base_replace', kgiri_base_replace)
     _log_item('kgiri replacement', 'enabled' if kgiri_replace_enabled else 'diabled')
 
 
 def kgiri_replace(value):
-    if kgiri_replace_enabled and isinstance(value, URIRef):
-        replaced = URIRef(value.replace(kgiri_base_replace, kgiri_base))
+    if (
+        kgiri_replace_enabled
+        and isinstance(value, URIRef)
+        and kgiri_base_replace is not None
+        and kgiri_base is not None
+    ):
+        replaced = URIRef(str(value).replace(str(kgiri_base_replace), str(kgiri_base)))
         return replaced
     else:
         return value
@@ -93,6 +100,6 @@ def kgiri_replace_iri_in_graph(g: Graph):
 
 
 def kgiri_replace_iri_in_literal(value: Literal):
-    if not kgiri_replace_enabled:
+    if not kgiri_replace_enabled or kgiri_base_replace is None or kgiri_base is None:
         return value
-    return Literal(value.replace(kgiri_base_replace, kgiri_base))
+    return Literal(str(value).replace(str(kgiri_base_replace), str(kgiri_base)))

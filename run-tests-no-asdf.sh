@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# This scriptlet creates a Python 3.10.8 virtual environment under the project folder (not to be checked in)
+# This scriptlet creates a virtual environment under the project folder (not to be checked in)
 # and then once it is available it enters it and executes all the tests in the tests folder
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 VIRTUAL_ENV="${SCRIPT_DIR}/.venv"
@@ -7,21 +7,17 @@ VIRTUAL_ENV="${SCRIPT_DIR}/.venv"
 if [ -d "${VIRTUAL_ENV}" ] ; then
   # shellcheck source=.venv/bin/activate
   source "${VIRTUAL_ENV}/bin/activate" || exit $?
-  echo "Inside Python 3.10 Virtual Environment" >&2
+  echo "Inside Virtual Environment" >&2
 else
   echo "WARNING: No Virtual Environment was found. Will create one NOW!" >&2
-  if [[ ! $(which python3) ]] ; then
-    echo "Python 3 not installed, please install a recent version of python e.g. by running %brew install python@3.10" >&2
+  if [[ ! $(which uv) ]] ; then
+    echo "uv not installed, please install it first: curl -LsSf https://astral.sh/uv/install.sh | sh" >&2
     exit 1
   fi
-  python3 -m venv "${VIRTUAL_ENV}" || exit $?
+  uv venv "${VIRTUAL_ENV}" || exit $?
   # shellcheck source=.venv/bin/activate
   source "${VIRTUAL_ENV}/bin/activate" || exit $?
-  "${VIRTUAL_ENV}/bin/pip3" install --upgrade pip setuptools && \
-    "${VIRTUAL_ENV}/bin/pip3" install flake8 pytest pytest-cov poetry || exit $?
-  "${VIRTUAL_ENV}/bin/poetry config virtualenvs.in-project true" || exit $?
-  "${VIRTUAL_ENV}/bin/poetry" install || exit $?
-  "${VIRTUAL_ENV}/bin/poetry" build || exit $?
+  uv sync || exit $?
   echo "Virtual Environment has been initialised successfully, will run the tests now" >&2
 fi
 

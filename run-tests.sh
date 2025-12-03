@@ -3,11 +3,14 @@
 # run the python tests
 #
 GIT_ROOT="$(git rev-parse --show-toplevel)"
-VIRTUAL_ENV="${GIT_ROOT}/.venv"
+# Use $TMPDIR on macOS (user-specific temp dir) or /tmp on Linux
+# Remove trailing slash if present to ensure clean path construction
+TMP_BASE="${TMPDIR:-/tmp}"
+TMP_BASE="${TMP_BASE%/}"
+TEST_VENV_DIR="${TMP_BASE}/ekglib-test-venv"
+VIRTUAL_ENV="${TEST_VENV_DIR}"
 
-python_version="$(cat "${GIT_ROOT}/.python-version")"
-
-flag_file="/tmp/ekglib-last-checked-environment.flag"
+flag_file="${TMP_BASE}/ekglib-last-checked-environment.flag"
 
 function checkEnvironment() {
 
@@ -17,7 +20,21 @@ function checkEnvironment() {
 
   touch "${flag_file}" || return 1
 
-  "${GIT_ROOT}/setup.sh" || return 1
+  echo "Using test virtual environment at: ${VIRTUAL_ENV}"
+
+  # Create venv in temp directory if it doesn't exist
+  if [[ ! -d "${VIRTUAL_ENV}" ]] || [[ ! -f "${VIRTUAL_ENV}/bin/python" ]] ; then
+    echo "Creating test virtual environment..."
+    uv venv "${VIRTUAL_ENV}" || return 1
+  fi
+
+  # Install dependencies into the test venv
+  # Use uv pip install to install project, runtime dependencies, and dev dependencies
+  echo "Installing dependencies into test venv..."
+  (
+    unset VIRTUAL_ENV
+    uv pip install --python "${TEST_VENV_DIR}/bin/python" -e . --group dev || return 1
+  ) || return 1
 
   source "${VIRTUAL_ENV}/bin/activate"
 }
@@ -26,10 +43,14 @@ function runLint() {
 
   echo "========================== lint"
 
-  # stop the build if there are Python syntax errors or undefined names
-  "${VIRTUAL_ENV}/bin/flake8" . --count --select=E9,F63,F7,F82 --show-source --statistics || return $?
-  # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-  "${VIRTUAL_ENV}/bin/flake8" . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics || return $?
+  # Format check with ruff (using executable from test venv)
+  "${VIRTUAL_ENV}/bin/ruff" format --check . || return $?
+  
+  # Lint with ruff (includes flake8-compatible checks)
+  "${VIRTUAL_ENV}/bin/ruff" check . || return $?
+
+  # Type check with mypy
+  "${VIRTUAL_ENV}/bin/mypy" src || return $?
 
   echo "Lint was ok"
   return 0

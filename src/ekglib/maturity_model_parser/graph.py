@@ -4,7 +4,7 @@ import textwrap
 from os import getcwd
 from os.path import relpath
 from pathlib import Path
-from typing import Optional, Iterable
+from typing import Optional, Iterable, Any
 
 import rdflib
 from rdflib import Graph, RDF, OWL, URIRef, RDFS, DCTERMS, SKOS
@@ -47,7 +47,7 @@ class MaturityModelGraph:
         self.config = config
         self.verbose = verbose
         self.lang = lang
-        self._models = list()
+        self._models: list[Any] = list()
 
     def __name_with_lang_for(self, subject_uri, lang: Optional[str], hint: str):
         for uri, value in self.preferred_label(subject_uri, lang=lang):
@@ -234,7 +234,7 @@ class MaturityModelGraph:
             log_item('Subject', subject)
             log_item('Object', objekt)
             log_item('Fragments Root', relpath(fragments_root, getcwd()))
-            fragment_path = fragments_root / objekt
+            fragment_path = fragments_root / str(objekt)
             log_item('Fragment Path', fragment_path)
             if not fragment_path.exists():
                 raise value_error(f'Fragment {fragment_path} does not exist')

@@ -25,11 +25,6 @@ jobs:
           git config --local user.name "GitHub Action"
         shell: bash
 
-      - name: Asciidoctor Setup
-        run: |
-          sudo apt-get install -y asciidoctor
-        shell: bash
-
       # Avoids keeping the commit history for the gh-pages branch,
       # so that such a branch keeps only the last commit.
       # But this slows down the GitHub Pages website build process.
@@ -43,20 +38,13 @@ jobs:
           git checkout --orphan gh-pages main 1>/dev/null
         shell: bash
 
-      - name: Converting AsciiDoc files to HTML
+      - name: Prepare Markdown documentation
         run: |
-          if find . -name "*.adoc" -print -quit | grep -q .; then
-            find . -name "*.adoc" -print0 | xargs -0 asciidoctor -b html --attribute=nofooter
-            for FILE in `find . -name "README.html"`; do
-              mv "$FILE" "`dirname $FILE`/index.html";
-            done
-            for FILE in `find . -name "*.html"`; do
-              git add -f "$FILE";
-            done
-            find . -name "*.adoc" -print0 | xargs -0 git rm -f --cached
-          else
-            echo "No .adoc files found, skipping AsciiDoc conversion"
-          fi
+          # Markdown files are already in the repository, no conversion needed
+          # GitHub Pages can serve Markdown files directly
+          echo "Markdown documentation files are ready for GitHub Pages"
+          # Add all Markdown files
+          find . -name "*.md" -exec git add -f {} \;
         shell: bash
 
       - name: Remove irrelevant files from gh-pages branch

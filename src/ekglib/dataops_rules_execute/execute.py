@@ -99,7 +99,7 @@ class DataopsRulesExecute:
                 rc += self.execute_rule(rule_iri, index, max_rules, key)
         return rc
 
-    def execute_rule(self, rule_iri, index, max_, key):
+    def execute_rule(self, rule_iri, index, max_, key):  # noqa: C901
         log_rule(f'Executing rule {index + 1}/{max_}: {key}')
         log_iri('Executing Rule', rule_iri)
         count = 0
@@ -119,13 +119,13 @@ class DataopsRulesExecute:
                         sparql_rule
                     )
                     if result is not None:
-                        formatted_response = format(
-                            result.response.read().decode('utf-8')
-                        )
+                        # Read and decode response (result used for side effects)
+                        result.response.read().decode('utf-8')
                 elif statement_type == RULE.SPARQLConstructQuery:
                     result = self.sparql_endpoint.execute_construct(sparql_rule)
                     if result is not None:
-                        graph = result.convert()
+                        # Convert result (result used for side effects)
+                        result.convert()
                 elif statement_type == RULE.SPARQLAskQuery:
                     result = self.sparql_endpoint.execute_sparql_statement(sparql_rule)
                     if result is not None:
@@ -148,9 +148,8 @@ class DataopsRulesExecute:
                 elif statement_type == RULE.SPARQLUpdateStatement:
                     result = self.sparql_endpoint.execute_sparql_statement(sparql_rule)
                     if result is not None:
-                        formatted_response = format(
-                            result.response.read().decode('utf-8')
-                        )
+                        # Read and decode response (result used for side effects)
+                        result.response.read().decode('utf-8')
                 else:
                     continue
                 #  details of obfucation rules have already been added so should not be included here
@@ -231,7 +230,7 @@ class DataopsRulesExecute:
             return textwrap.dedent(core_detail + result_detail + tail_detail)
 
 
-def main():
+def main() -> int:
     parser = argparse.ArgumentParser(
         prog='python3 -m ekglib.dataops_rules_execute',
         description='Processes each rule.ttl file in the given directory and executes it against the given SPARQL '

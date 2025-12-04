@@ -101,17 +101,21 @@ def copy_fragment(
         copy_template_fragment(from_path=from_path, config=config)
     fragment_base = from_path.name
     log_item('Copying fragment', fragment_base)
+    # Copy the fragment file into the same directory as the markdown file...
     to_path2 = md_file.path.parent / fragment_base
     if config.verbose:
         log_item('to', to_path2)
     File.copy(config=config, from_path=from_path, to_path=to_path2)
+    # ...but make the include path relative to the docs root so the include-markdown
+    # plugin (which resolves paths from docs_dir) can always find it.
+    include_path = os.path.relpath(to_path2, config.docs_root)
     md_file.write(
         '\n\n'
         + indent_prefix
         + '{%\n'
         + indent_prefix
         + '  include-markdown "'
-        + fragment_base
+        + include_path
         + '"\n'
         + indent_prefix
         + '  heading-offset=1\n'

@@ -59,8 +59,12 @@ jobs:
           git rm -rf --cached . 2>/dev/null || true
           # Add root README.md and LICENSE
           git add -f README.md LICENSE 2>/dev/null || true
-          # Add all the module directories that were copied
-          find . -maxdepth 1 -type d \( -name "*_parser" -o -name "*_export" -o -name "dataops_*" -o -name "maturity_model_parser" -o -name "step_export" \) -exec git add -f {} \; 2>/dev/null || true
+          # Add all directories that contain README.md files (these are the module docs we copied)
+          find . -maxdepth 1 -type d ! -name "." ! -name ".git" | while read -r dir; do
+            if [ -f "$dir/README.md" ]; then
+              git add -f "$dir" 2>/dev/null || true
+            fi
+          done
         shell: bash
 
       - name: Showing contents of gh-pages branch when running locally

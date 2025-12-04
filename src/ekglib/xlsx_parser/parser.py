@@ -23,9 +23,9 @@ from ..kgiri import (
     kgiri_with,
     parse_identity_key,
     parse_identity_key_with_prefix,
+    set_kgiri_base,
 )
 from ..kgiri import set_cli_params as kgiri_set_cli_params
-from ..kgiri import set_kgiri_base
 from ..log import error, log_item, log_list, warning
 from ..main import dump_as_ttl_to_stdout
 from ..namespace import DATAOPS, RAW

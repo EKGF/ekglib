@@ -9,9 +9,13 @@ import rdflib
 from rdflib import OWL, RDF, RDFS, XSD, Graph, Literal, URIRef
 
 from ..data_source import set_cli_params as data_source_set_cli_params
-from ..kgiri import EKG_NS, kgiri_replace_iri_in_literal
+from ..kgiri import (
+    EKG_NS,
+    kgiri_replace_iri_in_literal,
+    set_kgiri_base,
+    set_kgiri_base_replace,
+)
 from ..kgiri import set_cli_params as kgiri_set_cli_params
-from ..kgiri import set_kgiri_base, set_kgiri_base_replace
 from ..log import error, log_error, log_iri, log_item, log_list, warning
 from ..main import load_rdf_file_into_graph
 from ..namespace import DATAOPS, DATASET, PROV, RAW, RULE

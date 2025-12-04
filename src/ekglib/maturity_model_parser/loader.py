@@ -1,11 +1,11 @@
 from __future__ import annotations
 
+import importlib.resources
 from io import BytesIO
 from os import getcwd
 from os.path import relpath
 from pathlib import Path
 
-import importlib.resources
 import owlrl
 import rdflib
 from rdflib import Graph

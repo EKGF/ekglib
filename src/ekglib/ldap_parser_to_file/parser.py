@@ -3,7 +3,8 @@ import os
 import sys
 
 from ..data_source import set_cli_params as data_source_set_cli_params
-from ..kgiri import set_kgiri_base, set_cli_params as kgiri_set_cli_params
+from ..kgiri import set_cli_params as kgiri_set_cli_params
+from ..kgiri import set_kgiri_base
 from ..ldap_parser import LdapParser
 from ..log import log_item
 

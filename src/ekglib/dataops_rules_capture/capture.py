@@ -8,18 +8,18 @@ from rdflib import Graph, URIRef
 from rdflib.namespace import RDF
 
 from ..data_source import set_cli_params as data_source_set_cli_params
-from ..dataops_rule_parser import DataopsRuleParser, add_dataops_rule_namespaces  # type: ignore[attr-defined]
+from ..dataops_rule_parser import (  # type: ignore[attr-defined]
+    DataopsRuleParser,
+    add_dataops_rule_namespaces,
+)
 from ..dataset.various import export_graph
 from ..git import set_cli_params as git_set_cli_params
-from ..kgiri import (
-    set_kgiri_base,
-    set_kgiri_base_replace,
-    EKG_NS,
-    set_cli_params as kgiri_set_cli_params,
-)
-from ..log import error, warning, log, log_item, log_iri, log_error
+from ..kgiri import EKG_NS, set_kgiri_base, set_kgiri_base_replace
+from ..kgiri import set_cli_params as kgiri_set_cli_params
+from ..log import error, log, log_error, log_iri, log_item, warning
 from ..namespace import RAW
-from ..s3 import S3ObjectStore, set_cli_params as s3_set_cli_params
+from ..s3 import S3ObjectStore
+from ..s3 import set_cli_params as s3_set_cli_params
 
 
 class DataopsRulesCapture:

@@ -4,11 +4,14 @@ from typing import Any
 from ..data_source import set_cli_params as data_source_set_cli_params
 from ..dataset import datasets_produced_by_pipeline, export_dataset
 from ..git import set_cli_params as git_set_cli_params
-from ..kgiri import EKG_NS, set_kgiri_base, set_cli_params as kgiri_set_cli_params
+from ..kgiri import EKG_NS, set_kgiri_base
+from ..kgiri import set_cli_params as kgiri_set_cli_params
 from ..log import log_item
 from ..mime import MIME_NTRIPLES
-from ..s3 import S3ObjectStore, set_cli_params as s3_set_cli_params
-from ..sparql import SPARQLEndpoint, set_cli_params as sparql_set_cli_params
+from ..s3 import S3ObjectStore
+from ..s3 import set_cli_params as s3_set_cli_params
+from ..sparql import SPARQLEndpoint
+from ..sparql import set_cli_params as sparql_set_cli_params
 
 
 class Exporter:

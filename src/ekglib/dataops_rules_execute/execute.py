@@ -5,17 +5,15 @@ from typing import Any
 
 from rdflib import RDF, Graph, URIRef
 
-from ..sparql.sparql_endpoint import SPARQLResponse
-
 from ..data_source import set_cli_params as data_source_set_cli_params
 from ..git import set_cli_params as git_set_cli_params
-from ..kgiri import EKG_NS
+from ..kgiri import EKG_NS, set_kgiri_base
 from ..kgiri import set_cli_params as kgiri_set_cli_params
-from ..kgiri import set_kgiri_base
 from ..log import log, log_iri, log_item, log_rule, warning
 from ..namespace import DATAOPS, DATASET, RULE
 from ..sparql import SPARQLEndpoint
 from ..sparql import set_cli_params as sparql_set_cli_params
+from ..sparql.sparql_endpoint import SPARQLResponse
 
 
 #

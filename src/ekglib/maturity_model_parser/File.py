@@ -77,7 +77,12 @@ class File(object):
 
 
 def makedirs(path: Path, hint: str) -> None:
-    log_item(f'{hint} Path', path)
+    # Show paths relative to the current working directory to keep logs readable
+    try:
+        display_path = os.path.relpath(path, os.getcwd())
+    except Exception:
+        display_path = path
+    log_item(f'{hint} Path', display_path)
     try:
         os.makedirs(path)
     except FileExistsError:

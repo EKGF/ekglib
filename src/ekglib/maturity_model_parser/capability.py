@@ -4,10 +4,11 @@ from os import getcwd
 from os.path import relpath
 from pathlib import Path
 
-from ekglib import log_item
 from rdflib.term import Node
 
-from .File import makedirs, copy_fragment_new
+from ekglib import log_item
+
+from .File import copy_fragment, makedirs
 from .config import Config
 from .markdown_document import MarkdownDocument
 from .pages_yaml import PagesYaml
@@ -84,43 +85,43 @@ class MaturityModelCapability:
         assert self.md_file is not None
         indent_prefix = '    '
         self.md_file.new_line('\n\n=== "Intro"')
-        copy_fragment_new(
+        copy_fragment(
             self.md_file,
             self.fragments_dir / 'background-and-intro.md',
             self.config,
             indent_prefix,
         )
         self.md_file.new_line('\n\n=== "Dimensions"')
-        copy_fragment_new(
+        copy_fragment(
             self.md_file,
             self.fragments_dir / 'dimensions.md',
             self.config,
             indent_prefix,
         )
         self.md_file.new_line('\n\n=== "Levels"')
-        copy_fragment_new(
+        copy_fragment(
             self.md_file, self.fragments_dir / 'levels.md', self.config, indent_prefix
         )
         self.md_file.new_line('\n\n=== "Value"')
-        copy_fragment_new(
+        copy_fragment(
             self.md_file, self.fragments_dir / 'value.md', self.config, indent_prefix
         )
         self.md_file.new_line('\n\n=== "Traditional Approach"')
-        copy_fragment_new(
+        copy_fragment(
             self.md_file,
             self.fragments_dir / 'traditional-approach.md',
             self.config,
             indent_prefix,
         )
         self.md_file.new_line('\n\n=== "EKG Approach"')
-        copy_fragment_new(
+        copy_fragment(
             self.md_file,
             self.fragments_dir / 'ekg-approach.md',
             self.config,
             indent_prefix,
         )
         self.md_file.new_line('\n\n=== "Use cases"')
-        copy_fragment_new(
+        copy_fragment(
             self.md_file,
             self.fragments_dir / 'use-cases.md',
             self.config,

@@ -62,6 +62,7 @@ class MaturityModelPillar:
         self.generate_pages_yaml()
         self.generate_capability_areas()
         self.copy_fragments()
+        assert self.md_file is not None
         self.md_file.create_md_file()
         for area in self.capability_areas():
             area.generate_markdown()

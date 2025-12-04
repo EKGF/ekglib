@@ -4,6 +4,7 @@ import io
 import os
 import os.path
 from pathlib import Path
+from typing import Any
 
 import mkdocs_gen_files
 
@@ -21,7 +22,7 @@ class File(object):
         self.mkdocs = mkdocs
 
     @classmethod
-    def existing_file(cls, mkdocs: bool, path: Path):
+    def existing_file(cls, mkdocs: bool, path: Path) -> 'File':
         file = File(mkdocs, path)
         if not file.exists():
             raise value_error(f'File {path} does not exist')
@@ -30,7 +31,7 @@ class File(object):
     def exists(self) -> bool:
         return self.path.exists()
 
-    def open(self, mode: str):
+    def open(self, mode: str) -> Any:
         if self.mkdocs:
             return mkdocs_gen_files.open(self.path, mode, encoding='UTF-8')
         else:
@@ -43,15 +44,15 @@ class File(object):
             assert somefile.closed is False
             somefile.write(data)
 
-    def read_all_content(self):
+    def read_all_content(self) -> str:
         with self.open(mode='r') as somefile:
             return somefile.read()
 
-    def append_end(self, data):
+    def append_end(self, data: str) -> None:
         with self.open(mode='a') as somefile:
             somefile.write(data)
 
-    def append_after_second_line(self, data):
+    def append_after_second_line(self, data: str) -> None:
         """Write after the file's first line.
 
         :param str data: is a string containing all the data that is written in the markdown file."""
@@ -67,7 +68,7 @@ class File(object):
             somefile.write('\n' + file_data[len(first_line + second_line) :])
 
     @classmethod
-    def copy(cls, config: Config, from_path: Path, to_path: Path):
+    def copy(cls, config: Config, from_path: Path, to_path: Path) -> None:
         if config.verbose:
             log_item('Copying', f'{from_path} -> {to_path}')
         old_file = File.existing_file(mkdocs=config.mkdocs, path=from_path)
@@ -75,7 +76,7 @@ class File(object):
         new_file.rewrite_all_file(old_file.read_all_content())
 
 
-def makedirs(path: Path, hint: str):
+def makedirs(path: Path, hint: str) -> None:
     log_item(f'{hint} Path', path)
     try:
         os.makedirs(path)
@@ -83,7 +84,7 @@ def makedirs(path: Path, hint: str):
         return
 
 
-def copy_template_fragment(from_path: Path, config: Config):
+def copy_template_fragment(from_path: Path, config: Config) -> None:
     log_item('Fragment not found', from_path)
     fragment_base = from_path.name
     template_path = config.fragments_root / 'template' / fragment_base
@@ -95,7 +96,7 @@ def copy_template_fragment(from_path: Path, config: Config):
 
 def copy_fragment(
     md_file: MarkdownDocument, from_path: Path, config: Config, indent_prefix: str
-):
+) -> None:
     if not from_path.exists():
         copy_template_fragment(from_path=from_path, config=config)
     fragment_base = from_path.name
@@ -122,7 +123,7 @@ def copy_fragment(
 
 def copy_fragment_new(
     md_file: MarkdownDocument, from_path: Path, config: Config, indent_prefix: str
-):
+) -> None:
     if not from_path.exists():
         copy_template_fragment(from_path=from_path, config=config)
     from_path_str = os.path.relpath(

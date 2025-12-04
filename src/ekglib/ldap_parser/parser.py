@@ -54,14 +54,14 @@ skip_naming_contexts = (
 )
 
 
-def parse_ldap_domain(domain: str):
+def parse_ldap_domain(domain: str) -> str:
     x = domain.strip('\n').rsplit('.', 1)  # TODO: Support multiple levels of domains
     if len(x) < 2:
         error(f'Invalid LDAP domain {domain}')
     return f'dc={x[0]},dc={x[1]}'
 
 
-def _log_who_am_i(conn):
+def _log_who_am_i(conn: Connection) -> None:
     try:
         iam = conn.extend.standard.who_am_i()
         log_item('Who am I', iam)
@@ -76,7 +76,7 @@ def _log_who_am_i(conn):
 class LdapParser:
     skip_rdf_generation = False  # set to true to test/debug the overall flow of the app
 
-    def __init__(self, args, stream: typing.BinaryIO | None = None):
+    def __init__(self, args: Any, stream: typing.BinaryIO | None = None) -> None:
         self.processed_entries = 0
         self.returned_entries = 0
         logging.info('Starting LDAP parser')
@@ -100,7 +100,7 @@ class LdapParser:
         # TODO: Support ldaps as well
         #
 
-    def _check_bind_creds(self):
+    def _check_bind_creds(self) -> None:
         if self.bind_dn == '':
             self.bind_dn = None
         if self.bind_dn is None:
@@ -164,7 +164,7 @@ class LdapParser:
         log_item('Return Code', rc)
         return rc
 
-    def _create_connection(self, server) -> ldap3.Connection:
+    def _create_connection(self, server: ldap3.Server) -> ldap3.Connection:
         if self.bind_dn is None:
             log_item('Connecting as', 'Anonymous')
             return ldap3.Connection(
@@ -193,7 +193,7 @@ class LdapParser:
             check_names=False,
         )
 
-    def _process_connection(self, server) -> int:
+    def _process_connection(self, server: ldap3.Server) -> int:
         rc = 0
         with self._create_connection(server) as conn:
             log_item('Connected with', self.ldap_host_port)
@@ -245,12 +245,12 @@ class LdapParser:
             rc = 2
         return rc
 
-    def _process_naming_contexts(self, server, conn):
+    def _process_naming_contexts(self, server: SchemaInfo, conn: Connection) -> int:
         if self.naming_context:
             return self._process_one_naming_contexts(conn)
         return self._process_all_naming_contexts(server, conn)
 
-    def _process_one_naming_contexts(self, conn) -> int:
+    def _process_one_naming_contexts(self, conn: Connection) -> int:
         rc = 0
         try:
             log_item('Naming Context', self.naming_context)
@@ -263,7 +263,7 @@ class LdapParser:
             rc = 1
         return rc
 
-    def _process_all_naming_contexts(self, server, conn) -> int:
+    def _process_all_naming_contexts(self, server: SchemaInfo, conn: Connection) -> int:
         rc = 0
         try:
             for naming_context in _naming_contexts(server.info):
@@ -289,20 +289,20 @@ class LdapParser:
         self.processed_entries += 1
 
     @staticmethod
-    def has_subordinates(entry):
+    def has_subordinates(entry: Entry | dict[str, Any]) -> bool:
         return (
             'hasSubordinates' in entry['attributes']
             and entry['attributes']['hasSubordinates'][0] == 'TRUE'
         )
 
     @staticmethod
-    def value_of_attribute(attribute):
+    def value_of_attribute(attribute: Any) -> Any:
         return (
             attribute[0] if isinstance(attribute, ldap3.SEQUENCE_TYPES) else attribute
         )
 
     @staticmethod
-    def value_of_attribute_with_key(entry: Entry, key: str):
+    def value_of_attribute_with_key(entry: Entry, key: str) -> Any | None:
         if key in entry:
             return entry[key]
         attributes = entry['attributes']
@@ -311,18 +311,21 @@ class LdapParser:
         return None
 
     @staticmethod
-    def class_of_entry(entry):
-        return LdapParser.value_of_attribute_with_key(entry, 'structuralObjectClass')
+    def class_of_entry(entry: Entry | dict[str, Any]) -> Any | None:
+        return LdapParser.value_of_attribute_with_key(entry, 'structuralObjectClass')  # type: ignore[arg-type]
 
     @staticmethod
     def dn_of_entry(entry: Entry | dict[str, Any]) -> str:
         if hasattr(entry, 'entry_dn'):
-            return entry.entry_dn
-        return (
-            entry['dn']
-            if 'dn' in entry
-            else LdapParser.value_of_attribute_with_key(entry, 'dn')
-        )
+            dn = entry.entry_dn  # type: ignore[attr-defined]
+            return str(dn) if dn is not None else ''
+        if isinstance(entry, dict):
+            if 'dn' in entry:
+                return str(entry['dn'])
+        result = LdapParser.value_of_attribute_with_key(entry, 'dn')  # type: ignore[arg-type]
+        if result is None:
+            raise ValueError('Could not find dn in entry')
+        return str(result)
 
     def log_entry(self, entry: Entry) -> None:
         class_of_entry = self.class_of_entry(entry)
@@ -333,7 +336,9 @@ class LdapParser:
             if self.verbose:
                 log_item('DN', self.dn_of_entry(entry))
 
-    def _process_search_get_entries(self, conn: Connection, base, scope):
+    def _process_search_get_entries(
+        self, conn: Connection, base: str, scope: int
+    ) -> Any:
         if self.verbose:
             log_item(f'{scope}-search', base)
         if self.paged_size is not None:
@@ -372,11 +377,13 @@ class LdapParser:
         except LDAPOperationResult as e:
             raise CannotCapture(e.message)
 
-    def _process_search(self, conn: Connection, base, scope):
+    def _process_search(self, conn: Connection, base: str, scope: int) -> Any:
         entries = self._process_search_get_entries(conn, base, scope)
         yield from self._process_entries(conn, base, scope, entries)
 
-    def _process_entries(self, conn: Connection, base, scope, entries):
+    def _process_entries(
+        self, conn: Connection, base: str, scope: int, entries: Any
+    ) -> Any:
         returned_entries = 0
         try:
             for entry in entries:
@@ -393,7 +400,7 @@ class LdapParser:
         if returned_entries == 1 and scope is ldap3.BASE:
             yield from self._process_search(conn, base, ldap3.SUBTREE)
 
-    def _process_entry(self, entry: Entry):
+    def _process_entry(self, entry: Entry) -> Any:
         if self.verbose:
             log_dump(f'Entry {self.returned_entries}', entry)
         if 'dn' in entry:
@@ -415,17 +422,17 @@ class LdapParser:
         self.g.namespace_manager.bind('raw', RAW)
         self.g.namespace_manager.bind('dataops', DATAOPS)
 
-    def prov_activity_start(self):
+    def prov_activity_start(self) -> URIRef:
         activity_iri = kgiri_random()
         self.g.add((activity_iri, RDF.type, PROV.Activity))
         self.g.add((activity_iri, PROV.startedAtTime, Literal(datetime.utcnow())))
         return activity_iri
 
-    def prov_activity_end(self, activity_iri):
+    def prov_activity_end(self, activity_iri: URIRef) -> None:
         self.g.add((activity_iri, PROV.endedAtTime, Literal(datetime.utcnow())))
 
     @staticmethod
-    def _look_into_schema(conn: Connection):
+    def _look_into_schema(conn: Connection) -> None:
         schema: SchemaInfo = conn.server.schema
         if schema is None:
             error('Could not access LDAP schema')
@@ -454,7 +461,7 @@ class LdapParser:
     #
     # TODO: Not done yet
     #
-    def export(self):
+    def export(self) -> int:
         try:
             s3os = S3ObjectStore(self.args)
             result = export_graph(
@@ -466,11 +473,11 @@ class LdapParser:
             # log_item('result', result)
         except EndpointConnectionError:
             log_error('Could not connect to S3 s3_endpoint')
-            return False
-        return result
+            return 1
+        return 0 if result else 1
 
 
-def _naming_contexts(info):
+def _naming_contexts(info: SchemaInfo) -> Any:
     if info.naming_contexts:
         if isinstance(info.naming_contexts, ldap3.SEQUENCE_TYPES):
             yield from info.naming_contexts
@@ -486,7 +493,7 @@ _substitution_iri_map = {
 }
 
 
-def _substitute_iris(serialized_graph):
+def _substitute_iris(serialized_graph: BytesIO) -> BytesIO:
     bts = BytesIO(b'')
     for frm, to in _substitution_iri_map.items():
         bts.write(serialized_graph.getvalue().decode().replace(frm, to).encode())
@@ -500,7 +507,7 @@ class LdapEntry:
 
     entry: Entry
 
-    def __init__(self, args, entry, stream):
+    def __init__(self, args: Any, entry: Entry, stream: typing.BinaryIO | None) -> None:
         self.args = args
         self.verbose = args.verbose
         self.g = rdflib.Graph()
@@ -517,7 +524,7 @@ class LdapEntry:
         self._parse_other()
         self._graph_to_stream()
 
-    def _add_namespaces(self):
+    def _add_namespaces(self) -> None:
         """Define the @base and @prefix to be used when we would dump the graph for one entry as turtle.
         In production though we would always be streaming this as N-Triples so there's no real need
         for doing this in that case.
@@ -533,14 +540,15 @@ class LdapEntry:
             log(f'<{s}> <{p}> {o}')
         self.g.add(triple)
 
-    def _parse_entry_dn(self, dn) -> URIRef:
-        entry_iri = EKG_NS['KGIRI'].term(
-            parse_identity_key_with_prefix('ldap-term', dn)
-        )
+    def _parse_entry_dn(self, dn: str) -> URIRef:
+        key = parse_identity_key_with_prefix('ldap-term', dn)
+        if key is None:
+            raise ValueError(f'Could not parse identity key for dn: {dn}')
+        entry_iri = EKG_NS['KGIRI'].term(key)
         self._add((entry_iri, RDF.type, LDAP.Term))
         return entry_iri
 
-    def _parse_other(self):
+    def _parse_other(self) -> None:
         self._parse_entry_status()
         for key, values in self.attributes.items():
             if isinstance(values, ldap3.SEQUENCE_TYPES):
@@ -548,7 +556,7 @@ class LdapEntry:
             else:
                 self._parse_attribute(key, [values])
 
-    def _parse_attribute(self, key, values):
+    def _parse_attribute(self, key: str, values: Any) -> None:
         if key == 'objectClass' or key == 'structuralObjectClass':
             self._parse_object_class(values)
         elif key == 'cn':
@@ -571,7 +579,7 @@ class LdapEntry:
             for value in values:
                 self._add((self.entry_iri, LDAP.term(key), Literal(value)))
 
-    def parse_binary_content(self, key, values):
+    def parse_binary_content(self, key: str, values: Any) -> None:
         """Binary content is transformed into a Literal with base64 encoding"""
         for value in values:
             base64_bytes = b64encode(str_to_binary(value)).decode('ascii')
@@ -593,7 +601,7 @@ class LdapEntry:
                 Literal(base64_bytes, datatype=XSD.term('base64BinaryString')),
             ))
 
-    def parse_common_name(self, values):
+    def parse_common_name(self, values: Any) -> None:
         """Translate cn i.e. CommonName (in X.500 terms) to RDFS.label"""
         for value in values:
             self._add((self.entry_iri, RDFS.label, Literal(value)))
@@ -602,21 +610,25 @@ class LdapEntry:
         self._add((entry_iri, RDF.type, PROV.Person))
         self._add((entry_iri, RDF.type, PROV.Agent))
 
-    def _attribute(self, key):
+    def _attribute(self, key: str) -> Any | None:
         for value in self.attributes[key]:
             return value
+        return None
 
-    def _create_activity(self):
+    def _create_activity(self) -> URIRef:
         """Create a prov:Activity for the 'create' action, generate an IRI for the Activity that will be the same
         for each run (not a random one), based on 'entryUUID' or else 'dn'.
         """
         if 'entryUUID' in self.entry:
             guid = self._attribute('entryUUID')
+            if guid is None:
+                raise ValueError('entryUUID attribute is None')
             activity_iri = EKG_NS['KGIRI'].term(f'create-activity-{guid}')
         else:
-            activity_iri = EKG_NS['KGIRI'].term(
-                parse_identity_key_with_prefix('create-activity', self.dn)
-            )
+            key = parse_identity_key_with_prefix('create-activity', self.dn)
+            if key is None:
+                raise ValueError(f'Could not parse identity key for dn: {self.dn}')
+            activity_iri = EKG_NS['KGIRI'].term(key)
         self._add((activity_iri, RDF.type, PROV.Activity))
         self._add((activity_iri, PROV.generated, self.entry_iri))
         if 'createTimestamp' in self.entry:
@@ -627,7 +639,7 @@ class LdapEntry:
             ))
         return activity_iri
 
-    def _parse_creator(self, values):
+    def _parse_creator(self, values: Any) -> None:
         activity_iri = self._create_activity()
         for value in values:
             prov_agent_iri = self._parse_entry_dn(value)
@@ -635,13 +647,13 @@ class LdapEntry:
             self._add((self.entry_iri, PROV.wasAttributedTo, prov_agent_iri))
             self._add((activity_iri, PROV.wasStartedBy, prov_agent_iri))
 
-    def _parse_modifier(self, values):
+    def _parse_modifier(self, values: Any) -> None:
         for value in values:
             prov_agent_iri = self._parse_entry_dn(value)
             self.register_person(prov_agent_iri)
             self._add((self.entry_iri, PROV.wasAttributedTo, prov_agent_iri))
 
-    def _parse_entry_uuid(self, values):
+    def _parse_entry_uuid(self, values: Any) -> None:
         """Use the GUID specified with 'entryUUID' as an alternative KGIRI for the given entry.
         Even though the name suggests it's a standard UUID, it's actually a "legacy Microsoft UUID" based
         in RFC 4122. Which is why we're using the prefix 'guid:' in this case and not 'uuid:'.
@@ -650,7 +662,7 @@ class LdapEntry:
             other_kgiri = EKG_NS['KGIRI'].term(f'guid:{value}')
             self._add((self.entry_iri, OWL.sameAs, other_kgiri))
 
-    def _parse_has_subordinates(self, values):
+    def _parse_has_subordinates(self, values: Any) -> None:
         """Since we're scanning all entries we don't need to generate clutter saying that there are sub-entries"""
         #
         # TODO: When objectClass is a person and hasSubordinates is true can we
@@ -658,17 +670,17 @@ class LdapEntry:
         #
         pass
 
-    def _parse_object_class(self, values):
+    def _parse_object_class(self, values: Any) -> None:
         """Translate object class to an RDF type"""
         for value in values:
             self._add((self.entry_iri, RDF.type, self._parse_value_to_rdf_type(value)))  # noqa: E501
 
     @staticmethod
-    def _parse_value_to_rdf_type(value):
-        value = stringcase.alphanumcase(value)
-        return LDAP.term(stringcase.capitalcase(value))
+    def _parse_value_to_rdf_type(value: Any) -> URIRef:
+        value_str = stringcase.alphanumcase(str(value))
+        return LDAP.term(stringcase.capitalcase(value_str))
 
-    def _parse_entry_status(self):
+    def _parse_entry_status(self) -> None:
         if isinstance(
             self.entry, dict
         ):  # No status when entry is a 'searchResEntry' # noqa: E501
@@ -676,8 +688,10 @@ class LdapEntry:
         status = self.entry.entry_status
         self._add((self.entry_iri, LDAP.entryStatus, Literal(status)))
 
-    def _graph_to_stream(self):
+    def _graph_to_stream(self) -> None:
+        if self.stream is None:
+            return
         str_stream = BytesIO(b'')
-        serializer = plugin.get('ntriples', plugin.Serializer)(self.g)
+        serializer = plugin.get('ntriples', plugin.Serializer)(self.g)  # type: ignore[attr-defined]
         serializer.serialize(str_stream)
         self.stream.write(_substitute_iris(str_stream).getvalue())

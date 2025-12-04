@@ -6,6 +6,7 @@ import typing
 from base64 import b64encode
 from datetime import datetime
 from io import BytesIO
+from pathlib import Path
 from typing import Any
 
 import ldap3

@@ -11,6 +11,7 @@ This component is typically driven via the `ldap_parser_to_file` CLI entrypoint 
 ## Usage
 
 This module provides functionality to:
+
 - Connect to LDAP directories
 - Parse LDAP entries
 - Extract structured data

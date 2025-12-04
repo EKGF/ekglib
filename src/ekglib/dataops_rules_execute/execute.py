@@ -1,17 +1,21 @@
 # noqa
 import argparse
 import textwrap
+from typing import Any
 
+from rdflib import RDF, Graph, URIRef
 
-from rdflib import Graph, URIRef, RDF
-from SPARQLWrapper.Wrapper import QueryResult
+from ..sparql.sparql_endpoint import SPARQLResponse
 
 from ..data_source import set_cli_params as data_source_set_cli_params
 from ..git import set_cli_params as git_set_cli_params
-from ..kgiri import EKG_NS, set_kgiri_base, set_cli_params as kgiri_set_cli_params
-from ..log import log, log_item, warning, log_iri, log_rule
-from ..namespace import DATASET, RULE, DATAOPS
-from ..sparql import SPARQLEndpoint, set_cli_params as sparql_set_cli_params
+from ..kgiri import EKG_NS
+from ..kgiri import set_cli_params as kgiri_set_cli_params
+from ..kgiri import set_kgiri_base
+from ..log import log, log_iri, log_item, log_rule, warning
+from ..namespace import DATAOPS, DATASET, RULE
+from ..sparql import SPARQLEndpoint
+from ..sparql import set_cli_params as sparql_set_cli_params
 
 
 #
@@ -24,7 +28,9 @@ class DataopsRulesExecute:
     against the given SPARQL s3_endpoint.
     """
 
-    def __init__(self, args, sparql_endpoint: SPARQLEndpoint | None = None):
+    def __init__(
+        self, args: argparse.Namespace, sparql_endpoint: SPARQLEndpoint | None = None
+    ) -> None:
         self.args = args
         self.verbose = args.verbose
         self.data_source_code = args.data_source_code
@@ -36,7 +42,7 @@ class DataopsRulesExecute:
             if result is None:
                 self.g = Graph()
             else:
-                converted = result.convert()
+                converted = result.convert()  # type: ignore[attr-defined]
                 if not isinstance(converted, Graph):
                     raise ValueError(f'Expected Graph, got {type(converted)}')
                 self.g = converted
@@ -48,16 +54,18 @@ class DataopsRulesExecute:
         log_item('Number of triples', len(self.g))
         self.list_rules()
 
-    def _filter_out_unused(self):  # TODO: Finish this
+    def _filter_out_unused(self) -> None:  # TODO: Finish this
         for rule in self.g.subjects(RDF.type, RULE.Rule):
             log_item('Rule', rule)
 
-    def list_rules(self):
+    def list_rules(self) -> None:
         log('Rules in execution order:')
-        for index, key in enumerate(sorted(self.g.objects(None, RULE.term('sortKey')))):
+        for index, key in enumerate(
+            sorted(self.g.objects(None, RULE.term('sortKey')), key=str)
+        ):
             log_item(f'Rule {index + 1}', key)
 
-    def _query_all_rules(self) -> QueryResult | None:
+    def _query_all_rules(self) -> SPARQLResponse | None:
         if self.sparql_endpoint is None:
             raise ValueError('sparql_endpoint is required')
         log_item('Get Dataops Rules', self.data_source_code)
@@ -96,10 +104,14 @@ class DataopsRulesExecute:
         rc = 0
         for index, key in enumerate(sorted(rule_iris, key=str)):
             for rule_iri in self.g.subjects(RULE.sortKey, key):
+                if not isinstance(rule_iri, URIRef):
+                    continue
                 rc += self.execute_rule(rule_iri, index, max_rules, key)
         return rc
 
-    def execute_rule(self, rule_iri, index, max_, key):  # noqa: C901
+    def execute_rule(self, rule_iri: URIRef, index: int, max_: int, key: Any) -> int:  # noqa: C901
+        if self.sparql_endpoint is None:
+            raise ValueError('sparql_endpoint is required')
         log_rule(f'Executing rule {index + 1}/{max_}: {key}')
         log_iri('Executing Rule', rule_iri)
         count = 0
@@ -113,21 +125,27 @@ class DataopsRulesExecute:
         for sparql_rule in self.g.objects(rule_iri, RULE.hasSPARQLRule):
             count += 1
             validation_result = None
+            sparql_rule_str = str(sparql_rule)
             for statement_type in self.g.objects(rule_iri, RULE.sparqlQueryType):
                 if statement_type == RULE.SPARQLSelectQuery:
                     result = self.sparql_endpoint.execute_sparql_select_query(
-                        sparql_rule
+                        sparql_rule_str
                     )
                     if result is not None:
                         # Read and decode response (result used for side effects)
                         result.response.read().decode('utf-8')
                 elif statement_type == RULE.SPARQLConstructQuery:
-                    result = self.sparql_endpoint.execute_construct(sparql_rule)
-                    if result is not None:
+                    construct_result: Any = self.sparql_endpoint.execute_construct(
+                        sparql_rule_str
+                    )
+                    if construct_result is not None:
                         # Convert result (result used for side effects)
-                        result.convert()
+                        if hasattr(construct_result, 'convert'):
+                            construct_result.convert()  # type: ignore[attr-defined]
                 elif statement_type == RULE.SPARQLAskQuery:
-                    result = self.sparql_endpoint.execute_sparql_statement(sparql_rule)
+                    result = self.sparql_endpoint.execute_sparql_statement(
+                        sparql_rule_str
+                    )
                     if result is not None:
                         actual_result = format(result.response.read().decode('utf-8'))
                         for expected_result in self.g.objects(
@@ -146,7 +164,9 @@ class DataopsRulesExecute:
                             else:
                                 validation_result = RULE.ValidationRuleFail
                 elif statement_type == RULE.SPARQLUpdateStatement:
-                    result = self.sparql_endpoint.execute_sparql_statement(sparql_rule)
+                    result = self.sparql_endpoint.execute_sparql_statement(
+                        str(sparql_rule)
+                    )
                     if result is not None:
                         # Read and decode response (result used for side effects)
                         result.response.read().decode('utf-8')
@@ -177,8 +197,8 @@ class DataopsRulesExecute:
         return 0
 
     def insert_detail_about_sparql_statement(
-        self, dataset_code: str, rule_iri: URIRef, result=None
-    ):
+        self, dataset_code: str, rule_iri: URIRef, result: Any | None = None
+    ) -> str:
         #
         # We cannot use prefixes here because they might clash with the prefixes in sparql_rule
         #
@@ -265,4 +285,5 @@ def main() -> int:
 
 
 if __name__ == '__main__':
+    exit(main())
     exit(main())

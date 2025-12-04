@@ -1,5 +1,6 @@
 import argparse
 from pathlib import Path
+from typing import Any
 
 import rdflib
 from botocore.exceptions import EndpointConnectionError
@@ -7,7 +8,7 @@ from rdflib import Graph, URIRef
 from rdflib.namespace import RDF
 
 from ..data_source import set_cli_params as data_source_set_cli_params
-from ..dataops_rule_parser import DataopsRuleParser, add_dataops_rule_namespaces
+from ..dataops_rule_parser import DataopsRuleParser, add_dataops_rule_namespaces  # type: ignore[attr-defined]
 from ..dataset.various import export_graph
 from ..git import set_cli_params as git_set_cli_params
 from ..kgiri import (
@@ -26,7 +27,7 @@ class DataopsRulesCapture:
 
     g: rdflib.Graph
 
-    def __init__(self, args):
+    def __init__(self, args: Any) -> None:
         self.args = args
         self.verbose = args.verbose
         self.data_source_code = args.data_source_code
@@ -40,7 +41,7 @@ class DataopsRulesCapture:
         self.g = Graph()
         add_dataops_rule_namespaces(self.g)
 
-    def capture(self):
+    def capture(self) -> None:
         rules_directories = self.rules_directories_to_capture()
         for directory in rules_directories:
             log_item('Rules Directory', directory.stem)
@@ -48,7 +49,7 @@ class DataopsRulesCapture:
             self.capture_rules_directory(directory)
         log('Finished Capture Phase')
 
-    def rules_directories_to_capture(self):
+    def rules_directories_to_capture(self) -> list[Path]:
         all_rules_directories = []
         for root_dir in self.dataops_roots:
             all_rules_directories.extend([
@@ -56,7 +57,7 @@ class DataopsRulesCapture:
             ])
         return list(filter(self.filter_rule_directory, all_rules_directories))
 
-    def filter_rule_directory(self, rule_directory):
+    def filter_rule_directory(self, rule_directory: Path) -> bool:
         stem = rule_directory.stem
         return (
             stem == 'generic'
@@ -65,7 +66,7 @@ class DataopsRulesCapture:
             or stem == self.data_source_code
         )
 
-    def capture_rules_directory(self, rules_directory: Path):
+    def capture_rules_directory(self, rules_directory: Path) -> None:
         rules_directory_iri = EKG_NS['KGIRI'].term('dataops-rules-root-directory')
         self.g.add((rules_directory_iri, RDF.type, RAW.term('DataopsRulesRoot')))
         log(f'Capturing {rules_directory.stem}-rules:')
@@ -73,7 +74,9 @@ class DataopsRulesCapture:
         for directory in rule_directories:
             self.capture_rule_directory(directory, rules_directory_iri)
 
-    def capture_rule_directory(self, rule_directory: Path, rules_directory_iri: URIRef):
+    def capture_rule_directory(
+        self, rule_directory: Path, rules_directory_iri: URIRef
+    ) -> None:
         log_item('Rule Directory', rule_directory.stem)
         rule_directory_iri = EKG_NS['KGIRI'].term('dataops-rule-directory')
         self.g.add((rule_directory_iri, RDF.type, RAW.term('DataopsRuleDirectory')))
@@ -91,13 +94,13 @@ class DataopsRulesCapture:
         for rule_file in rule_files:
             self.capture_rule_file(rule_file, rule_directory_iri)
 
-    def capture_rule_file(self, rule_file: Path, rule_directory_iri: URIRef):
+    def capture_rule_file(self, rule_file: Path, rule_directory_iri: URIRef) -> None:
         log_item('Rule File', f'{rule_file.parent.name}/{rule_file.name}')
         rule_file_iri = EKG_NS['KGIRI'].term('dataops-rule-file')
         self.g.add((rule_file_iri, RDF.type, RAW.term('DataopsRuleFile')))
         self.g.add((rule_file_iri, RAW.term('inRuleDirectory'), rule_directory_iri))
         processor = DataopsRuleParser(
-            self.args, input_file_name=rule_file, rule_file_iri=rule_file_iri
+            self.args, input_file_name=str(rule_file), rule_file_iri=rule_file_iri
         )
         processor.check()
         for triple in processor.g:
@@ -118,7 +121,7 @@ class DataopsRulesCapture:
             log_item('result', result)
         except EndpointConnectionError:
             log_error('Could not connect to S3 s3_endpoint')
-            return False
+            return 1
         return 0 if result else 1
 
 

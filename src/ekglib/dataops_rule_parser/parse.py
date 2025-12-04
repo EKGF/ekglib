@@ -2,6 +2,7 @@ import argparse
 import os
 from itertools import chain
 from pathlib import Path
+from typing import Any
 
 import owlrl
 import rdflib
@@ -22,7 +23,7 @@ OWL._fail = (
 ontology_file_names = ['ekgf-dataops-rule.ttl']
 
 
-def check_ontologies(ontologies_root: Path):
+def check_ontologies(ontologies_root: Path) -> Path:
     if not ontologies_root.exists():
         error(f'Ontologies root directory not found: {ontologies_root}')
     for ontology_file_name in ontology_file_names:
@@ -31,7 +32,7 @@ def check_ontologies(ontologies_root: Path):
     return ontologies_root
 
 
-def add_dataops_rule_namespaces(rule_graph: Graph):
+def add_dataops_rule_namespaces(rule_graph: Graph) -> None:
     rule_graph.base = EKG_NS['KGIRI']
     rule_graph.bind('kgiri', EKG_NS['KGIRI'])
     rule_graph.bind('kggraph', EKG_NS['KGGRAPH'])
@@ -53,9 +54,16 @@ class DataopsRuleParser:
 
     g: rdflib.Graph
 
-    def __init__(self, args, input_file_name=None, rule_file_iri: URIRef | None = None):
+    def __init__(
+        self,
+        args: Any,
+        input_file_name: str | None = None,
+        rule_file_iri: URIRef | None = None,
+    ) -> None:
         self.args = args
         self.verbose = args.verbose
+        if input_file_name is None:
+            raise ValueError('input_file_name is required')
         self.rule_file = Path(input_file_name)
         if not self.rule_file.exists():
             error(f'{input_file_name} does not exist')
@@ -87,7 +95,7 @@ class DataopsRuleParser:
         # exit(1)
         return 0
 
-    def load_ontology(self, ontology_file_name: Path):
+    def load_ontology(self, ontology_file_name: Path) -> None:
         log_item('Loading Ontology', ontology_file_name)
         load_rdf_file_into_graph(self.g, ontology_file_name)
 
@@ -108,7 +116,7 @@ class DataopsRuleParser:
             datatype_axioms=False,
         ).expand(self.g)
 
-    def rdfs_remove_tbox_stuff(self):
+    def rdfs_remove_tbox_stuff(self) -> None:
         """
         Remove all stuff that the reasoner added that we don't need, only leave
         the rules and other abox stuff in there
@@ -127,20 +135,20 @@ class DataopsRuleParser:
         self.g.remove((None, RDF.type, XSD.string))
 
         self.g.remove((None, OWL.disjointWith, XSD.dateTime))
-        self.g.remove((RULE, None, None))
+        self.g.remove((RULE, None, None))  # type: ignore[arg-type]
         for subject in self.g.subjects(predicate=OWL.equivalentProperty, object=None):
             self.g.remove((subject, None, None))
         for subject in self.g.subjects(predicate=None, object=None):
-            if subject.startswith(RULE):
+            if str(subject).startswith(str(RULE)):
                 self.g.remove((subject, None, None))
 
-    def get_rule_iris(self):
+    def get_rule_iris(self) -> Any:
         return chain(
             self.g.subjects(RDF.type, RULE.Rule),
             self.g.subjects(RDF.type, RULE.SPARQLRule),
         )
 
-    def read_rule_file(self):
+    def read_rule_file(self) -> Graph:
         """Parse the content of the given turtle file (which should be a Path object) and return an RDF graph"""
         rule_graph = rdflib.Graph()
         add_dataops_rule_namespaces(rule_graph)
@@ -150,10 +158,10 @@ class DataopsRuleParser:
     def set_key(self) -> str:
         return self.rule_file.parent.parent.stem
 
-    def set_iri(self):
+    def set_iri(self) -> URIRef:
         return EKG_NS['KGIRI'].term(f'rule-set-{self.set_key()}')
 
-    def set_sort_key(self):
+    def set_sort_key(self) -> str:
         """Produce a sort key allowing for an easy 'ORDER BY' to get all rules to be executed in order.
         This is a temporary implementation, at some point we'll have to switch over to a model where rules
         and rule-sets can specify dependencies to each other and then calculate the execution order based
@@ -174,13 +182,13 @@ class DataopsRuleParser:
     def sort_key(self) -> str:
         return f'{self.set_sort_key()}-{self.rule_file.parent.stem}'
 
-    def create_rule_set(self):
+    def create_rule_set(self) -> URIRef:
         set_iri = self.set_iri()
         self.g.add((set_iri, RDF.type, RULE.term('RuleSet')))
         self.g.add((set_iri, RDFS.label, Literal(self.set_key())))
         return set_iri
 
-    def check_rule(self, rule_iri) -> bool:
+    def check_rule(self, rule_iri: URIRef) -> bool:
         log_iri('Rule IRI', rule_iri)
         log_item('Rule Sort-key', self.sort_key())
         set_iri = self.create_rule_set()
@@ -209,7 +217,7 @@ class DataopsRuleParser:
             log_list('SPARQL Files', sparql_rule_file_names)
         for sparql_rule_file_name in sparql_rule_file_names:
             self.process_sparql_literal(
-                rule_iri, self.check_sparql_file_name(sparql_rule_file_name)
+                rule_iri, self.check_sparql_file_name(str(sparql_rule_file_name))
             )
         return True
 
@@ -267,7 +275,7 @@ class DataopsRuleParser:
         return 0
 
 
-def runit(args, stream) -> int:
+def runit(args: Any, stream: Any) -> int:
     processor = DataopsRuleParser(args, input_file_name=args.input)
     processor.check()
     processor.check()

@@ -9,12 +9,14 @@ from ..log import error, log_item
 from ..mime import MIME_NTRIPLES
 
 
-def s3_object_full_name(object_):
+def s3_object_full_name(object_: Any | None) -> str | None:
     return None if object_ is None else f'{object_.bucket_name}/{object_.key}'
 
 
 class S3ObjectStore:
     def __init__(self, args: Any | None = None) -> None:
+        if args is None:
+            raise ValueError('args is required')
         self.args = args
         self.verbose = args.verbose
         self.s3_endpoint = args.s3_endpoint
@@ -39,7 +41,7 @@ class S3ObjectStore:
         self.s3_client = self.s3.meta.client
         self.__check_bucket()
 
-    def __check_bucket(self):
+    def __check_bucket(self) -> None:
         if self.s3_bucket_name is None:
             # Print out all bucket names
             for bucket in self.s3.buckets.all():
@@ -53,7 +55,7 @@ class S3ObjectStore:
             else:
                 error('Bucket ' + self.s3_bucket_name + ' does not exist.')
 
-    def __create_bucket(self):
+    def __create_bucket(self) -> bool:
         log_item('Creating Bucket', self.s3_bucket_name)
         try:
             location = {'LocationConstraint': self.args.aws_region}
@@ -61,28 +63,29 @@ class S3ObjectStore:
                 Bucket=self.s3_bucket_name, CreateBucketConfiguration=location
             )
         except ClientError as e:
-            error(e)
+            error(str(e))
             return False
         return True
 
-    def __check_dataset_directory(self, dataset_code: str):
+    def __check_dataset_directory(self, dataset_code: str) -> None:
         root_object = self.root_folder(dataset_code)
         log_item('Root', s3_object_full_name(root_object))
 
-    def does_bucket_exist(self, bucket_name):
+    def does_bucket_exist(self, bucket_name: str) -> bool | None:
         try:
             return self.bucket(bucket_name).creation_date is not None
         except EndpointConnectionError as e:
-            error(e)
+            error(str(e))
+            return None
 
     def object(self, key: str) -> Any:
         bucket = self.bucket(self.s3_bucket_name)
         return None if bucket is None else bucket.Object(key)
 
-    def does_object_exist(self, key):
+    def does_object_exist(self, key: str) -> Any | None:
         return self.object(key)
 
-    def root_folder(self, dataset_code: str):
+    def root_folder(self, dataset_code: str) -> Any | None:
         root_key = self.dataset_root(dataset_code)
         return None if root_key is None else self.object(root_key)
 
@@ -96,16 +99,18 @@ class S3ObjectStore:
     def bucket(self, bucket_name: str) -> Any:
         return self.s3.Bucket(bucket_name)
 
-    def file_key_in_dataset_folder(self, dataset_code, key):
+    def file_key_in_dataset_folder(self, dataset_code: str, key: str) -> str:
         return '{}/{}'.format(self.dataset_root(dataset_code), key)
 
     def uploader_for(
         self,
-        key,
-        mime=MIME_NTRIPLES,
+        key: str,
+        mime: str = MIME_NTRIPLES,
         content_encoding: str | None = None,
         dataset_code: str | None = None,
-    ):
+    ) -> 'S3Uploader':
+        if dataset_code is None:
+            raise ValueError('dataset_code is required')
         return S3Uploader(
             self,
             key=self.file_key_in_dataset_folder(dataset_code, key),
@@ -118,13 +123,14 @@ class S3ObjectStore:
 class S3Uploader:
     def __init__(
         self,
-        s3_object_store,
-        key,
-        mime=MIME_NTRIPLES,
+        s3_object_store: S3ObjectStore,
+        key: str,
+        mime: str = MIME_NTRIPLES,
         content_encoding: str | None = None,
         dataset_code: str | None = None,
-    ):
+    ) -> None:
         self.args = s3_object_store.args
+        assert self.args is not None
         self.verbose = self.args.verbose
         self.object_store = s3_object_store
         self.key = key
@@ -145,13 +151,13 @@ class S3Uploader:
         log_item('Multipart Upload Id', self.mpu.id)
         self.parts: list['S3Part'] = []
 
-    def part(self, chunk: bytes):
+    def part(self, chunk: bytes) -> 'S3Part':
         part = S3Part(self, len(self.parts) + 1)
         self.parts.append(part)
         part.upload(chunk)
         return part
 
-    def parts_dict(self):
+    def parts_dict(self) -> Any:
         for part in self.parts:
             yield part.dict()
 
@@ -179,7 +185,7 @@ class S3Uploader:
 
 
 class S3Part:
-    def __init__(self, s3_uploader, part_number):
+    def __init__(self, s3_uploader: S3Uploader, part_number: int) -> None:
         self.verbose = s3_uploader.args.verbose
         self.uploader = s3_uploader
         self.number = part_number
@@ -187,13 +193,13 @@ class S3Part:
 
         log_item('Created Part', '{}: {}'.format(self.uploader.key, self.number))
 
-    def dict(self):
+    def dict(self) -> dict[str, Any]:
         return {
             'ETag': self.e_tag,  # self.part.e_tag,
             'PartNumber': self.number,
         }
 
-    def upload(self, chunk: bytes):
+    def upload(self, chunk: bytes) -> None:
         log_item('Type of chunk', type(chunk))
         log_item('Uploading Part', f'size={len(chunk)} last 10 bytes={chunk[-10:]!r}')
         response = self.uploader.object_store.s3_client.upload_part(

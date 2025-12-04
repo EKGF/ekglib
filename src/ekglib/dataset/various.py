@@ -3,10 +3,11 @@ import gzip
 import os
 import textwrap
 from pathlib import Path
+from typing import Generator, Tuple
 
 import rdflib
 import requests
-from rdflib import plugin, Graph
+from rdflib import Graph, plugin
 from six import BytesIO
 
 from ..kgiri import EKG_NS
@@ -44,7 +45,7 @@ def export_dataset(
     s3_endpoint: S3ObjectStore | None = None,
     data_source_code: str | None = None,
     graph_iri: rdflib.URIRef | None = None,
-    mime=MIME_NTRIPLES,
+    mime: str = MIME_NTRIPLES,
 ) -> bool:
     if (
         sparql_endpoint is None
@@ -88,7 +89,7 @@ def export_dataset(
         return False
 
 
-def _s3_file_name(mime, data_source_code):
+def _s3_file_name(mime: str, data_source_code: str) -> str:
     if mime == MIME_NTRIPLES:
         return f'ekg-dataset-{data_source_code}.nt.gz'
     return f'ekg-dataset-{data_source_code}.ttl.gz'  # TODO: Support other mime types as well
@@ -131,14 +132,14 @@ def export_graph(
         chunk_size = buf.readinto(chunk)
         log_item(f'{s3_file_name} chunk_size', str(chunk_size))
         if chunk_size > 0:
-            uploader.part(chunk[0:chunk_size])
+            uploader.part(bytes(chunk[0:chunk_size]))
     log_item(f'{s3_file_name} completing with', str(chunk_size))
     return uploader.complete()
 
 
 def datasets_produced_by_pipeline(
     sparql_endpoint: SPARQLEndpoint, data_source_code: str
-):
+) -> Generator[Tuple[rdflib.URIRef, rdflib.Literal], None, None]:
     """
     Return an iterator over the collection of graph iris and the codes of the datasets that the given pipeline
     has produced in the staging database.
@@ -192,17 +193,20 @@ def datasets_produced_by_pipeline(
     if result is None:
         g = Graph()
     else:
-        converted = result.convert()
+        converted = result.convert()  # type: ignore[attr-defined]
         if not isinstance(converted, Graph):
             raise ValueError(f'Expected Graph, got {type(converted)}')
         g = converted
 
-    def datasets():
+    def datasets() -> Generator[Tuple[rdflib.URIRef, rdflib.Literal], None, None]:
         for dataset_iri, graph_iri in g.subject_objects(DATASET.inGraph):
             log_item('Dataset IRI', dataset_iri)
             log_item('Graph IRI', graph_iri)
+            assert isinstance(dataset_iri, rdflib.URIRef)
+            assert isinstance(graph_iri, rdflib.URIRef)
             for dataset_code in g.objects(dataset_iri, DATASET.datasetCode):
                 log_item('Dataset Code', dataset_code)
+                assert isinstance(dataset_code, rdflib.Literal)
                 yield graph_iri, dataset_code
 
     # make these unique as the same graph and dataset may be returned for multiple dataset_iris

@@ -1,9 +1,11 @@
+from typing import Any
+
 import boto3
 from botocore.client import Config
 from botocore.exceptions import ClientError, EndpointConnectionError
 
 from ..kgiri import parse_identity_key
-from ..log import log_item, error
+from ..log import error, log_item
 from ..mime import MIME_NTRIPLES
 
 
@@ -12,7 +14,7 @@ def s3_object_full_name(object_):
 
 
 class S3ObjectStore:
-    def __init__(self, args=None):
+    def __init__(self, args: Any | None = None) -> None:
         self.args = args
         self.verbose = args.verbose
         self.s3_endpoint = args.s3_endpoint
@@ -73,7 +75,7 @@ class S3ObjectStore:
         except EndpointConnectionError as e:
             error(e)
 
-    def object(self, key):
+    def object(self, key: str) -> Any:
         bucket = self.bucket(self.s3_bucket_name)
         return None if bucket is None else bucket.Object(key)
 
@@ -91,7 +93,7 @@ class S3ObjectStore:
     def dataset_root(self, dataset_code: str) -> str:
         return f'{parse_identity_key(self.git_branch)}/{dataset_code}'
 
-    def bucket(self, bucket_name):
+    def bucket(self, bucket_name: str) -> Any:
         return self.s3.Bucket(bucket_name)
 
     def file_key_in_dataset_folder(self, dataset_code, key):
@@ -214,4 +216,5 @@ class S3Part:
             else:
                 if value and value != '0':
                     log_item(key, value)
+        self.e_tag = response['ETag']
         self.e_tag = response['ETag']

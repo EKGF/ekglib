@@ -1,3 +1,4 @@
+import argparse
 import os
 import re
 import sys
@@ -6,13 +7,13 @@ from typing import Any
 
 import inflection
 from pandas._libs.tslibs.timestamps import Timestamp  # noqa
-from rdflib import Literal
+from rdflib import Literal, URIRef
 
-from .namespace import EKG_NS, set_kgiri_base, set_kgiri_base_replace
 from ..string import strip_end
+from .namespace import EKG_NS, set_kgiri_base, set_kgiri_base_replace
 
 
-def set_cli_params(parser):
+def set_cli_params(parser: argparse.ArgumentParser) -> Any:
     ekg_kgiri_base = os.getenv('EKG_KGIRI_BASE')
     if ekg_kgiri_base:
         set_kgiri_base(ekg_kgiri_base)  # should call this again after 'parse_args'
@@ -37,11 +38,11 @@ def set_cli_params(parser):
     return group
 
 
-def kgiri_random():
+def kgiri_random() -> URIRef:
     return kgiri_with(f'uuid:{uuid.uuid4()}')
 
 
-def kgiri_with(key):
+def kgiri_with(key: str) -> URIRef:
     return EKG_NS['KGIRI'].term(key)
 
 
@@ -56,12 +57,12 @@ special_char_map = {
 }
 
 
-def _translate_to_human_readable(key):
+def _translate_to_human_readable(key: str) -> str:
     key = re.sub(r'(?i)([a-z\d]*)', lambda m: m.group(1).lower(), key)
     return re.sub(r'^\w', lambda m: m.group(0).upper(), key)
 
 
-def parse_identity_key(legacy_id: Any):
+def parse_identity_key(legacy_id: Any) -> str:
     """Try to convert a given value into a string that we can use to construct a non-obfuscated KGIRI"""
     if isinstance(legacy_id, int):
         key = f'{legacy_id}'
@@ -109,7 +110,7 @@ def parse_identity_key(legacy_id: Any):
     return key
 
 
-def parse_identity_key_with_prefix(prefix: str, legacy_id: Any):
+def parse_identity_key_with_prefix(prefix: str, legacy_id: Any) -> str:
     """See parse_identity_key()"""
     if len(prefix) > 0:
         return parse_identity_key(f'{prefix}-{legacy_id}')

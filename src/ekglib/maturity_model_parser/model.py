@@ -2,17 +2,18 @@ from __future__ import annotations
 
 from os.path import relpath
 from pathlib import Path
-from typing import Generator, Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Generator
 
-from ekglib.maturity_model_parser.pages_yaml import PagesYaml
 from rdflib.term import Node
 
-from .File import makedirs
+from ekglib.maturity_model_parser.pages_yaml import PagesYaml
+
+from ..log.various import log_item, value_error
+from ..namespace import MATURITY_MODEL
 from .config import Config
+from .File import makedirs
 from .graph import MaturityModelGraph
 from .markdown_document import MarkdownDocument
-from ..log.various import value_error, log_item
-from ..namespace import MATURITY_MODEL
 
 if TYPE_CHECKING:
     from .pillar import MaturityModelPillar
@@ -26,7 +27,7 @@ class MaturityModel:
         log_item('Generating pages for', model_node)
         from .pillar import MaturityModelPillar
 
-        self.md_file = None
+        self.md_file: MarkdownDocument | None = None
         self.graph = graph
         self.model_node = model_node
         # self.model_node = graph.model_with_name(config.model_name)
@@ -46,14 +47,14 @@ class MaturityModel:
         self._pillars: list[Any] = list()
 
     def sort_key(self, element: Node) -> str:
-        for sort_key in self.graph.g.objects(
+        for sort_key_node in self.graph.g.objects(
             subject=element, predicate=MATURITY_MODEL.sortKey
         ):
-            log_item('Sort key of', f'{sort_key} -> {element}')
-            return str(sort_key)
-        sort_key = str(element)
+            log_item('Sort key of', f'{sort_key_node} -> {element}')
+            return str(sort_key_node)
+        sort_key_str = str(element)
         log_item('No sort key for', element)
-        return sort_key
+        return sort_key_str
 
     def pillar_nodes_unsorted(self) -> Generator[Node, None, None]:
         found = 0
@@ -89,7 +90,7 @@ class MaturityModel:
 
     def get_pillars_with_name(
         self, name: str
-    ) -> Generator['MaturityModelPillar', Any, None]:
+    ) -> Generator['MaturityModelPillar', None, None]:
         for pillar in self.pillars():
             if pillar.name == name:
                 yield pillar
@@ -102,7 +103,7 @@ class MaturityModel:
         self.generate_capabilities_overview_table()
         # self.generate_capabilities_overview()
 
-    def generate_pillars(self):
+    def generate_pillars(self) -> None:
         for pillar in self.pillars():
             pillar.generate()
 
@@ -116,6 +117,7 @@ class MaturityModel:
                 'hide': ['navigation', 'toc', 'title'],
             },
         )
+        assert self.md_file is not None
         card_indent_1 = ' ' * 4
         card_indent_2 = ' ' * 8
         icon = ':orange_book:'
@@ -170,7 +172,7 @@ class MaturityModel:
             pages_yaml.add(f'{area.name}: {area.local_name}')
         pages_yaml.write()
 
-    def generate_capabilities_overview_table(self):
+    def generate_capabilities_overview_table(self) -> None:
         overview_md_path = self.config.docs_root / 'intro' / 'overview.md'
         makedirs(overview_md_path.parent, 'Overview')
         overview_md = MarkdownDocument(
@@ -241,7 +243,7 @@ class MaturityModel:
         overview_md.write('</tbody>\n</table>\n', wrap_width=0)
         overview_md.create_md_file()
 
-    def generate_capabilities_overview(self):
+    def generate_capabilities_overview(self) -> None:
         overview_md_path = self.config.docs_root / 'intro' / 'overview.md'
         makedirs(overview_md_path.parent, 'Overview')
         overview_md = MarkdownDocument(
@@ -284,4 +286,5 @@ class MaturityModel:
                         f'[{capability.name}]({capability_url})|{tag_line}|\n',
                         wrap_width=0,
                     )
+        overview_md.create_md_file()
         overview_md.create_md_file()

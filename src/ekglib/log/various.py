@@ -3,7 +3,7 @@ from __future__ import print_function
 import sys
 from typing import Any
 
-from rdflib import Graph, RDF, RDFS
+from rdflib import RDF, RDFS, Graph
 
 from ..kgiri.namespace import EKG_NS  # Do a deep import
 from ..string import remove_prefix
@@ -42,7 +42,7 @@ def log_item(item: str, msg: Any) -> None:
     log(' - {:<26}: [{:}]'.format(item, msg))
 
 
-def log_exception(e: Exception | None = None):
+def log_exception(e: Exception | None = None) -> None:
     if e:
         log_item('Exception', f'{repr(e)}: {e.args}')
     else:

@@ -1,7 +1,7 @@
 chars_that_do_not_belong_in_camel_case_string = ['_', ':', '-', ' ']
 
 
-def is_lower_camel_case(some_string):
+def is_lower_camel_case(some_string: str) -> bool:
     if len(some_string) < 1:
         return False
     if any(e in some_string for e in chars_that_do_not_belong_in_camel_case_string):
@@ -32,6 +32,6 @@ tests = [
 ]
 
 
-def test_is_lower_camel_case():
+def test_is_lower_camel_case() -> None:
     for test_string, expected in tests:
         assert is_lower_camel_case(test_string) is expected

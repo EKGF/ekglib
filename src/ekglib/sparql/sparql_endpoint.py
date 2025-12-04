@@ -7,14 +7,14 @@ import requests
 from requests.exceptions import StreamConsumedError
 from requests.utils import iter_slices
 
-from ..log import log_item, log_error, error, warning
-from ..mime import MIME_CSV, check_sparql_mime_type, MIME_TSV
+from ..log import error, log_error, log_item, warning
+from ..mime import MIME_CSV, MIME_TSV, check_sparql_mime_type
 
 try:
-    from SPARQLWrapper import SPARQLWrapper, POST, GET, URLENCODED, JSON, RDFXML
+    from SPARQLWrapper import GET, JSON, POST, RDFXML, URLENCODED, SPARQLWrapper
     from SPARQLWrapper.SPARQLExceptions import (
-        QueryBadFormed,
         EndPointNotFound,
+        QueryBadFormed,
         Unauthorized,
     )
     from SPARQLWrapper.Wrapper import QueryResult
@@ -45,7 +45,7 @@ def set_cli_params(parser: argparse.ArgumentParser) -> None:
 
 
 # noinspection PyUnresolvedReferences
-def iter_raw(r: requests.Response, chunk_size: int = 1):
+def iter_raw(r: requests.Response, chunk_size: int = 1) -> Any:
     """
     Reimplementation of requests.Response.iter_content that doesn't try
     to decode zipped content
@@ -87,8 +87,11 @@ class SPARQLResponse:
     sparql_endpoint: 'SPARQLEndpoint'
 
     def __init__(
-        self, sparql_endpoint, response: requests.Response, mime: str | None = None
-    ):
+        self,
+        sparql_endpoint: 'SPARQLEndpoint',
+        response: requests.Response,
+        mime: str | None = None,
+    ) -> None:
         self.sparql_endpoint = sparql_endpoint
         self.response = response
         self.mime = mime
@@ -103,20 +106,20 @@ class SPARQLResponse:
         else:
             self.iter_lines_generator = self._iter_lines_raw
 
-    def _csv_iter(self):
+    def _csv_iter(self) -> Any:
         for line in self.response.iter_lines(
             chunk_size=self.chunk_size, decode_unicode=False, delimiter=b'\n'
         ):
             yield line.decode('utf-8')
 
-    def _iter_lines_in_csv_format(self):
+    def _iter_lines_in_csv_format(self) -> Any:
         for line in csv.DictReader(self._csv_iter()):
             yield line
 
     #
     # TODO: Translate each TSV row into a Python dictionary where the keys are the column names returned in row 1
     #
-    def _iter_lines_in_tsv_format(self):
+    def _iter_lines_in_tsv_format(self) -> Any:
         first_line = True
         for line in self.response.iter_lines(
             chunk_size=self.chunk_size, decode_unicode=False, delimiter=b'\n'
@@ -128,14 +131,14 @@ class SPARQLResponse:
                 continue
             yield line.decode('utf-8')
 
-    def _iter_lines_raw(self):
+    def _iter_lines_raw(self) -> Any:
         print('iter_lines 3')
         for line in self.response.iter_lines(
             chunk_size=self.chunk_size, decode_unicode=False, delimiter=b'\n'
         ):
             yield line.decode('utf-8')
 
-    def iter_lines(self):
+    def iter_lines(self) -> Any:
         return self.iter_lines_generator()
 
 
@@ -145,7 +148,7 @@ class SPARQLEndpoint:
     #
     #
     #
-    def __init__(self, args=None):
+    def __init__(self, args: Any | None = None) -> None:
         """
         Create a SPARQL Endpoint (an instance of the class SPARQLWrapper) given the "standard"
         command line params that we're using for most command line utilities
@@ -174,13 +177,15 @@ class SPARQLEndpoint:
     def endpoint_url_for_queries(self) -> str:
         return f'{self.endpoint_base}/{self.database}/query'
 
-    def user_id(self):
+    def user_id(self) -> str:
         return self.sparql_endpoint.user
 
-    def password(self):
+    def password(self) -> str:
         return self.sparql_endpoint.passwd
 
-    def execute_sparql_select_query(self, sparql_statement, mime_type=MIME_CSV):
+    def execute_sparql_select_query(
+        self, sparql_statement: str, mime_type: str = MIME_CSV
+    ) -> Optional[SPARQLResponse]:
         check_sparql_mime_type(mime_type)
 
         if self.verbose:
@@ -205,11 +210,11 @@ class SPARQLEndpoint:
         #     print(f.read().decode('utf-8'))
         return self._execute_query()
 
-    def execute_csv_query(self, sparql_statement: str):
+    def execute_csv_query(self, sparql_statement: str) -> Optional[SPARQLResponse]:
         return self.execute_sparql_query2(sparql_statement)
 
     def execute_sparql_query2(
-        self, sparql_statement, graph_iri: str | None = None, mime: str = MIME_CSV
+        self, sparql_statement: str, graph_iri: str | None = None, mime: str = MIME_CSV
     ) -> Optional[SPARQLResponse]:
         if self.verbose:
             log_item('Executing', sparql_statement)
@@ -299,7 +304,7 @@ class SPARQLEndpoint:
             log_item(header_name, header_value)
         return self._execute_query()
 
-    def _execute_query(self):  # noqa: C901
+    def _execute_query(self) -> Optional[SPARQLResponse]:  # noqa: C901
         try:
             result = self.sparql_endpoint.query()
             response = result.response

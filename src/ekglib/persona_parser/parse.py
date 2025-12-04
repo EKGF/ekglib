@@ -30,7 +30,7 @@ class PersonaParser:
             for s, p, o in self.g:
                 print((s, p, o))
 
-    def check(self):
+    def check(self) -> None:
         for persona in self.g.subjects(RDF.type, PERSONA.Persona):
             log_item('Persona', persona)
             for rdfsLabel in self.g.objects(persona, RDFS.label):
@@ -39,7 +39,7 @@ class PersonaParser:
         # TODO: Nothing much happens here yet
         #
 
-    def dump(self, output_file):
+    def dump(self, output_file: str | Path | None) -> None:
         if not output_file:
             warning('You did not specify an output file, no output file created')
             return

@@ -4,15 +4,11 @@ from pathlib import Path
 import rdflib
 from rdflib.namespace import RDF, RDFS
 
-from ..kgiri import (
-    set_kgiri_base,
-    set_kgiri_base_replace,
-    set_cli_params as kgiri_set_cli_params,
-    kgiri_replace_iri_in_graph,
-    kgiri_replace_iri_in_literal,
-)
-from ..log import log_item, log_error, warning
-from ..namespace import USERSTORY, EKGPSS
+from ..kgiri import kgiri_replace_iri_in_graph, kgiri_replace_iri_in_literal
+from ..kgiri import set_cli_params as kgiri_set_cli_params
+from ..kgiri import set_kgiri_base, set_kgiri_base_replace
+from ..log import log_error, log_item, warning
+from ..namespace import EKGPSS, USERSTORY
 
 
 class UserStoryParser:
@@ -74,7 +70,9 @@ class UserStoryParser:
     # Check to see if in the same directory as the user-story.ttl file we have a .sparql file
     # with the given name. If so, return its contents as a Literal.
     #
-    def check_sparql_file_name(self, sparql_file_name):
+    def check_sparql_file_name(
+        self, sparql_file_name: str
+    ) -> rdflib.term.Literal | None:
         log_item('Checking', self.userStoryFile.parent / sparql_file_name)
         sparql_file_name_full_path = self.userStoryFile.parent / sparql_file_name
         if not sparql_file_name_full_path.exists():
@@ -83,7 +81,9 @@ class UserStoryParser:
         log_item('Found SPARQL file', sparql_file_name_full_path)
         return rdflib.Literal(sparql_file_name_full_path.read_text().strip())
 
-    def process_sparql_literal(self, user_story, sparql_literal):
+    def process_sparql_literal(
+        self, user_story: rdflib.term.URIRef, sparql_literal: rdflib.term.Literal | None
+    ) -> None:
         if not sparql_literal:
             return
         self.replace_literal_triple(
@@ -98,14 +98,22 @@ class UserStoryParser:
     #
     # Add a triple to the graph with the given sparql literal.
     #
-    def add_literal_triple(self, s, p, o):
+    def add_literal_triple(
+        self, s: rdflib.term.URIRef, p: rdflib.term.URIRef, o: str
+    ) -> None:
         self.g.add((s, p, rdflib.term.Literal(o)))
 
-    def replace_literal_triple(self, s, p1, p2, o):
+    def replace_literal_triple(
+        self,
+        s: rdflib.term.URIRef,
+        p1: rdflib.term.URIRef,
+        p2: rdflib.term.URIRef,
+        o: str,
+    ) -> None:
         self.g.remove((s, p1, None))
         self.add_literal_triple(s, p2, o)
 
-    def dump(self, output_file):
+    def dump(self, output_file: str | Path | None) -> None:
         if not output_file:
             print('WARNING: You did not specify an output file, no output file created')
             return

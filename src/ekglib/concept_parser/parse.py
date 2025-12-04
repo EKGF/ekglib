@@ -30,7 +30,7 @@ class ConceptParser:
             for s, p, o in self.g:
                 print((s, p, o))
 
-    def check(self):
+    def check(self) -> None:
         for concept in self.g.subjects(RDF.type, CONCEPT.Concept):
             log_item('Concept', concept)
             for rdfsLabel in self.g.objects(concept, RDFS.label):
@@ -41,7 +41,7 @@ class ConceptParser:
         # TODO: Nothing much happens here yet
         #
 
-    def dump(self, output_file):
+    def dump(self, output_file: str | Path | None) -> None:
         if not output_file:
             warning('You did not specify an output file, no output file created')
             return

@@ -1,9 +1,9 @@
 import asyncio
 import functools
-from typing import AsyncGenerator, Callable, Any, Optional, List
+from io import BytesIO
+from typing import Any, AsyncGenerator, Callable, List, Optional
 
 import pandas as pd
-from io import BytesIO
 
 R = Any  # Type received by the generator
 S = Any  # Type sent by the generator
@@ -144,7 +144,7 @@ def example_row_processor(row: pd.Series) -> None:
     print(f'Processed row: {row}')
 
 
-async def run_pipeline():
+async def run_pipeline() -> None:
     csv_content = b"""name,age,city
 Alice,30,London
 Bob,25,New York

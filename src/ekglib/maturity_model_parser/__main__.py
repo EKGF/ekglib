@@ -19,7 +19,7 @@ def run_with_config(config: Config) -> int:
     return 0
 
 
-def run_with_args(args) -> int:
+def run_with_args(args: argparse.Namespace) -> int:
     if args.pillar_dir_name is None:
         pillar_dir_name: option.Option[str] = option.NONE  # type: ignore[assignment]
     else:

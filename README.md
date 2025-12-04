@@ -1,7 +1,5 @@
 # ekglib
 
-> ⚠️ **Warning:** This is a pre-alpha project. Everything in this repo is subject to heavy change.
-
 A Python Library for various tasks in an EKG DataOps operation.
 
 ## Badges
@@ -13,39 +11,67 @@ A Python Library for various tasks in an EKG DataOps operation.
 [![Linting & Formatting: ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![Type checking: mypy](https://img.shields.io/badge/type%20checking-mypy-blue.svg)](https://mypy.readthedocs.io/)
 
-**Links:**
-
-- 📖 [Documentation](https://ekgf.github.io/ekglib/)
-- 🐛 [Issue Tracker](https://github.com/EKGF/ekglib/issues)
-- 💬 [Discussions](https://github.com/EKGF/ekglib/discussions)
-
----
-
 ## Metadata Parsers
 
-- [Concept Parser](concept_parser/)
-- [Persona Parser](persona_parser/)
-- [Story Validate Rule Parser](dataops_rule_parser/)
-- [Story Vaidate Rules Capture](dataops_rules_capture/)
-- [Story Validate Rules Executor](dataops_rules_execute/)
-- [Use Case Parser](use_case_parser/)
-- [User Story Parser](user_story_parser/)
+- [Concept Parser](concept_parser/README.md)
+- [Persona Parser](persona_parser/README.md)
+- [Story Validate Rule Parser](dataops_rule_parser/README.md)
+- [Story Vaidate Rules Capture](dataops_rules_capture/README.md)
+- [Story Validate Rules Executor](dataops_rules_execute/README.md)
+- [Use Case Parser](use_case_parser/README.md)
+- [User Story Parser](user_story_parser/README.md)
 
 ## Capture Steps
 
-- [Xlsx Parser](xlsx_parser/)
-- [LDAP Parser](ldap_parser/)
+- [Xlsx Parser](xlsx_parser/README.md)
+- [LDAP Parser](ldap_parser/README.md)
 
----
+## Maturity Model Tools
+
+- [Maturity Model Parser](maturity_model_parser/README.md)
+
+## Pipelines and Export
+
+- [Pipeline Framework](pipeline/README.md)
+- [Step Export](step_export/README.md)
+
+## LDAP Variants
+
+- [LDAP Parser to File](ldap_parser_to_file/README.md)
+- [LDAP Parser to S3](ldap_parser_to_s3/README.md)
+
+## Storage and Data Access
+
+- [S3 Helpers](s3/README.md)
+- [Data Sources](data_source/README.md)
+- [Datasets](dataset/README.md)
+
+## Knowledge Graph and SPARQL Utilities
+
+- [KG IRI Utilities](kgiri/README.md)
+- [SPARQL Helpers](sparql/README.md)
+- [Namespaces](namespace/README.md)
+- [Ontologies and Resources](resources/README.md)
+
+## Core Utilities
+
+- [Logging Utilities](log/README.md)
+- [String Utilities](string/README.md)
+- [Git Utilities](git/README.md)
+- [Exceptions](exceptions/README.md)
+- [MIME Helpers](mime/README.md)
+- [Main CLI Entrypoint](main/README.md)
 
 ## Installation
 
-**Using `uv` (recommended)**
+`ekglib` is not yet published on PyPI. You can install it directly from GitHub.
 
-If you are using `uv` to manage your project, add `ekglib` as a dependency:
+**Using `uv` from GitHub (recommended)**
+
+Add `ekglib` as a dependency from GitHub:
 
 ```bash
-uv add ekglib
+uv add --git https://github.com/EKGF/ekglib.git
 ```
 
 You can then run the provided CLI tools via `uv`:
@@ -59,19 +85,19 @@ uv run pipeline-example --help
 To install the CLI tools as global commands (similar to `pipx`):
 
 ```bash
-uv tool install ekglib
+uv tool install --git https://github.com/EKGF/ekglib.git
 
 xlsx-parser --help
 user-story-parser --help
 pipeline-example --help
 ```
 
-**Using `pip`**
+**Using `pip` from GitHub**
 
-If you prefer to use `pip` directly:
+If you prefer to use `pip`, you can install from the GitHub repo:
 
 ```bash
-python -m pip install ekglib
+python -m pip install "git+https://github.com/EKGF/ekglib.git"
 ```
 
 The console scripts will then be available on your `PATH`:
@@ -82,8 +108,6 @@ user-story-parser --help
 pipeline-example --help
 ```
 
----
-
 ## Development setup (from source)
 
 If you cloned this repository and want to work on `ekglib` itself:
@@ -93,8 +117,6 @@ uv sync
 ```
 
 This will create and populate a virtual environment using `uv` based on `pyproject.toml`.
-
----
 
 ## Tests
 
@@ -109,8 +131,6 @@ To run a single test:
 ```bash
 uv run pytest tests/<path-to-test> -k <name-of-test>
 ```
-
----
 
 ## Packaging
 

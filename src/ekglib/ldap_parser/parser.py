@@ -1,41 +1,41 @@
 import logging
 import sys
 import time
+import traceback
 import typing
-from typing import Any
-from datetime import datetime
 from base64 import b64encode
+from datetime import datetime
 from io import BytesIO
+from typing import Any
 
 import ldap3
 import rdflib
 import stringcase
-import traceback
 from botocore.exceptions import EndpointConnectionError
-from ldap3 import Entry, Connection, SchemaInfo, set_config_parameter
+from ldap3 import Connection, Entry, SchemaInfo, set_config_parameter
 from ldap3.core.exceptions import (
-    LDAPSocketOpenError,
-    LDAPOperationResult,
-    LDAPUnavailableCriticalExtensionResult,
-    LDAPExtensionError,
     LDAPBindError,
+    LDAPExtensionError,
+    LDAPOperationResult,
     LDAPResponseTimeoutError,
+    LDAPSocketOpenError,
     LDAPSocketReceiveError,
+    LDAPUnavailableCriticalExtensionResult,
 )
 from ldap3.utils.log import (
+    EXTENDED,
     set_library_log_activation_level,
     set_library_log_detail_level,
-    EXTENDED,
 )
 from pyasn1.error import PyAsn1Error
-from rdflib import RDF, Literal, PROV, plugin, URIRef, RDFS, OWL, XSD
+from rdflib import OWL, PROV, RDF, RDFS, XSD, Literal, URIRef, plugin
 
 from ..dataset.various import export_graph
-from ..exceptions import PagingNotSupported, CannotCapture
-from ..kgiri import EKG_NS, parse_identity_key_with_prefix, kgiri_random
-from ..log import log, warning, error, log_item, log_error, log_dump, log_exception
+from ..exceptions import CannotCapture, PagingNotSupported
+from ..kgiri import EKG_NS, kgiri_random, parse_identity_key_with_prefix
+from ..log import error, log, log_dump, log_error, log_exception, log_item, warning
 from ..main import dump_as_ttl_to_stdout
-from ..namespace import RAW, DATAOPS, LDAP
+from ..namespace import DATAOPS, LDAP, RAW
 from ..s3 import S3ObjectStore
 from ..string import str_to_binary
 
@@ -281,7 +281,7 @@ class LdapParser:
             rc = 1
         return rc
 
-    def process_entry(self, entry):
+    def process_entry(self, entry: Entry) -> None:
         if self.skip_rdf_generation:
             return
         LdapEntry(self.args, entry, self.stream)
@@ -314,7 +314,7 @@ class LdapParser:
         return LdapParser.value_of_attribute_with_key(entry, 'structuralObjectClass')
 
     @staticmethod
-    def dn_of_entry(entry):
+    def dn_of_entry(entry: Entry | dict[str, Any]) -> str:
         if hasattr(entry, 'entry_dn'):
             return entry.entry_dn
         return (
@@ -323,7 +323,7 @@ class LdapParser:
             else LdapParser.value_of_attribute_with_key(entry, 'dn')
         )
 
-    def log_entry(self, entry):
+    def log_entry(self, entry: Entry) -> None:
         class_of_entry = self.class_of_entry(entry)
         if class_of_entry:
             log_item(f'DN {class_of_entry}', self.dn_of_entry(entry))
@@ -408,7 +408,7 @@ class LdapParser:
             log_dump('entry_dn', entry.entry_dn)
             log_error(f'Entry without dn: {entry}')
 
-    def add_namespaces(self):
+    def add_namespaces(self) -> None:
         self.g.base = EKG_NS['KGIRI']
         self.g.namespace_manager.bind('prov', PROV)
         self.g.namespace_manager.bind('raw', RAW)
@@ -439,7 +439,7 @@ class LdapParser:
         dump_as_ttl_to_stdout(self.g)
         return 0
 
-    def dump(self, output_file) -> int:
+    def dump(self, output_file: str | Path | None) -> int:
         if not output_file:
             warning('You did not specify an output file, no output file created')
             return 1
@@ -447,7 +447,7 @@ class LdapParser:
         log_item('Created', output_file)
         return 0
 
-    def s3_file_name(self):
+    def s3_file_name(self) -> str:
         return f'raw-data-transform-rules-{self.data_source_code}.ttl.gz'
 
     #
@@ -597,7 +597,7 @@ class LdapEntry:
         for value in values:
             self._add((self.entry_iri, RDFS.label, Literal(value)))
 
-    def register_person(self, entry_iri):
+    def register_person(self, entry_iri: URIRef) -> None:
         self._add((entry_iri, RDF.type, PROV.Person))
         self._add((entry_iri, RDF.type, PROV.Agent))
 

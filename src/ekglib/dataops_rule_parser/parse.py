@@ -5,19 +5,15 @@ from pathlib import Path
 
 import owlrl
 import rdflib
-from rdflib import Graph, Literal, URIRef, OWL, RDF, RDFS, XSD
+from rdflib import OWL, RDF, RDFS, XSD, Graph, Literal, URIRef
 
 from ..data_source import set_cli_params as data_source_set_cli_params
-from ..kgiri import (
-    EKG_NS,
-    set_kgiri_base,
-    set_kgiri_base_replace,
-    set_cli_params as kgiri_set_cli_params,
-    kgiri_replace_iri_in_literal,
-)
-from ..log import error, warning, log_error, log_list, log_item, log_iri
+from ..kgiri import EKG_NS, kgiri_replace_iri_in_literal
+from ..kgiri import set_cli_params as kgiri_set_cli_params
+from ..kgiri import set_kgiri_base, set_kgiri_base_replace
+from ..log import error, log_error, log_iri, log_item, log_list, warning
 from ..main import load_rdf_file_into_graph
-from ..namespace import RULE, PROV, RAW, DATAOPS, DATASET
+from ..namespace import DATAOPS, DATASET, PROV, RAW, RULE
 
 OWL._fail = (
     False  # workaround for this issue: https://github.com/RDFLib/OWL-RL/issues/53
@@ -95,11 +91,11 @@ class DataopsRuleParser:
         log_item('Loading Ontology', ontology_file_name)
         load_rdf_file_into_graph(self.g, ontology_file_name)
 
-    def load_ontologies(self):
+    def load_ontologies(self) -> None:
         for ontology_file_name in ontology_file_names:
             self.load_ontology(self.ontologies_root / ontology_file_name)
 
-    def rdfs_infer(self):
+    def rdfs_infer(self) -> None:
         owlrl.RDFSClosure.RDFS_Semantics(self.g, True, True, True)
         closure_class = owlrl.return_closure_class(
             owl_closure=True, rdfs_closure=True, owl_extras=True, trimming=True
@@ -172,10 +168,10 @@ class DataopsRuleParser:
             return '99-obfuscate'
         return f'10-{set_key}'
 
-    def key(self):
+    def key(self) -> str:
         return f'{self.set_key()}-{self.rule_file.parent.stem}'
 
-    def sort_key(self):
+    def sort_key(self) -> str:
         return f'{self.set_sort_key()}-{self.rule_file.parent.stem}'
 
     def create_rule_set(self):
@@ -221,7 +217,7 @@ class DataopsRuleParser:
     # Check to see if in the same directory as the rule.ttl file we have a .sparql_endpoint file
     # with the given name. If so, return its contents as a Literal.
     #
-    def check_sparql_file_name(self, sparql_file_name):
+    def check_sparql_file_name(self, sparql_file_name: str) -> Literal | None:
         if self.verbose:
             log_item('Checking', self.rule_file.parent / sparql_file_name)
         sparql_file_name_full_path = self.rule_file.parent / sparql_file_name
@@ -233,7 +229,9 @@ class DataopsRuleParser:
         )
         return rdflib.Literal(sparql_file_name_full_path.read_text())
 
-    def process_sparql_literal(self, rule, sparql_literal):
+    def process_sparql_literal(
+        self, rule: URIRef, sparql_literal: Literal | None
+    ) -> None:
         if not sparql_literal:
             return
         self.replace_literal_triple(
@@ -249,16 +247,18 @@ class DataopsRuleParser:
     #
     # Add a triple to the graph with the given sparql_endpoint literal.
     #
-    def add_literal_triple(self, s, p, o):
+    def add_literal_triple(self, s: URIRef, p: URIRef, o: Literal) -> None:
         if self.verbose:
             print('Adding triple <{0}> - <{1}> - "{2}"'.format(s, p, o))
         self.g.add((s, p, o))
 
-    def replace_literal_triple(self, s, p1, p2, o):
+    def replace_literal_triple(
+        self, s: URIRef, p1: URIRef, p2: URIRef, o: Literal
+    ) -> None:
         self.g.remove((s, p1, None))
         self.add_literal_triple(s, p2, o)
 
-    def dump(self, output_file) -> int:
+    def dump(self, output_file: str | Path | None) -> int:
         if not output_file:
             warning('You did not specify an output file, no output file created')
             return 1
@@ -309,5 +309,7 @@ def main() -> int:
     return rc
 
 
+if __name__ == '__main__':
+    exit(main())
 if __name__ == '__main__':
     exit(main())

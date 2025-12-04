@@ -3,17 +3,18 @@ from __future__ import annotations
 from os import getcwd
 from os.path import relpath
 from pathlib import Path
-from typing import Any, Generator, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Generator
 
-from ekglib.maturity_model_parser.pages_yaml import PagesYaml
 from rdflib.term import Node
 
-from .File import makedirs, copy_fragment
-from .config import Config
-from .graph import MaturityModelGraph
-from .markdown_document import MarkdownDocument
+from ekglib.maturity_model_parser.pages_yaml import PagesYaml
+
 from ..log import log_item
 from ..namespace import MATURITY_MODEL
+from .config import Config
+from .File import copy_fragment, makedirs
+from .graph import MaturityModelGraph
+from .markdown_document import MarkdownDocument
 
 if TYPE_CHECKING:
     from .capability_area import MaturityModelCapabilityArea
@@ -31,7 +32,7 @@ class MaturityModelPillar:
         pillar_node: Node,
         config: Config,
     ):
-        self.md_file = None
+        self.md_file: MarkdownDocument | None = None
         self.graph = graph
         self.model_node = model_node
         self.node = pillar_node
@@ -82,6 +83,7 @@ class MaturityModelPillar:
         pages_yaml.write()
 
     def copy_fragments(self) -> None:
+        assert self.md_file is not None
         copy_fragment(
             self.md_file,
             self.fragments_dir / 'background-and-intro.md',
@@ -90,7 +92,8 @@ class MaturityModelPillar:
         )
 
     def capability_area_nodes(self) -> Generator[Node, None, None]:
-        return self.graph.capability_areas_of_pillar(self.node)
+        for node in self.graph.capability_areas_of_pillar(self.node):
+            yield node
 
     def capability_areas_not_cached(
         self,
@@ -107,7 +110,8 @@ class MaturityModelPillar:
             self._capability_areas = list(self.capability_areas_not_cached())
         return self._capability_areas
 
-    def generate_capability_areas(self):
+    def generate_capability_areas(self) -> None:
+        assert self.md_file is not None
         icon = ':orange_book:'
         arrow = ':octicons-arrow-right-24:'
         icon_style = '{ .lg .middle }'
@@ -148,11 +152,12 @@ class MaturityModelPillar:
         return count
 
     @staticmethod
-    def pillars_root(graph: MaturityModelGraph, config: Config):
+    def pillars_root(graph: MaturityModelGraph, config: Config) -> Path:
         if config.pillar_dir_name.is_none:
             pillar_type_name = graph.local_type_name_for_type(
                 MaturityModelPillar.class_iri, MaturityModelPillar.class_label
             )
         else:
             pillar_type_name = config.pillar_dir_name.expect('')
+        return config.output_root / pillar_type_name
         return config.output_root / pillar_type_name

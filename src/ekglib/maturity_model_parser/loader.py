@@ -1,22 +1,22 @@
 from __future__ import annotations
 
+from io import BytesIO
 from os import getcwd
 from os.path import relpath
+from pathlib import Path
 
 import owlrl
 import rdflib
-from io import BytesIO
-from pathlib import Path
 from pkg_resources import resource_stream
 from rdflib import Graph
 
-from .config import Config
-from .graph import MaturityModelGraph
 from ..log import error, log_item
-from ..log.various import value_error, log
+from ..log.various import log, value_error
 from ..main import load_rdf_file_into_graph
 from ..main.main import load_rdf_stream_into_graph
 from ..namespace import BASE_IRI_MATURITY_MODEL
+from .config import Config
+from .graph import MaturityModelGraph
 
 ontology_file_names = ['maturity-model.ttl']
 
@@ -63,7 +63,7 @@ class MaturityModelLoader:
     def load_ontology_from_stream(self, ontology_stream: BytesIO):
         load_rdf_stream_into_graph(self.g, ontology_stream)
 
-    def load_ontologies(self):
+    def load_ontologies(self) -> None:
         log_item('Loading', 'Ontologies')
         for ontology_file_name in ontology_file_names:
             log_item('Loading Ontology', ontology_file_name)
@@ -85,7 +85,7 @@ class MaturityModelLoader:
         log_item('Loading Model File', relpath(turtle_file, getcwd()))
         load_rdf_file_into_graph(self.g, turtle_file)
 
-    def rdfs_infer(self):
+    def rdfs_infer(self) -> None:
         log_item('Inferring', 'Triples')
         owlrl.RDFSClosure.RDFS_Semantics(self.g, True, True, True)
         closure_class = owlrl.return_closure_class(
@@ -100,12 +100,20 @@ class MaturityModelLoader:
         ).expand(self.g)
         log_item('# triples', len(self.g))
 
-    def add_literal_triple(self, s, p, o):
+    def add_literal_triple(
+        self, s: rdflib.term.URIRef, p: rdflib.term.URIRef, o: rdflib.term.Literal
+    ) -> None:
         """Add a triple to the graph with the given sparql_endpoint literal."""
         if self.config.verbose:
             print('Adding triple <{0}> - <{1}> - "{2}"'.format(s, p, o))
         self.g.add((s, p, o))
 
-    def replace_literal_triple(self, s, p1, p2, o):
+    def replace_literal_triple(
+        self,
+        s: rdflib.term.URIRef,
+        p1: rdflib.term.URIRef,
+        p2: rdflib.term.URIRef,
+        o: rdflib.term.Literal,
+    ) -> None:
         self.g.remove((s, p1, None))
         self.add_literal_triple(s, p2, o)

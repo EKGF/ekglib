@@ -1,8 +1,9 @@
 import os
 from argparse import ArgumentParser
+from typing import Any
 
 
-def set_cli_params(parser: ArgumentParser) -> None:
+def set_cli_params(parser: ArgumentParser) -> Any:
     ekg_data_source_code = os.getenv('EKG_DATA_SOURCE_CODE', None)
     group = parser.add_argument_group('Data Source')
     if ekg_data_source_code:

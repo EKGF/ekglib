@@ -23,7 +23,7 @@ def argv_check_list(param_values: Any) -> list[Any]:
         return param_values
 
 
-def test_argv_check_list():
+def test_argv_check_list() -> None:
     actual = argv_check_list(['a', 'b', 'c'])
     expected = ['a', 'b', 'c']
     assert actual == expected

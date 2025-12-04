@@ -5,6 +5,7 @@ from __future__ import annotations
 
 from pathlib import Path
 from textwrap import fill
+from typing import Any
 
 import mdutils.tools.Table
 from mdutils.fileutils.fileutils import MarkDownFile
@@ -15,7 +16,7 @@ from mdutils.tools.TextUtils import TextUtils
 from ..log import log_item
 
 
-def new_inline_link(link, text=None):
+def new_inline_link(link: str, text: str | None = None) -> str:
     """Creates a inline link in markdown format.
 
     :param link:
@@ -72,7 +73,7 @@ class MarkdownDocument:
         self.write('---\n')
         self.write_title(metadata)
 
-    def write_title(self, metadata: dict = {}):
+    def write_title(self, metadata: dict[str, Any] = {}) -> None:
         if 'title' not in metadata:
             return
         if 'hide' in metadata and 'title' in metadata['hide']:
@@ -84,7 +85,7 @@ class MarkdownDocument:
         file.rewrite_all_file(self.file_data_text)
         return file
 
-    def read_md_file(self, file_name):
+    def read_md_file(self, file_name: str) -> str:
         """Reads a Markdown file and save it to global class `file_data_text`.
 
         :param file_name: Markdown file's name that has to be read.
@@ -97,14 +98,14 @@ class MarkdownDocument:
 
         return file_data
 
-    def heading(self, level: int, title: str, link: str | None = None):
+    def heading(self, level: int, title: str, link: str | None = None) -> None:
         hdr = '#' * level
         if link:
             self.write(f'\n{self.indent}{hdr} [{title}]({link})\n\n')
         else:
             self.write(f'\n{self.indent}{hdr} {title}\n\n')
 
-    def new_table(self, columns, rows, text):
+    def new_table(self, columns: int, rows: int, text: str) -> str:
         """This method takes a list of strings and creates a table.
 
             Using arguments ``columns`` and ``rows`` allows to create a table of *n* columns and *m* rows. The
@@ -145,7 +146,7 @@ class MarkdownDocument:
 
         return text_table
 
-    def new_paragraph(self, text='', wrap_width=120):
+    def new_paragraph(self, text: str = '', wrap_width: int = 120) -> str:
         """Add a new paragraph to Markdown file. The text is saved to the global variable file_data_text.
 
         :param text: is a string containing the paragraph text. Optionally, the paragraph text is returned.
@@ -176,8 +177,8 @@ class MarkdownDocument:
 
         return self.file_data_text
 
-    def new_line_no_wrap(self, text=''):
-        self.new_line(text, wrap_width=0)
+    def new_line_no_wrap(self, text: str = '') -> str:
+        return self.new_line(text, wrap_width=0)
 
     def new_line(self, text: str = '', wrap_width: int = 120) -> str:
         """Add a new line to Markdown file. The text is saved to the global variable file_data_text.
@@ -247,7 +248,7 @@ class MarkdownDocument:
 
         return text
 
-    def insert_code(self, code, language=''):
+    def insert_code(self, code: str, language: str = '') -> str:
         """This method allows to insert a peace of code on a markdown file.
 
         :param code: code string.

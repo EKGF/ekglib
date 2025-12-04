@@ -1,14 +1,16 @@
+from typing import Any
+
 import inflection
 from humps.camel import case
 from pandas._libs.tslibs.timestamps import Timestamp  # noqa
 from rdflib import Literal
 
+from ..log import error
 from .case import is_lower_camel_case
 from .prefix import strip_end
-from ..log import error
 
 
-def parse_column_name(column_name):
+def parse_column_name(column_name: str | int | Any) -> str | None:
     if column_name == 'ID':
         return 'legacyId'
     if column_name == 'Reference Id':
@@ -48,6 +50,6 @@ tests = [
 ]
 
 
-def test_parse_column_name():
+def test_parse_column_name() -> None:
     for test_string, expected in tests:
         assert parse_column_name(test_string) == expected

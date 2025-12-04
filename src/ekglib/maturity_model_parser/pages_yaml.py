@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 from pathlib import Path
 
 from ekglib import log_item
@@ -12,7 +13,7 @@ class PagesYaml:
         self.title = title
         self.nav = ['index.md']
 
-    def add(self, item: str):
+    def add(self, item: str) -> None:
         self.nav.append(item)
 
     def write(self) -> None:
@@ -22,4 +23,5 @@ class PagesYaml:
         for item in self.nav:
             data += f'\n  - {item}'
         # log_item("pages.yaml", data)
+        file.rewrite_all_file(data)
         file.rewrite_all_file(data)

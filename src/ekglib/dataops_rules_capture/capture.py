@@ -103,7 +103,7 @@ class DataopsRulesCapture:
         for triple in processor.g:
             self.g.add(triple)
 
-    def s3_file_name(self):
+    def s3_file_name(self) -> str:
         return f'raw-data-dataops-rules-{self.data_source_code}.ttl.gz'
 
     def export(self) -> int:

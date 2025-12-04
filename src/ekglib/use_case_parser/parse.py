@@ -32,7 +32,7 @@ class UseCaseParser:
             for s, p, o in self.g:
                 print((s, p, o))
 
-    def check(self):
+    def check(self) -> None:
         for useCase in self.g.subjects(RDF.type, USECASE.UseCase):
             log_item('Use Case', useCase)
             for rdfsLabel in self.g.objects(useCase, RDFS.label):
@@ -41,7 +41,7 @@ class UseCaseParser:
         # TODO: Nothing much happens here yet
         #
 
-    def dump(self, output_file):
+    def dump(self, output_file: str | Path | None) -> None:
         if not output_file:
             warning('You did not specify an output file, no output file created')
             return

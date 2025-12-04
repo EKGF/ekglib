@@ -6,6 +6,7 @@
 #
 # MIT License: (C) 2018 Dídac Coll
 from __future__ import annotations
+
 import mkdocs_gen_files
 
 
@@ -17,7 +18,7 @@ class MarkDownFileForMkDocs(object):
         - Rewrite a file with new data.
         - Write at the end of the file."""
 
-    def __init__(self, name=''):
+    def __init__(self, name: str = '') -> None:
         """Creates a markdown file, if name is not empty.
         :param str name: file name"""
         if name:
@@ -32,14 +33,14 @@ class MarkDownFileForMkDocs(object):
         with mkdocs_gen_files.open(self.file_name, 'w', encoding='utf-8') as self.file:
             self.file.write(data)
 
-    def append_end(self, data):
+    def append_end(self, data: str) -> None:
         """Write at the last position of a Markdown file.
 
         :param str data: is a string containing all the data that is written in the markdown file."""
         with mkdocs_gen_files.open(self.file_name, 'a', encoding='utf-8') as self.file:
             self.file.write(data)
 
-    def append_after_second_line(self, data):
+    def append_after_second_line(self, data: str) -> None:
         """Write after the file's first line.
 
         :param str data: is a string containing all the data that is written in the markdown file."""
@@ -55,7 +56,7 @@ class MarkDownFileForMkDocs(object):
             self.file.write('\n' + file_data[len(first_line + second_line) :])
 
     @staticmethod
-    def read_file(file_name):
+    def read_file(file_name: str) -> str:
         """Read a Markdown file using a file name. It is not necessary to add *.md extension.
 
         :param file_name: Markdown file's name.
@@ -69,4 +70,5 @@ class MarkDownFileForMkDocs(object):
         with mkdocs_gen_files.open(file_name, 'r', encoding='utf-8') as file:
             file_data = file.read()
 
+        return file_data
         return file_data

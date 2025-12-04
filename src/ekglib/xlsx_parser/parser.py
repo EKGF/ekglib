@@ -1,40 +1,40 @@
 import argparse
 import os
-from datetime import datetime, date
+from datetime import date, datetime
 from decimal import InvalidOperation
 from pathlib import Path
-from typing import Tuple, Any, Optional
+from typing import Any, Optional, Tuple
 
 import numpy as np
 import pandas as pd
 import rdflib
 import stringcase
-from dateutil.parser import parse, ParserError
+from dateutil.parser import ParserError, parse
 from pandas import isna
 from pandas._libs.lib import Decimal  # type: ignore[attr-defined]  # noqa
 from pandas._libs.tslibs.timestamps import Timestamp  # noqa
-from rdflib import RDF, Literal, URIRef, RDFS, PROV, XSD
+from rdflib import PROV, RDF, RDFS, XSD, Literal, URIRef
 from six import string_types
 
 from ..data_source import set_cli_params as data_source_set_cli_params
 from ..kgiri import (
     EKG_NS,
-    parse_identity_key,
-    parse_identity_key_with_prefix,
-    set_kgiri_base,
     kgiri_random,
     kgiri_with,
-    set_cli_params as kgiri_set_cli_params,
+    parse_identity_key,
+    parse_identity_key_with_prefix,
 )
-from ..log import error, warning, log_item, log_list
+from ..kgiri import set_cli_params as kgiri_set_cli_params
+from ..kgiri import set_kgiri_base
+from ..log import error, log_item, log_list, warning
 from ..main import dump_as_ttl_to_stdout
-from ..namespace import RAW, DATAOPS
+from ..namespace import DATAOPS, RAW
 from ..string import (
+    argv_check_list,
     common_prefix,
+    parse_column_name,
     remove_prefix,
     strip_end,
-    argv_check_list,
-    parse_column_name,
 )
 
 pd.options.display.max_rows = 999
@@ -104,7 +104,7 @@ def numpy_type_2_xsd_type(value: Any) -> tuple[Any, URIRef | None]:
     return (value, None)
 
 
-def create_column_iri(sheet_iri, column_name):
+def create_column_iri(sheet_iri: URIRef, column_name: str) -> URIRef:
     return URIRef(f'{sheet_iri}-column-{stringcase.spinalcase(column_name)}')
 
 
@@ -265,7 +265,7 @@ class XlsxParser:
     def _prov_activity_end(self, activity_iri):
         self.g.add((activity_iri, PROV.endedAtTime, Literal(datetime.utcnow())))
 
-    def key_column_number(self, number_of_columns):
+    def key_column_number(self, number_of_columns: int) -> int:
         return min(self.legacy_key_column_number, number_of_columns) - 1
 
     def parse_sheet(self, xlsx: pd.ExcelFile, xlsx_iri: URIRef, sheet_name: str):
@@ -560,7 +560,7 @@ class XlsxParser:
     def is_ignored_value(self, cell):
         return cell in self.ignored_values
 
-    def add_namespaces(self):
+    def add_namespaces(self) -> None:
         self.g.base = EKG_NS['KGIRI']
         self.g.namespace_manager.bind('prov', PROV)
         self.g.namespace_manager.bind('raw', RAW)
@@ -570,7 +570,7 @@ class XlsxParser:
         dump_as_ttl_to_stdout(self.g)
         return 0
 
-    def dump(self, output_file) -> int:
+    def dump(self, output_file: str | Path) -> int:
         if not output_file:
             warning('You did not specify an output file, no output file created')
             return 1
@@ -669,5 +669,7 @@ def main() -> int:
     )
 
 
+if __name__ == '__main__':
+    exit(main())
 if __name__ == '__main__':
     exit(main())

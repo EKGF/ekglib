@@ -43,10 +43,10 @@ class MaturityModelCapability:
         self.full_dir = self.area.full_dir / self.local_name
         self.fragments_dir = capability_area_fragments_dir / self.local_name
         log_item(f'{self.class_label} Fragments', relpath(self.fragments_dir, getcwd()))
-        self.md_file = None
+        self.md_file: MarkdownDocument | None = None
         makedirs(self.full_dir, self.class_label)
 
-    def generate_markdown(self):
+    def generate_markdown(self) -> None:
         self.generate_link_from_area_to_capability()
         self.md_file = MarkdownDocument(
             path=self.full_dir / 'index.md',
@@ -54,13 +54,16 @@ class MaturityModelCapability:
         )
         self.generate_summary()
         self.copy_fragments()
+        assert self.md_file is not None
         self.md_file.create_md_file()
 
-    def generate_link_from_area_to_capability(self):
+    def generate_link_from_area_to_capability(self) -> None:
+        assert self.area.md_file is not None
         link = Path('.') / self.local_name / 'index.md'
         self.area.md_file.new_line(f'- [{self.name}]({link})')
 
-    def generate_summary(self):
+    def generate_summary(self) -> None:
+        assert self.md_file is not None
         # self.md_file.heading(2, "Summary")
         indent_prefix = '    '
         self.graph.write_tag_line(self.md_file, self.node)
@@ -78,6 +81,7 @@ class MaturityModelCapability:
         self.graph.write_description(self.md_file, self.node)
 
     def copy_fragments(self) -> None:
+        assert self.md_file is not None
         indent_prefix = '    '
         self.md_file.new_line('\n\n=== "Intro"')
         copy_fragment_new(

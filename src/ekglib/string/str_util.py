@@ -1,7 +1,7 @@
 from io import BytesIO
 
 
-def str_to_binary(s: str):
+def str_to_binary(s: str) -> bytes:
     bts = BytesIO(b'')  # can't just do this: bts = value.encode('utf8')
     for c in (
         s

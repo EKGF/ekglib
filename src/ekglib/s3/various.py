@@ -1,8 +1,9 @@
 import os
 from argparse import ArgumentParser
+from typing import Any
 
 
-def set_cli_params(parser: ArgumentParser) -> None:
+def set_cli_params(parser: ArgumentParser) -> Any:
     s3_endpoint_url = os.getenv('S3_ENDPOINT_URL', None)
     s3_bucket_name = os.getenv('S3_BUCKET_NAME', None)
     aws_region = os.getenv('AWS_REGION', None)

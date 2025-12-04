@@ -15,7 +15,7 @@ EKG_NS = {}
 
 
 # NB: Using a private logger, we can't use the log library as it would introduce a cyclic dependency
-def _log_item(item, msg):
+def _log_item(item: str, msg: Any) -> None:
     print('\r - {:<26}: [{:}]'.format(item, msg))
 
 

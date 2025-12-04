@@ -48,7 +48,6 @@ class MaturityModelCapability:
         makedirs(self.full_dir, self.class_label)
 
     def generate_markdown(self) -> None:
-        self.generate_link_from_area_to_capability()
         self.md_file = MarkdownDocument(
             path=self.full_dir / 'index.md',
             metadata={'title': f'{self.number}. {self.name}'},

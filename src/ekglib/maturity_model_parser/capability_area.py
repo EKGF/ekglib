@@ -132,6 +132,10 @@ class MaturityModelCapabilityArea:
         from .capability import MaturityModelCapability
 
         self.md_file.heading(2, MaturityModelCapability.class_label_plural)
-        # MaturityModelCapability.generate_index_md(self)
+        # Write the list of capabilities in this area once
+        for capability in self.capabilities():
+            link = Path('.') / capability.local_name / 'index.md'
+            self.md_file.new_line(f'- [{capability.name}]({link})')
+        # Then generate each capability page
         for capability in self.capabilities():
             capability.generate_markdown()

@@ -4,13 +4,9 @@ from pathlib import Path
 import rdflib
 from rdflib.namespace import RDF, RDFS
 
-from ..kgiri import (
-    set_kgiri_base,
-    set_kgiri_base_replace,
-    set_cli_params as kgiri_set_cli_params,
-    kgiri_replace_iri_in_graph,
-)
-from ..log import log_item, error, warning
+from ..kgiri import kgiri_replace_iri_in_graph, set_kgiri_base, set_kgiri_base_replace
+from ..kgiri import set_cli_params as kgiri_set_cli_params
+from ..log import error, log_item, warning
 from ..namespace import USECASE
 
 
@@ -19,7 +15,7 @@ class UseCaseParser:
     gets the IRI of the user story from a given use-case.ttl file
     """
 
-    def __init__(self, input_file_name, verbose):
+    def __init__(self, input_file_name: str, verbose: bool) -> None:
         self.verbose = verbose
         self.useCaseFile = Path(input_file_name)
         if not self.useCaseFile.exists():
@@ -41,12 +37,13 @@ class UseCaseParser:
         # TODO: Nothing much happens here yet
         #
 
-    def dump(self, output_file: str | Path | None) -> None:
+    def dump(self, output_file: str | Path | None) -> int:
         if not output_file:
             warning('You did not specify an output file, no output file created')
-            return
+            return 1
         self.g.serialize(destination=output_file, format='ttl')
         log_item('Created', output_file)
+        return 0
 
 
 def main() -> int:
@@ -76,5 +73,7 @@ def main() -> int:
     return processor.dump(args.output) if args.output else 1
 
 
+if __name__ == '__main__':
+    exit(main())
 if __name__ == '__main__':
     exit(main())

@@ -4,9 +4,13 @@ from pathlib import Path
 import rdflib
 from rdflib.namespace import RDF, RDFS
 
-from ..kgiri import kgiri_replace_iri_in_graph, kgiri_replace_iri_in_literal
+from ..kgiri import (
+    kgiri_replace_iri_in_graph,
+    kgiri_replace_iri_in_literal,
+    set_kgiri_base,
+    set_kgiri_base_replace,
+)
 from ..kgiri import set_cli_params as kgiri_set_cli_params
-from ..kgiri import set_kgiri_base, set_kgiri_base_replace
 from ..log import log_error, log_item, warning
 from ..namespace import EKGPSS, USERSTORY
 
@@ -14,7 +18,7 @@ from ..namespace import EKGPSS, USERSTORY
 class UserStoryParser:
     """gets the IRI of the user story from a given user-story.ttl file"""
 
-    def __init__(self, input_file_name, verbose):
+    def __init__(self, input_file_name: str, verbose: bool) -> None:
         self.verbose = verbose
         self.userStoryFile = Path(input_file_name)
         self.g = rdflib.Graph()
@@ -29,12 +33,13 @@ class UserStoryParser:
         log_item('Number of triples', len(self.g))
         for user_story in self.g.subjects(RDF.type, USERSTORY.UserStory):
             log_item('User Story', user_story)
+            assert isinstance(user_story, rdflib.URIRef)
             self.check_story_label(user_story)
             self.check_story_base_name(user_story)
             self.check_story_sparql(user_story)
         return 0
 
-    def check_story_label(self, user_story: rdflib.URIRef):
+    def check_story_label(self, user_story: rdflib.URIRef) -> None:
         count = 0
         for rdfsLabel in self.g.objects(user_story, RDFS.label):
             count += 1
@@ -44,13 +49,13 @@ class UserStoryParser:
         if count > 1:
             warning('User Story has multiple rdfs:labels')
 
-    def check_story_base_name(self, user_story: rdflib.URIRef):
+    def check_story_base_name(self, user_story: rdflib.URIRef) -> None:
         self.g.remove((user_story, USERSTORY.baseName, None))
         self.add_literal_triple(
             user_story, USERSTORY.baseName, self.userStoryFile.parent.stem
         )
 
-    def check_story_sparql(self, user_story: rdflib.URIRef):
+    def check_story_sparql(self, user_story: rdflib.URIRef) -> None:
         if self.verbose:
             log_item('Looking for triple', EKGPSS.sparqlStatementFileName)
         count = 0
@@ -59,7 +64,7 @@ class UserStoryParser:
         ):
             count += 1
             self.process_sparql_literal(
-                user_story, self.check_sparql_file_name(sparqlStatementFileName)
+                user_story, self.check_sparql_file_name(str(sparqlStatementFileName))
             )
         if count == 0:
             warning(f'User Story does not have an {EKGPSS.sparqlStatementFileName}')
@@ -113,12 +118,13 @@ class UserStoryParser:
         self.g.remove((s, p1, None))
         self.add_literal_triple(s, p2, o)
 
-    def dump(self, output_file: str | Path | None) -> None:
+    def dump(self, output_file: str | Path | None) -> int:
         if not output_file:
             print('WARNING: You did not specify an output file, no output file created')
-            return
+            return 1
         self.g.serialize(destination=output_file, format='ttl')
         log_item('Created', output_file)
+        return 0
 
 
 def main() -> int:

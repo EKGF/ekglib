@@ -4,22 +4,22 @@ import textwrap
 from os import getcwd
 from os.path import relpath
 from pathlib import Path
-from typing import Optional, Iterable, Any
+from typing import Any, Iterable, List, Optional
 
 import rdflib
-from rdflib import Graph, RDF, OWL, URIRef, RDFS, DCTERMS, SKOS
-from rdflib.term import Node, Literal
+from rdflib import DCTERMS, OWL, RDF, RDFS, SKOS, Graph, URIRef
+from rdflib.term import Literal, Node
 
-from .config import Config
-from .markdown_document import MarkdownDocument
 from ..log import log_item
 from ..log.various import value_error, warning
 from ..namespace import MATURITY_MODEL
+from .config import Config
+from .markdown_document import MarkdownDocument
 
 
 def get_text_in_language(
     graph: Graph, lang: str, subject: Node, predicate: URIRef, indent_prefix: str
-):
+) -> str | None:
     default_value = None
     for value in graph.objects(subject, predicate):
         if not isinstance(value, rdflib.Literal):
@@ -49,23 +49,28 @@ class MaturityModelGraph:
         self.lang = lang
         self._models: list[Any] = list()
 
-    def __name_with_lang_for(self, subject_uri, lang: Optional[str], hint: str):
+    def __name_with_lang_for(
+        self, subject_uri: Node, lang: Optional[str], hint: str
+    ) -> str | None:
         for uri, value in self.preferred_label(subject_uri, lang=lang):
             if isinstance(value, rdflib.term.Literal):
                 log_item(f'{hint} Name', value.toPython())
-                return value.toPython()
+                result = value.toPython()
+                return str(result) if result is not None else None
             log_item(f'{hint} Name', value)
             log_item('Unknown Value Type', type(value))
-            return value.toPython()
+            if isinstance(value, rdflib.term.Literal):
+                result = value.toPython()
+                return str(result) if result is not None else None
         return None
 
     def preferred_label(
         self,
-        subject,
-        lang=None,
-        default=None,
-        label_properties=(SKOS.prefLabel, RDFS.label),
-    ):
+        subject: Node,
+        lang: Optional[str] = None,
+        default: Optional[List[tuple[URIRef, Literal]]] = None,
+        label_properties: tuple[URIRef, ...] = (SKOS.prefLabel, RDFS.label),
+    ) -> List[tuple[URIRef, Literal]]:
         """
         Find the preferred label for subject.
 
@@ -83,7 +88,7 @@ class MaturityModelGraph:
         """
 
         if default is None:
-            default = []
+            default = []  # type: ignore[assignment]
 
         # set up the language filtering
         if lang is not None:
@@ -103,10 +108,15 @@ class MaturityModelGraph:
             if len(labels) == 0:
                 continue
             else:
-                return [(labelProp, l_) for l_ in labels]
-        return default
+                result: List[tuple[URIRef, Literal]] = []
+                for l_ in labels:
+                    if isinstance(l_, Literal):
+                        result.append((labelProp, l_))
+                if result:
+                    return result
+        return default if default is not None else []
 
-    def name_for(self, subject_uri, hint: str) -> str:
+    def name_for(self, subject_uri: Node, hint: str) -> str:
         name = self.__name_with_lang_for(
             subject_uri, self.lang, hint
         )  # first ask language specific label
@@ -119,15 +129,15 @@ class MaturityModelGraph:
             return name
         raise value_error(f'{hint} has no label: {subject_uri}')
 
-    def tag_line_for(self, node: Node):
+    def tag_line_for(self, node: Node) -> str | None:
         return get_text_in_language(self.g, self.lang, node, RDFS.comment, '')
 
-    def description_for(self, node: Node, indent_prefix: str):
+    def description_for(self, node: Node, indent_prefix: str) -> str | None:
         return get_text_in_language(
             self.g, self.lang, node, DCTERMS.description, indent_prefix
         )
 
-    def capability_number_for(self, capability_node, hint: str):
+    def capability_number_for(self, capability_node: Node, hint: str) -> str:
         for number in self.g.objects(capability_node, MATURITY_MODEL.capabilityNumber):
             log_item(f'{hint} Number', number)
             return str(number)
@@ -141,6 +151,8 @@ class MaturityModelGraph:
 
     def local_type_name_for(self, subject_node: Node, hint: str) -> str:
         type_node = self.get_type(subject_node)
+        if type_node is None:
+            raise value_error(f'{hint} has no type: {subject_node}')
         return self.local_type_name_for_type(type_node, hint)
 
     def local_type_name_for_type(self, type_node: Node, hint: str) -> str:
@@ -151,27 +163,28 @@ class MaturityModelGraph:
             return str(local_type_name)
         raise value_error(f'{hint} has no iriLocalTypeName: {type_node}')
 
-    def get_type(self, subject_node):
+    def get_type(self, subject_node: Node) -> Node | None:
         for node_type in self.g.objects(subject_node, RDF.type):
             if node_type in (OWL.Thing, OWL.NamedIndividual):
                 continue
             return node_type
+        return None
 
     def has_type(self, subject_uri: Node, type_uri: Node) -> bool:
         return (subject_uri, RDF.type, type_uri) in self.g
 
-    def has_type_pillar(self, subject_iri):
+    def has_type_pillar(self, subject_iri: Node) -> bool:
         return self.has_type(subject_iri, MATURITY_MODEL.Pillar)
 
-    def has_type_level(self, subject_iri):
+    def has_type_level(self, subject_iri: Node) -> bool:
         return self.has_type(subject_iri, MATURITY_MODEL.Level)
 
-    def has_type_capability_area(self, subject_iri):
+    def has_type_capability_area(self, subject_iri: Node) -> bool:
         # if self.verbose:
         #     log_item("Type of", f"{subject_iri} == {self.get_type(subject_iri)}")
         return self.has_type(subject_iri, MATURITY_MODEL.CapabilityArea)
 
-    def has_type_capability(self, subject_iri):
+    def has_type_capability(self, subject_iri: Node) -> bool:
         # if self.verbose:
         #     log_item("Type of", f"{subject_iri} == {self.get_type(subject_iri)}")
         return self.has_type(subject_iri, MATURITY_MODEL.Capability)
@@ -182,18 +195,18 @@ class MaturityModelGraph:
     def model_nodes(self) -> Iterable[Node]:
         return self.subjects_of_type(type_uri=MATURITY_MODEL.Model)
 
-    def models_non_cached(self):  # -> Generator[model.MaturityModel, Any, None]:
+    def models_non_cached(self) -> Any:  # -> Generator[model.MaturityModel, Any, None]:
         from .model import MaturityModel
 
         for model_node in self.model_nodes():
             yield MaturityModel(graph=self, model_node=model_node, config=self.config)
 
-    def models(self):
+    def models(self) -> List[Any]:
         if len(self._models) == 0:
             self._models = list(self.models_non_cached())
         return self._models
 
-    def model_with_name(self, model_name: str):
+    def model_with_name(self, model_name: str) -> Any:
         for model in self.models():
             if model.name == model_name:
                 return model
@@ -219,11 +232,11 @@ class MaturityModelGraph:
         if found == 0:
             warning(f'No capabilities found in area <{area_node}>')
 
-    def fragment_background_and_intro(self, subject_node):
+    def fragment_background_and_intro(self, subject_node: Node) -> Any:
         for fragment in self.g.objects(subject_node, MATURITY_MODEL.backgroundAndIntro):
             yield fragment
 
-    def rewrite_fragment_references(self, fragments_root: Path):
+    def rewrite_fragment_references(self, fragments_root: Path) -> None:
         """
         For each reference to some text-fragment rewrite the path to that markdown file
         relative to the given input directory
@@ -241,7 +254,7 @@ class MaturityModelGraph:
             self.g.remove((subject, predicate, objekt))
             self.g.add((subject, predicate, Literal(str(fragment_path))))
 
-    def create_sort_keys(self):
+    def create_sort_keys(self) -> None:
         """Generate sortKeys for anything with an ekgmm:capabilityNumber"""
         for subject, capability_number in self.g.subject_objects(
             MATURITY_MODEL.capabilityNumber
@@ -254,12 +267,12 @@ class MaturityModelGraph:
             sort_key = f'{capability_number_parts[0]}.{capability_number_parts[1]:0>3}.{capability_number_parts[2]:0>3}'
             self.g.add((subject, MATURITY_MODEL.sortKey, Literal(sort_key)))
 
-    def write_tag_line(self, md: MarkdownDocument, node: Node):
+    def write_tag_line(self, md: MarkdownDocument, node: Node) -> None:
         tag_line = self.tag_line_for(node)
         if tag_line:
             md.new_line(f'_{tag_line}_', wrap_width=0)
 
-    def write_description(self, md: MarkdownDocument, node: Node):
+    def write_description(self, md: MarkdownDocument, node: Node) -> None:
         dct_description = self.description_for(node, md.indent)
         if dct_description:
             md.new_line(dct_description, wrap_width=0)

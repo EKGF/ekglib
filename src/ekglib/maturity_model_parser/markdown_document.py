@@ -36,7 +36,7 @@ def new_inline_link(link: str, text: str | None = None) -> str:
     else:
         n_text = text
 
-    return Inline.new_link(link=link, text=n_text)
+    return str(Inline.new_link(link=link, text=n_text))
 
 
 class MarkdownDocument:
@@ -51,7 +51,7 @@ class MarkdownDocument:
     - **file_data_text:** contains all the file data that will be written on the markdown file.
     """
 
-    def __init__(self, path: Path, metadata: dict = {}):
+    def __init__(self, path: Path, metadata: dict[str, Any] = {}):
         """
 
         :param file_name: it is the name of the Markdown file.
@@ -96,7 +96,7 @@ class MarkdownDocument:
         file_data = MarkDownFile().read_file(file_name)
         self.___update_file_data(file_data)
 
-        return file_data
+        return str(file_data)
 
     def heading(self, level: int, title: str, link: str | None = None) -> None:
         hdr = '#' * level
@@ -144,7 +144,7 @@ class MarkdownDocument:
         text_table = new_table.create_table(columns, rows, text)
         self.___update_file_data(text_table)
 
-        return text_table
+        return str(text_table)
 
     def new_paragraph(self, text: str = '', wrap_width: int = 120) -> str:
         """Add a new paragraph to Markdown file. The text is saved to the global variable file_data_text.
@@ -222,7 +222,7 @@ class MarkdownDocument:
 
         return self.file_data_text
 
-    def write(self, text: str = '', wrap_width: int = 120) -> None:
+    def write(self, text: str = '', wrap_width: int = 120) -> str:
         """Write text in ``file_Data_text`` string.
 
         :param text: a text a string.
@@ -258,7 +258,7 @@ class MarkdownDocument:
         :return:
         :rtype: str
         """
-        md_code = '\n\n' + self.textUtils.insert_code(code, language)
+        md_code = '\n\n' + str(self.textUtils.insert_code(code, language))
         self.___update_file_data(md_code)
         return md_code
 

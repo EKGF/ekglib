@@ -8,10 +8,10 @@ from typing import Any
 
 import mkdocs_gen_files
 
-from .config import Config
-from .markdown_document import MarkdownDocument
 from ..log import log_item
 from ..log.various import value_error
+from .config import Config
+from .markdown_document import MarkdownDocument
 
 
 class File(object):
@@ -46,7 +46,7 @@ class File(object):
 
     def read_all_content(self) -> str:
         with self.open(mode='r') as somefile:
-            return somefile.read()
+            return str(somefile.read())
 
     def append_end(self, data: str) -> None:
         with self.open(mode='a') as somefile:

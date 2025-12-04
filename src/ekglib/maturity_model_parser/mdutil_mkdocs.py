@@ -1,11 +1,14 @@
 from __future__ import annotations
+
+from typing import Any
+
 from mdutils import MdUtils
 
 from .MarkdownFileForMkDocs import MarkDownFileForMkDocs
 
 
-class MdUtils4MkDocs(MdUtils):
-    def create_md_file(self):
+class MdUtils4MkDocs(MdUtils):  # type: ignore[misc]
+    def create_md_file(self) -> Any:
         """It creates a new Markdown file.
         :return: return an instance of a MarkDownFile."""
         md_file = MarkDownFileForMkDocs(self.file_name)
@@ -17,7 +20,7 @@ class MdUtils4MkDocs(MdUtils):
         )
         return md_file
 
-    def read_md_file(self, file_name):
+    def read_md_file(self, file_name: str) -> str:
         """Reads a Markdown file and save it to global class `file_data_text`.
 
         :param file_name: Markdown file's name that has to be read.

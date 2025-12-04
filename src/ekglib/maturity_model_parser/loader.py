@@ -5,9 +5,9 @@ from os import getcwd
 from os.path import relpath
 from pathlib import Path
 
+import importlib.resources
 import owlrl
 import rdflib
-from pkg_resources import resource_stream
 from rdflib import Graph
 
 from ..log import error, log_item
@@ -21,7 +21,7 @@ from .graph import MaturityModelGraph
 ontology_file_names = ['maturity-model.ttl']
 
 
-def check_ontologies(ontologies_root: Path):
+def check_ontologies(ontologies_root: Path) -> Path:
     if not ontologies_root.exists():
         error(f'Ontologies root directory not found: {ontologies_root}')
     for ontology_file_name in ontology_file_names:
@@ -60,17 +60,21 @@ class MaturityModelLoader:
         graph.create_sort_keys()
         return graph
 
-    def load_ontology_from_stream(self, ontology_stream: BytesIO):
+    def load_ontology_from_stream(self, ontology_stream: BytesIO) -> None:
         load_rdf_stream_into_graph(self.g, ontology_stream)
 
     def load_ontologies(self) -> None:
         log_item('Loading', 'Ontologies')
         for ontology_file_name in ontology_file_names:
             log_item('Loading Ontology', ontology_file_name)
-            stream = resource_stream('ekglib.resources.ontologies', ontology_file_name)
-            self.load_ontology_from_stream(stream)
+            with (
+                importlib.resources.files('ekglib.resources.ontologies')
+                .joinpath(ontology_file_name)
+                .open('rb') as stream
+            ):
+                self.load_ontology_from_stream(BytesIO(stream.read()))
 
-    def load_model_files(self):
+    def load_model_files(self) -> None:
         log_item('Loading', 'Model Files')
         # for turtle_file in self.root_directory.rglob("*.ttl"):
         #     log_item("Going to load", turtle_file)
@@ -81,7 +85,7 @@ class MaturityModelLoader:
                 self.load_model_file(Path(turtle_file))
         log_item('# asserted triples', len(self.g))
 
-    def load_model_file(self, turtle_file: Path):
+    def load_model_file(self, turtle_file: Path) -> None:
         log_item('Loading Model File', relpath(turtle_file, getcwd()))
         load_rdf_file_into_graph(self.g, turtle_file)
 

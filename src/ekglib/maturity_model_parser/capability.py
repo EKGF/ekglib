@@ -8,11 +8,11 @@ from rdflib.term import Node
 
 from ekglib import log_item
 
-from .File import copy_fragment, makedirs
+from ..namespace import MATURITY_MODEL
 from .config import Config
+from .File import copy_fragment, makedirs
 from .markdown_document import MarkdownDocument
 from .pages_yaml import PagesYaml
-from ..namespace import MATURITY_MODEL
 
 
 class MaturityModelCapability:

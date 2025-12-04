@@ -70,5 +70,4 @@ class MarkDownFileForMkDocs(object):
         with mkdocs_gen_files.open(file_name, 'r', encoding='utf-8') as file:
             file_data = file.read()
 
-        return file_data
-        return file_data
+        return str(file_data)

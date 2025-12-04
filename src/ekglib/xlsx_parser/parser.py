@@ -37,10 +37,10 @@ from ..string import (
     strip_end,
 )
 
-pd.options.display.max_rows = 999
+pd.options.display.max_rows = 999  # type: ignore[attr-defined]
 
 
-def parse_literal(cell) -> Optional[Literal]:
+def parse_literal(cell: Any) -> Optional[Literal]:
     if isinstance(cell, int):
         return Literal(cell)
     elif isinstance(cell, str):
@@ -108,9 +108,11 @@ def create_column_iri(sheet_iri: URIRef, column_name: str) -> URIRef:
     return URIRef(f'{sheet_iri}-column-{stringcase.spinalcase(column_name)}')
 
 
-def strip_common_prefix_in_column(df, column_name):
+def strip_common_prefix_in_column(df: pd.DataFrame, column_name: str) -> pd.DataFrame:
     column_cells = df[column_name]
-    some_prefix = os.path.commonprefix(column_cells.astype(str).to_list())
+    some_prefix = os.path.commonprefix([
+        str(x) for x in column_cells.astype(str).tolist()
+    ])
     if not some_prefix:
         return df
     if f'{some_prefix}' == 'nan':
@@ -122,19 +124,19 @@ def strip_common_prefix_in_column(df, column_name):
     # Don't touch date columns
     #
     try:
-        df[column_name] = pd.to_datetime(column_cells)
+        df[column_name] = pd.to_datetime(column_cells)  # type: ignore[attr-defined]
         # print(df)
         # log_item('column name', column_name)
         # exit(1)
         return df
     except ParserError:
         pass
-    column_cells = column_cells.replace(rf'^{some_prefix}', '', regex=True)
+    column_cells = column_cells.str.replace(rf'^{some_prefix}', '', regex=True)
     df[column_name] = column_cells
     return df
 
 
-def strip_ignored_values(df, ignored_values: list):
+def strip_ignored_values(df: pd.DataFrame, ignored_values: list[str]) -> pd.DataFrame:
     for ignored_value in ignored_values:
         regex = rf'^{ignored_value}$'
         # log_item('Removing ignored value', regex)
@@ -142,7 +144,9 @@ def strip_ignored_values(df, ignored_values: list):
     return df
 
 
-def remove_ignored_prefixes(df, ignored_prefixes):
+def remove_ignored_prefixes(
+    df: pd.DataFrame, ignored_prefixes: list[str]
+) -> pd.DataFrame:
     if len(ignored_prefixes) == 0:
         return df
     for ignored_prefix in ignored_prefixes:
@@ -171,25 +175,25 @@ translations = {
 }
 
 
-def is_int(value):
+def is_int(value: Any) -> bool:
     try:
         number = int(value)
-        return value == str(number)
-    except ValueError:
+        return bool(value == str(number))
+    except (ValueError, TypeError):
         return False
 
 
-def is_decimal(value):
+def is_decimal(value: Any) -> bool:
     try:
         number = Decimal(value)
-        return value == str(number)
-    except InvalidOperation:
+        return bool(value == str(number))
+    except (InvalidOperation, TypeError):
         return False
 
 
-def convert_to_date(value):
+def convert_to_date(value: Any) -> date | datetime | None:
     try:
-        date_time = parse(value)
+        date_time: datetime = parse(value)
         if (
             date_time.hour == 0
             and date_time.minute == 0
@@ -202,7 +206,7 @@ def convert_to_date(value):
         return None
 
 
-def convert_key_column(value):
+def convert_key_column(value: Any) -> str:
     """Add the content of key_column_suffix to every value in a key column
     to prevent NA values to be replaced with NaN
     """
@@ -211,7 +215,7 @@ def convert_key_column(value):
 
 
 class XlsxParser:
-    def __init__(self, args):
+    def __init__(self, args: Any) -> None:
         self.verbose = args.verbose
         self.ignored_values = (
             args.ignored_values if 'ignored_values' in args else list()
@@ -228,7 +232,7 @@ class XlsxParser:
         self.skip_sheets = args.skip_sheets if 'skip_sheets' in args else list()
         self.legacy_key_prefix = stringcase.spinalcase(args.kgiri_prefix)
         self.legacy_key_column_number = args.key_column_number
-        self.column_names = list()
+        self.column_names: list[str] = list()
         self.counter_rows = 0
         self.counter_cells = 0
         self.g = rdflib.Graph()
@@ -236,15 +240,16 @@ class XlsxParser:
         self.xlsx_file = Path(args.input)
         if not self.xlsx_file.exists():
             error(f'{self.xlsx_file} does not exist')
-        xlsx_iri = EKG_NS['KGIRI'].term(
-            parse_identity_key_with_prefix('xlsx-file', self.xlsx_file.stem)
-        )
+        key = parse_identity_key_with_prefix('xlsx-file', self.xlsx_file.stem)
+        if key is None:
+            raise ValueError(f'Could not parse identity key for {self.xlsx_file.stem}')
+        xlsx_iri = EKG_NS['KGIRI'].term(key)
         self.g.add((xlsx_iri, RDF.type, RAW.XlsxFile))
         self.g.add((xlsx_iri, RDF.type, PROV.Entity))
         self.g.add((xlsx_iri, RAW.fileName, Literal(self.xlsx_file)))
         activity_iri = self._prov_activity_start(xlsx_iri)
         log_item('Reading XSLX file', self.xlsx_file)
-        xlsx = pd.ExcelFile(self.xlsx_file)
+        xlsx: Any = pd.ExcelFile(self.xlsx_file)  # type: ignore[attr-defined]
         log_list('Sheet Names', xlsx.sheet_names)
         log_list('Skipping Sheets', args.skip_sheets)
         for sheet_name in xlsx.sheet_names:
@@ -255,20 +260,20 @@ class XlsxParser:
         log_item('Processed # cells', self.counter_cells)
         log_item('Generated # triples', len(self.g))
 
-    def _prov_activity_start(self, xlsx_iri):
+    def _prov_activity_start(self, xlsx_iri: URIRef) -> URIRef:
         activity_iri = kgiri_random()
         self.g.add((activity_iri, RDF.type, PROV.Activity))
         self.g.add((activity_iri, PROV.startedAtTime, Literal(datetime.utcnow())))
         self.g.add((activity_iri, PROV.used, xlsx_iri))
         return activity_iri
 
-    def _prov_activity_end(self, activity_iri):
+    def _prov_activity_end(self, activity_iri: URIRef) -> None:
         self.g.add((activity_iri, PROV.endedAtTime, Literal(datetime.utcnow())))
 
     def key_column_number(self, number_of_columns: int) -> int:
-        return min(self.legacy_key_column_number, number_of_columns) - 1
+        return int(min(self.legacy_key_column_number, number_of_columns) - 1)
 
-    def parse_sheet(self, xlsx: pd.ExcelFile, xlsx_iri: URIRef, sheet_name: str):
+    def parse_sheet(self, xlsx: Any, xlsx_iri: URIRef, sheet_name: str) -> None:
         if sheet_name in self.skip_sheets:
             log_item('Skipping sheet', sheet_name)
             return
@@ -309,7 +314,7 @@ class XlsxParser:
         self.data_profile(sheet_iri, df)
         self.parse_rows(df, sheet_iri, sheet_name_escaped)
 
-    def parse_value(self, value, column_number):  # noqa
+    def parse_value(self, value: Any, column_number: int) -> Any:  # noqa
         if not isinstance(value, string_types):
             return value
         if not value:
@@ -335,21 +340,21 @@ class XlsxParser:
         # log_item(f'Cell {self.column_names[column_number]}', value)
         return value
 
-    def strip_any_prefix_from_all_columns(self, df):
+    def strip_any_prefix_from_all_columns(self, df: pd.DataFrame) -> pd.DataFrame:
         if not self.strip_any_prefix:
             return df
         for column_name in df.columns:
             df = strip_common_prefix_in_column(df, column_name)
         return df
 
-    def data_profile(self, sheet_iri, df):
+    def data_profile(self, sheet_iri: URIRef, df: pd.DataFrame) -> None:
         """Use pandas describe function to generate data profiling information.
 
         'count', 'unique', 'top', 'freq', 'mean', 'std', 'min', '25%', '50%', '75%', 'max'
         """
         # data_profile = df.describe(include='all', datetime_is_numeric=True)
-        data_profile = df.describe(include='all')
-        data_profile.columns = self.column_names
+        data_profile = df.describe(include='all')  # type: ignore[operator]
+        data_profile.columns = self.column_names  # type: ignore[assignment]
         # log_item('Data Profile', data_profile)
         data_profile_transposed = data_profile.transpose()
         data_profile_transposed = data_profile_transposed.set_index([
@@ -416,27 +421,39 @@ class XlsxParser:
         sheet_name_escaped = parse_identity_key_with_prefix(
             'xlsx-file-sheet', sheet_name
         )
+        if sheet_name_escaped is None:
+            raise ValueError(f'Could not parse identity key for sheet {sheet_name}')
         sheet_iri = EKG_NS['KGIRI'].term(sheet_name_escaped)
         self.g.add((sheet_iri, RDF.type, RAW.View))
         self.g.add((sheet_iri, RDFS.label, Literal(sheet_name)))
         self.g.add((sheet_iri, RAW.isViewIn, xlsx_iri))
         return sheet_iri, sheet_name_escaped
 
-    def parse_column_names(self, sheet_iri, df):
+    def parse_column_names(self, sheet_iri: URIRef, df: pd.DataFrame) -> None:
         # log_list("Original column names", df.columns)
         #
         # Remove new lines from column names
         #
-        df.rename(columns=lambda name: name.replace('\n', ' '), inplace=True)
+        df.rename(
+            columns=lambda name: str(name).replace('\n', ' ')
+            if name is not None
+            else '',
+            inplace=True,
+        )
         #
         # Remove double spaces from column names
         #
-        df.rename(columns=lambda name: name.replace('  ', ' '), inplace=True)
+        df.rename(
+            columns=lambda name: str(name).replace('  ', ' ')
+            if name is not None
+            else '',
+            inplace=True,
+        )
         log_list('Column names', df.columns)
         #
         # Figure out if the column names all share the same prefix, of so, strip it
         #
-        prefix = common_prefix(df.columns)
+        prefix = common_prefix(list(df.columns))
         if (
             prefix
             and not prefix.startswith('http://')
@@ -444,7 +461,10 @@ class XlsxParser:
         ):
             log_item('Strip Column Prefix', prefix)
             df.rename(
-                columns=lambda element: remove_prefix(element, prefix), inplace=True
+                columns=lambda element: remove_prefix(
+                    str(element) if element is not None else '', prefix
+                ),
+                inplace=True,
             )
             # self.column_names = list(map(lambda element: remove_prefix(element, prefix), df.columns))
         # else:
@@ -453,7 +473,9 @@ class XlsxParser:
         # From this point onwards, we keep the slightly modified but still recognisable column names
         # in df.columns but all further modifications to the column names are stored in self.column_names
         #
-        self.column_names = list(map(parse_column_name, df.columns))
+        self.column_names = [
+            name for name in map(parse_column_name, df.columns) if name is not None
+        ]
         log_list('Column raw names', self.column_names)
         for column_index, column_name in enumerate(self.column_names):
             column_iri = create_column_iri(sheet_iri, column_name)
@@ -469,11 +491,19 @@ class XlsxParser:
             self.g.add((column_iri, RAW.localName, Literal(column_name)))
             self.g.add((column_iri, RAW.predicate, RAW.term(column_name)))
 
-    def parse_rows(self, df, sheet_iri, sheet_name_escaped):
+    def parse_rows(
+        self, df: pd.DataFrame, sheet_iri: URIRef, sheet_name_escaped: str
+    ) -> None:
         for row in df.itertuples(name=None):
             self.parse_row(sheet_iri, sheet_name_escaped, df, row)
 
-    def parse_row(self, sheet_iri, sheet_name_escaped, df, row):
+    def parse_row(
+        self,
+        sheet_iri: URIRef,
+        sheet_name_escaped: str,
+        df: pd.DataFrame,
+        row: Tuple[Any, ...],
+    ) -> None:
         row_number = row[0]
         self.counter_rows += 1
         if self.verbose:
@@ -493,7 +523,9 @@ class XlsxParser:
                 resource_iri, df, row_number, column_number, cell, column_name
             )
 
-    def construct_resource_iri(self, sheet_name_escaped, row_number, legacy_id):
+    def construct_resource_iri(
+        self, sheet_name_escaped: str, row_number: int, legacy_id: Any
+    ) -> URIRef | None:
         legacy_id = strip_end(legacy_id, key_column_suffix)
         if not legacy_id:
             return None
@@ -512,8 +544,14 @@ class XlsxParser:
         return resource_iri
 
     def parse_cell(
-        self, resource_iri: URIRef, df, row_number, column_number, cell, column_name
-    ):  # noqa
+        self,
+        resource_iri: URIRef,
+        df: pd.DataFrame,
+        row_number: int,
+        column_number: int,
+        cell: Any,
+        column_name: str,
+    ) -> None:  # noqa
         if isna(cell):
             return
         self.counter_cells += 1
@@ -530,7 +568,9 @@ class XlsxParser:
             self.g.add((resource_iri, RAW.term(column_name), literal))
         self.parse_cell_as_iri(cell, resource_iri, column_name)
 
-    def parse_cell_as_iri(self, cell, resource_iri: URIRef, column_name: str):
+    def parse_cell_as_iri(
+        self, cell: Any, resource_iri: URIRef, column_name: str
+    ) -> None:
         """Now translate every string value to an IRI for easier transformations and 'Things not Strings' concept"""
         if not isinstance(cell, string_types):
             return
@@ -541,23 +581,24 @@ class XlsxParser:
             log_item('Cell', cell)
             error(f'No column name for IRI {resource_iri}')
         column_predicate = f'has{stringcase.capitalcase(column_name)}'
-        string_thing_iri = EKG_NS['KGIRI'].term(
-            parse_identity_key_with_prefix(column_name, cell_without_suffix)
-        )
+        key = parse_identity_key_with_prefix(column_name, cell_without_suffix)
+        if key is None:
+            return
+        string_thing_iri = EKG_NS['KGIRI'].term(key)
         self.g.add((resource_iri, RAW.term(column_predicate), string_thing_iri))
         self.g.add((string_thing_iri, RDFS.label, Literal(cell_without_suffix)))
         self.g.add((string_thing_iri, RDF.type, RAW.StringValue))
         self.g.add((string_thing_iri, RAW.valueOf, resource_iri))
         self.g.add((string_thing_iri, RAW.forPredicate, RAW.term(column_name)))
 
-    def strip_ignored_prefix(self, cell):
+    def strip_ignored_prefix(self, cell: Any) -> Any:
         if not isinstance(cell, str):
             return cell
         for prefix in self.ignored_prefixes:
             cell = remove_prefix(cell, prefix)
         return cell
 
-    def is_ignored_value(self, cell):
+    def is_ignored_value(self, cell: Any) -> bool:
         return cell in self.ignored_values
 
     def add_namespaces(self) -> None:
@@ -580,7 +621,13 @@ class XlsxParser:
 
 
 class _KeyColumnNumberAction(argparse.Action):
-    def __call__(self, _parser, namespace, values, option_string=None):
+    def __call__(
+        self,
+        _parser: argparse.ArgumentParser,
+        namespace: argparse.Namespace,
+        values: Any,
+        option_string: str | None = None,
+    ) -> None:
         value = int(values)
         if value < 1:
             _parser.error(f'Minimum value for {option_string} is 1')
@@ -588,56 +635,60 @@ class _KeyColumnNumberAction(argparse.Action):
 
 
 def main() -> int:
-    args = argparse.ArgumentParser(
+    parser = argparse.ArgumentParser(
         prog='python3 -m ekglib.xlsx_parser',
         description='Capture all information from the given .xlsx file and store it as RDF "raw data"',
         epilog='Currently only supports turtle.',
         allow_abbrev=False,
     )
-    args.add_argument('--input', help='The name of the input .xlsx file', required=True)
-    args.add_argument('--output', help='The name of the output RDF file (must be .ttl)')
-    args.add_argument(
+    parser.add_argument(
+        '--input', help='The name of the input .xlsx file', required=True
+    )
+    parser.add_argument(
+        '--output', help='The name of the output RDF file (must be .ttl)'
+    )
+    parser.add_argument(
         '--key-column-number',
         help='The 1-based column number containing the "legacy ID"',
         action=_KeyColumnNumberAction,
         type=int,
         default=1,
     )
-    args.add_argument(
+    parser.add_argument(
         '--strip-any-prefix',
         help='Strip any prefix from any column if all cells in that column have the same prefix',
         default=False,
     )
-    args.add_argument(
+    parser.add_argument(
         '--ignored-values',
         help='A list of values to ignore',
         nargs=argparse.ONE_OR_MORE,
         default=list(),
     )
-    args.add_argument(
+    parser.add_argument(
         '--ignored-prefixes',
         help='A list of prefixes of cell values to ignore',
         nargs=argparse.ONE_OR_MORE,
         default=list(),
     )
-    args.add_argument(
+    parser.add_argument(
         '--skip-sheets',
         help='A list of sheet names to skip',
         nargs=argparse.ONE_OR_MORE,
         default=list(),
     )
-    args.add_argument(
+    parser.add_argument(
         '--verbose', '-v', help='verbose output', default=False, action='store_true'
     )
-    kgiri_group = kgiri_set_cli_params(args)
+    kgiri_group = kgiri_set_cli_params(parser)
     kgiri_group.add_argument(
         '--kgiri-prefix',
         help='The prefix to be used to construct KGIRIs',
         default='some-type-name',
     )
-    data_source_set_cli_params(args)
+    data_source_set_cli_params(parser)
 
-    args = args.parse_args()
+    args = parser.parse_args()
     set_kgiri_base(args.kgiri_base)
 
     #
@@ -669,7 +720,5 @@ def main() -> int:
     )
 
 
-if __name__ == '__main__':
-    exit(main())
 if __name__ == '__main__':
     exit(main())

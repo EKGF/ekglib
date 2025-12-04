@@ -1,4 +1,5 @@
 import argparse
+from typing import Any
 
 from ..data_source import set_cli_params as data_source_set_cli_params
 from ..dataset import datasets_produced_by_pipeline, export_dataset
@@ -13,13 +14,13 @@ from ..sparql import SPARQLEndpoint, set_cli_params as sparql_set_cli_params
 class Exporter:
     sparql: SPARQLEndpoint
 
-    def __init__(self, args):
+    def __init__(self, args: Any) -> None:
         self.args = args
         self.verbose = args.verbose
         self.data_source_code = args.data_source_code
         self.sparql = SPARQLEndpoint(args)
 
-    def export(self):
+    def export(self) -> int:
         s3os = S3ObjectStore(self.sparql.args)
         for graph_iri, dataset_code in datasets_produced_by_pipeline(
             self.sparql, self.data_source_code

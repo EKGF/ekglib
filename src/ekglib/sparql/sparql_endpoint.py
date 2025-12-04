@@ -17,7 +17,6 @@ try:
         QueryBadFormed,
         Unauthorized,
     )
-    from SPARQLWrapper.Wrapper import QueryResult
 except ImportError:
     raise Exception(
         "SPARQLWrapper not found! install with 'pip3 install SPARQLWrapper'"
@@ -53,7 +52,7 @@ def iter_raw(r: requests.Response, chunk_size: int = 1) -> Any:
     :type r: requests.Response
     """
 
-    def generate():
+    def generate() -> Any:
         while True:
             # urllib3.response.HTTPResponse.read
             chunk = r.raw.read(amt=chunk_size, decode_content=False)
@@ -155,6 +154,8 @@ class SPARQLEndpoint:
 
         :param args: the CLI args, see set_cli_params
         """
+        if args is None:
+            raise ValueError('args is required')
         self.args = args
         self.verbose = args.verbose
         self.data_source_code = args.data_source_code
@@ -177,10 +178,10 @@ class SPARQLEndpoint:
     def endpoint_url_for_queries(self) -> str:
         return f'{self.endpoint_base}/{self.database}/query'
 
-    def user_id(self) -> str:
+    def user_id(self) -> str | None:
         return self.sparql_endpoint.user
 
-    def password(self) -> str:
+    def password(self) -> str | None:
         return self.sparql_endpoint.passwd
 
     def execute_sparql_select_query(
@@ -259,7 +260,9 @@ class SPARQLEndpoint:
         log_item('HTTP Status', r.status_code)
         return None
 
-    def execute_sparql_statement(self, sparql_statement):
+    def execute_sparql_statement(
+        self, sparql_statement: str
+    ) -> Optional[SPARQLResponse]:
         if self.verbose:
             log_item('Executing', sparql_statement)
         statement_type = self.sparql_endpoint._parseQueryType(sparql_statement)
@@ -282,7 +285,7 @@ class SPARQLEndpoint:
 
     def execute_construct(
         self, sparql_construct_statement: str
-    ) -> Optional[QueryResult]:
+    ) -> Optional[SPARQLResponse]:
         self.sparql_endpoint.clearCustomHttpHeader('Accept')
         self.sparql_endpoint.setMethod(GET)
         self.sparql_endpoint.setReturnFormat(
@@ -308,13 +311,19 @@ class SPARQLEndpoint:
         try:
             result = self.sparql_endpoint.query()
             response = result.response
-            log_item('Response Code', response.code)
-            for key, value in response.info().items():
-                log_item(key, value)
+            # result.response is an HTTPResponse from urllib which has a 'code' attribute
+            response_code = getattr(response, 'code', None) or getattr(
+                response, 'status_code', None
+            )  # type: ignore[attr-defined]
+            if response_code is not None:
+                log_item('Response Code', response_code)
+            if hasattr(response, 'info'):
+                for key, value in response.info().items():  # type: ignore[attr-defined]
+                    log_item(key, value)
             for key, value in result.info().items():
                 log_item(key, value)
-            if response.code in (200, 201):
-                return result
+            if response_code in (200, 201):
+                return SPARQLResponse(self, response)
         except urllib.error.HTTPError as err:
             error('{} code={}'.format(err, err.code))
         except urllib.error.URLError as err:

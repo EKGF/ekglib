@@ -116,7 +116,7 @@ async def read_csv_from_bytes(csv_bytes: bytes) -> AsyncGenerator[pd.DataFrame, 
 
 
 @async_step
-async def process_each_row() -> AsyncGenerator[pd.Series, pd.DataFrame]:
+async def process_each_row() -> AsyncGenerator[pd.Series[Any], pd.DataFrame]:
     """Process Each Row"""
     while True:
         df: pd.DataFrame = yield  # type: ignore[misc]
@@ -128,19 +128,19 @@ async def process_each_row() -> AsyncGenerator[pd.Series, pd.DataFrame]:
 
 @async_sink
 async def process_row(
-    row_processor: Callable[[pd.Series], None],
-) -> AsyncGenerator[None, pd.Series]:
+    row_processor: Callable[[pd.Series[Any]], None],
+) -> AsyncGenerator[None, pd.Series[Any]]:
     """Process Row Sink"""
     try:
         while True:
-            row: pd.Series = yield
+            row: pd.Series[Any] = yield
             if row is not None:
                 await asyncio.to_thread(row_processor, row)
     except GeneratorExit:
         print('Sink closed')
 
 
-def example_row_processor(row: pd.Series) -> None:
+def example_row_processor(row: pd.Series[Any]) -> None:
     print(f'Processed row: {row}')
 
 

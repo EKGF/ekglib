@@ -3,12 +3,12 @@
 # https://codereview.stackexchange.com/questions/145757/finding-a-common-prefix-suffix-in-a-list-tuple-of-strings
 #
 from itertools import zip_longest
-from typing import Union
+from typing import Any, Union
 
 from ekglib.exceptions.exceptions import PrefixException
 
 
-def all_same(items: Union[tuple, list, str]) -> bool:
+def all_same(items: Union[tuple[Any, ...], list[Any], str]) -> bool:
     """
     A helper function to test if
     all items in the given iterable

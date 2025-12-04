@@ -20,7 +20,9 @@ def argv_check_list(param_values: Any) -> list[Any]:
             return [supposed_to_be_tuple]
         return list(supposed_to_be_tuple)
     else:
-        return param_values
+        if isinstance(param_values, list):
+            return param_values
+        return list(param_values) if param_values is not None else []
 
 
 def test_argv_check_list() -> None:

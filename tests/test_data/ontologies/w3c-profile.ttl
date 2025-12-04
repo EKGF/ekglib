@@ -1,0 +1,48 @@
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix prof: <http://www.w3.org/ns/owl-profile/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+prof:DL
+	a prof:Profile ;
+	rdfs:label "DL" ;
+	.
+
+prof:EL
+	a prof:Profile ;
+	rdfs:label "EL" ;
+	.
+
+prof:Full
+	a prof:Profile ;
+	rdfs:label "Full" ;
+	.
+
+prof:Profile
+	a owl:Class ;
+	rdfs:label "Profile" ;
+	dct:title "Unique URIs for OWL 2 Profiles" ;
+	skos:definition """ is a unique, top-level Class URI for the concept of OWL 2 Profiles. 
+Instances for this Class represent the OWL 2 Profiles like DL, EL, QL, RL, and Full. For the specific profiles, use these URIs.""" ;
+	skos:note """Note that, strictly speaking, OWL DL and OWL Full are not referred to, formally, as “profiles” by the OWL 2 Profiles specification. 
+However, “each profile is defined as a syntactic restriction of the OWL 2 Structural Specification, i.e., as a subset of the structural elements 
+that can be used in a conforming ontology,…” (see the OWL 2 Document Overview). 
+In this sense, and for practical purposes, including a URI for OWL DL and Full is correct. 
+Indeed, OWL DL can be seen as a sytactic restriction of OWL that is particularly well suited for OWL 2 Direct Semantics, whereas 
+OWL Full is a “profile” without any syntactic restriction, and is usually associated with the usage of the OWL 2 RDF-Based Semantics. 
+Note also that there are no separate URIs for the 2004 version of OWL DL; OWL 2 DL, published in 2008 supersede that version. Nor is there a URI for OWL Lite.""" ;
+	.
+
+prof:QL
+	a prof:Profile ;
+	rdfs:label "QL" ;
+	.
+
+prof:RL
+	a prof:Profile ;
+	rdfs:label "RL" ;
+	.
+

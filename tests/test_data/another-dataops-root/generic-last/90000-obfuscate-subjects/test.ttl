@@ -1,0 +1,96 @@
+@base <https://placeholder.kg/id/> .
+@prefix rdf:          <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:         <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rule:    <https://ekgf.org/ontology/dataops-rule/> .
+@prefix sbe:          <https://ekgf.org/ontology/specification-by-example/> .
+@prefix kggraph:      <https://placeholder.kg/graph/> .
+
+<rule-00004-set-legal-person>
+    sbe:hasScenario [ a         sbe:Scenario ;
+                      rdfs:comment
+                                "Create legal person, legal name, user account and delete temporary natural person email" ;
+                      sbe:given [ a           sbe:State ;
+                                  sbe:dataSet <dataset-ldap-person-label-raw> ;
+                                  sbe:dataSet
+                                              <dataset-natural-person-multiple-email> ; # temporary ldap person emails are deleted by this rule.
+                                  sbe:dataSet <dataset-user-email-new> ;
+                                  sbe:dataSet <dataset-user-account-id-new> ; ] ;
+                      sbe:when  [ a sbe:StorySolution ; ] ;
+                      sbe:then  [ a           sbe:State ;
+                                  sbe:dataSet <dataset-ldap-person-label-raw> ;
+                                  sbe:dataSet <dataset-user-email-new> ;
+                                  sbe:dataSet <dataset-user-account-id-new> ;
+                                  sbe:dataSet <dataset-legal-person-new> ; ] ; ] ;
+
+    sbe:hasScenario [ a            sbe:Scenario ;
+                      rdfs:comment "An email with unrecognized suffix creates a new legal person" ;
+                      # Rule 00004 combines multiple ldap persons into one Legal Person with links to multiple User Accounts.
+                      # This is done by merging the email addresses of multiple ldap persons that contain certain specified
+                      # suffixes, which were identified during data analysis of the full dataset: consultant, emergency,
+                      # secondary, and portable. Anything different than those will cause a new Legal Person to be created.
+                      sbe:given    [ a           sbe:State ;
+                                     sbe:dataSet <dataset-ldap-person-label-raw> ;
+                                     sbe:dataSet <dataset-ldap-person-label-other-suffix-raw> ;
+                                     sbe:dataSet <dataset-natural-person-multiple-email> ;
+                                     sbe:dataSet <dataset-natural-person-email-other-suffix> ;
+                                     sbe:dataSet <dataset-user-email-new> ;
+                                     sbe:dataSet <dataset-user-account-id-new> ; ] ;
+                      sbe:when     [ a sbe:StorySolution ; ] ;
+                      sbe:then     [ a           sbe:State ;
+                                     sbe:dataSet <dataset-ldap-person-label-raw> ;
+                                     sbe:dataSet <dataset-ldap-person-label-other-suffix-raw> ;
+                                     sbe:dataSet <dataset-user-email-new> ;
+                                     sbe:dataSet <dataset-user-account-id-new> ;
+                                     sbe:dataSet <dataset-legal-person-new> ;
+                                     sbe:dataSet <dataset-legal-person-other-suffix-new>; ] ; ];
+
+    sbe:hasScenario [ a         sbe:Scenario ;
+                      rdfs:comment
+                                "Legal person does not get created for a vcard or user account that does not have an email" ;
+                      sbe:given [ a           sbe:State ;
+                                  # Omitting the file that contain the emails
+                                  sbe:dataSet <dataset-ldap-person-label-raw> ;
+                                  sbe:dataSet <dataset-user-account-id-new> ; ] ;
+                      sbe:when  [ a sbe:StorySolution ; ] ;
+                      sbe:then  [ a           sbe:State ;
+                                  # The state remains the same, as no legal person gets created.
+                                  sbe:dataSet <dataset-ldap-person-label-raw> ;
+                                  sbe:dataSet <dataset-user-account-id-new> ; ] ; ] ;
+.
+
+<dataset-ldap-person-label-raw>
+    a                    sbe:DataSet ;
+    sbe:fileName         "test-datasets/ldap/ldap-person-label-raw.ttl" ;
+    sbe:targetNamedGraph kggraph:ldap-raw ;
+.
+
+<dataset-user-email-new>
+    a                    sbe:DataSet ;
+    sbe:fileName         "test-datasets/user-account/user-email-new.ttl" ;
+    sbe:targetNamedGraph kggraph:ldap ;
+.
+
+<dataset-legal-person-new>
+    a                    sbe:DataSet ;
+    sbe:fileName         "test-datasets/legal-person/legal-person-new.ttl" ;
+    sbe:targetNamedGraph kggraph:ldap ;
+.
+
+<dataset-legal-person-other-suffix-new>
+    a                    sbe:DataSet ;
+    sbe:fileName         "test-datasets/legal-person/legal-person-other-suffix-new.ttl" ;
+    sbe:targetNamedGraph kggraph:ldap ;
+.
+
+<dataset-natural-person-email-other-suffix>
+    a                    sbe:DataSet ;
+    sbe:fileName         "test-datasets/email-address/natural-person-email-other-suffix.ttl" ;
+    sbe:targetNamedGraph kggraph:ldap ;
+.
+
+<dataset-ldap-person-label-other-suffix-raw>
+    a                    sbe:DataSet ;
+    sbe:fileName         "test-datasets/ldap/ldap-person-label-other-suffix-raw.ttl" ;
+    sbe:targetNamedGraph kggraph:ldap-raw ;
+.
+

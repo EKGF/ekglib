@@ -79,8 +79,8 @@ def log_iri(item: str, iri: str) -> None:
 
 
 def log_resource(graph: Graph, subject: Any) -> None:
-    log_iri('IRI', subject)
+    log_iri('IRI', str(subject))
     for rdfs_type in graph.objects(subject, RDF.type):
-        log_iri('Type', rdfs_type)
+        log_iri('Type', str(rdfs_type))
     for rdfs_label in graph.objects(subject, RDFS.label):
-        log_iri('Label', rdfs_label)
+        log_iri('Label', str(rdfs_label))

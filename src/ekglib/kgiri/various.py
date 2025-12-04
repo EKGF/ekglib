@@ -62,7 +62,7 @@ def _translate_to_human_readable(key: str) -> str:
     return re.sub(r'^\w', lambda m: m.group(0).upper(), key)
 
 
-def parse_identity_key(legacy_id: Any) -> str:
+def parse_identity_key(legacy_id: Any) -> str | None:
     """Try to convert a given value into a string that we can use to construct a non-obfuscated KGIRI"""
     if isinstance(legacy_id, int):
         key = f'{legacy_id}'
@@ -110,7 +110,7 @@ def parse_identity_key(legacy_id: Any) -> str:
     return key
 
 
-def parse_identity_key_with_prefix(prefix: str, legacy_id: Any) -> str:
+def parse_identity_key_with_prefix(prefix: str, legacy_id: Any) -> str | None:
     """See parse_identity_key()"""
     if len(prefix) > 0:
         return parse_identity_key(f'{prefix}-{legacy_id}')

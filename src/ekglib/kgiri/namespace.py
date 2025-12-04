@@ -1,6 +1,7 @@
-from rdflib import Namespace, URIRef, Literal, Graph
-from six import string_types
 from typing import Any, Optional
+
+from rdflib import Graph, Literal, Namespace, URIRef
+from six import string_types
 
 from ..exceptions import PrefixException
 
@@ -19,7 +20,7 @@ def _log_item(item: str, msg: Any) -> None:
     print('\r - {:<26}: [{:}]'.format(item, msg))
 
 
-def complete_ns_iri_ending(iri):
+def complete_ns_iri_ending(iri: Any) -> Any:
     if isinstance(iri, string_types):
         if iri.endswith('/'):
             return iri
@@ -102,4 +103,5 @@ def kgiri_replace_iri_in_graph(g: Graph) -> None:
 def kgiri_replace_iri_in_literal(value: Literal) -> Literal:
     if not kgiri_replace_enabled or kgiri_base_replace is None or kgiri_base is None:
         return value
+    return Literal(str(value).replace(str(kgiri_base_replace), str(kgiri_base)))
     return Literal(str(value).replace(str(kgiri_base_replace), str(kgiri_base)))

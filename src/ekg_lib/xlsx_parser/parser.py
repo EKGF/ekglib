@@ -179,7 +179,7 @@ def is_int(value: Any) -> bool:
     try:
         number = int(value)
         return bool(value == str(number))
-    except (ValueError, TypeError):
+    except ValueError, TypeError:
         return False
 
 
@@ -187,7 +187,7 @@ def is_decimal(value: Any) -> bool:
     try:
         number = Decimal(value)
         return bool(value == str(number))
-    except (InvalidOperation, TypeError):
+    except InvalidOperation, TypeError:
         return False
 
 
@@ -202,7 +202,7 @@ def convert_to_date(value: Any) -> date | datetime | None:
         ):
             return date_time.date()
         return date_time
-    except (ParserError, OverflowError):
+    except ParserError, OverflowError:
         return None
 
 

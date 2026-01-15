@@ -1,0 +1,65 @@
+version: 2
+updates:
+  # Maintain dependencies for Python (pip/uv)
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+      time: "22:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 10
+    groups:
+      # Group all updates into a single PR
+      all-dependencies:
+        patterns:
+          - "*"
+    commit-message:
+      prefix: "build(deps)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "python"
+      - "automated"
+
+  # Maintain dependencies for npm/pnpm
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+      time: "22:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 10
+    groups:
+      # Group all updates into a single PR
+      all-dependencies:
+        patterns:
+          - "*"
+    commit-message:
+      prefix: "build(deps)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "npm"
+      - "automated"
+
+  # Maintain GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+      time: "22:00"
+      timezone: "UTC"
+    groups:
+      # Group all updates into a single PR
+      all-dependencies:
+        patterns:
+          - "*"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "github-actions"

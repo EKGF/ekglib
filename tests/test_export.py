@@ -2,7 +2,7 @@ import sys
 
 import pytest
 
-import ekglib
+import ekg_lib
 
 
 class TestExport:
@@ -38,4 +38,4 @@ class TestExport:
             kgiri_base,
             '--verbose',
         ]
-        assert 0 == ekglib.step_export.main()
+        assert 0 == ekg_lib.step_export.main()

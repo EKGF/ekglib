@@ -2,7 +2,7 @@ import os
 import sys
 import textwrap
 
-import ekglib
+import ekg_lib
 
 
 class TestUseCaseParser:
@@ -20,7 +20,7 @@ class TestUseCaseParser:
             'https://placeholder.kg',
             '--verbose',
         ]
-        ekglib.use_case_parser.parse.main()
+        ekg_lib.use_case_parser.parse.main()
 
         with open(output_file) as f:
             actual = f.read()

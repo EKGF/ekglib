@@ -2,7 +2,7 @@ import sys
 
 import pytest
 
-import ekglib
+import ekg_lib
 
 
 class TestDataopsRulesExecutor:
@@ -28,5 +28,5 @@ class TestDataopsRulesExecutor:
             kgiri_base,
         ]
         assert (
-            0 == ekglib.dataops_rules_execute.main()
+            0 == ekg_lib.dataops_rules_execute.main()
         )  # TODO: make more meaningful assertions here

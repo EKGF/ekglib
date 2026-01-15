@@ -2,7 +2,7 @@ import os
 import sys
 import textwrap
 
-import ekglib
+import ekg_lib
 
 
 class TestConceptParser:
@@ -21,7 +21,7 @@ class TestConceptParser:
             '--kgiri-base-replace',
             kgiri_base_no_replace,
         ]
-        ekglib.concept_parser.parse.main()
+        ekg_lib.concept_parser.parse.main()
         with open(output_file) as f:
             actual = textwrap.dedent(f.read())
         os.remove(output_file)

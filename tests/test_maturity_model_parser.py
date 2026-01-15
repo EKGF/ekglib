@@ -7,13 +7,13 @@ from pathlib import Path
 from rdflib import URIRef, Graph, RDFS
 from rdflib.term import Literal
 
-import ekglib
-from ekglib import log_item, log
-from ekglib.namespace import BASE_IRI_MATURITY_MODEL
-from ekglib.maturity_model_parser import MaturityModelLoader, Config
-from ekglib.maturity_model_parser.File import makedirs
-from ekglib.maturity_model_parser.graph import get_text_in_language
-from ekglib.maturity_model_parser.pages_yaml import PagesYaml
+import ekg_lib
+from ekg_lib import log_item, log
+from ekg_lib.namespace import BASE_IRI_MATURITY_MODEL
+from ekg_lib.maturity_model_parser import MaturityModelLoader, Config
+from ekg_lib.maturity_model_parser.File import makedirs
+from ekg_lib.maturity_model_parser.graph import get_text_in_language
+from ekg_lib.maturity_model_parser.pages_yaml import PagesYaml
 
 
 class TestMaturityModelParser:
@@ -145,7 +145,7 @@ class TestMaturityModelParser:
             'EKG Maturity',
             '--verbose',
         ]
-        assert 0 == ekglib.maturity_model_parser.main()
+        assert 0 == ekg_lib.maturity_model_parser.main()
 
     def test_maturity_model_parser_004(
         self, test_ekgmm_repo_dir, test_ekgmm_docs_root, test_ekgmm_output_dir
@@ -171,4 +171,4 @@ class TestMaturityModelParser:
             '--pillar-dir-name',
             'pillar-dev',
         ]
-        assert 0 == ekglib.maturity_model_parser.main()
+        assert 0 == ekg_lib.maturity_model_parser.main()

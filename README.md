@@ -1,12 +1,13 @@
-# ekglib
+# ekg-lib
 
 A Python Library for various tasks in an EKG DataOps operation.
 
 ## Badges
 
-[![Build & Test](https://github.com/EKGF/ekglib/workflows/Build%20&%20Test/badge.svg)](https://github.com/EKGF/ekglib/actions/workflows/build.yml)
+[![PyPI version](https://badge.fury.io/py/ekg-lib.svg)](https://pypi.org/project/ekg-lib/)
+[![Build & Test](https://github.com/EKGF/ekg-lib/workflows/Build%20&%20Test/badge.svg)](https://github.com/EKGF/ekg-lib/actions/workflows/build.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.13+](https://img.shields.io/badge/python-3.13+-blue.svg)](https://www.python.org/downloads/)
+[![Python 3.14+](https://img.shields.io/badge/python-3.14+-blue.svg)](https://www.python.org/downloads/)
 [![uv](https://img.shields.io/badge/uv-package%20manager-blue)](https://github.com/astral-sh/uv)
 [![Linting & Formatting: ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![Type checking: mypy](https://img.shields.io/badge/type%20checking-mypy-blue.svg)](https://mypy.readthedocs.io/)
@@ -16,7 +17,7 @@ A Python Library for various tasks in an EKG DataOps operation.
 - [Concept Parser](concept_parser/README.md)
 - [Persona Parser](persona_parser/README.md)
 - [Story Validate Rule Parser](dataops_rule_parser/README.md)
-- [Story Vaidate Rules Capture](dataops_rules_capture/README.md)
+- [Story Validate Rules Capture](dataops_rules_capture/README.md)
 - [Story Validate Rules Executor](dataops_rules_execute/README.md)
 - [Use Case Parser](use_case_parser/README.md)
 - [User Story Parser](user_story_parser/README.md)
@@ -64,59 +65,57 @@ A Python Library for various tasks in an EKG DataOps operation.
 
 ## Installation
 
-`ekglib` is not yet published on PyPI. You can install it directly from GitHub.
-
-**Using `uv` from GitHub (recommended)**
-
-Add `ekglib` as a dependency from GitHub:
+### From PyPI (recommended)
 
 ```bash
-uv add --git https://github.com/EKGF/ekglib.git
+pip install ekg-lib
 ```
 
-You can then run the provided CLI tools via `uv`:
+Or using `uv`:
 
 ```bash
-uv run xlsx-parser --help
-uv run user-story-parser --help
-uv run pipeline-example --help
+uv add ekg-lib
 ```
 
-To install the CLI tools as global commands (similar to `pipx`):
+### From GitHub
+
+Add `ekg-lib` as a dependency from GitHub:
 
 ```bash
-uv tool install --git https://github.com/EKGF/ekglib.git
+uv add --git https://github.com/EKGF/ekg-lib.git
+```
 
+Or using `pip`:
+
+```bash
+pip install "git+https://github.com/EKGF/ekg-lib.git"
+```
+
+### CLI tools
+
+After installation, the following CLI tools are available:
+
+```bash
 xlsx-parser --help
 user-story-parser --help
 pipeline-example --help
 ```
 
-**Using `pip` from GitHub**
-
-If you prefer to use `pip`, you can install from the GitHub repo:
+To install as global commands using `uv`:
 
 ```bash
-python -m pip install "git+https://github.com/EKGF/ekglib.git"
-```
-
-The console scripts will then be available on your `PATH`:
-
-```bash
-xlsx-parser --help
-user-story-parser --help
-pipeline-example --help
+uv tool install ekg-lib
 ```
 
 ## Development setup (from source)
 
-If you cloned this repository and want to work on `ekglib` itself:
+If you cloned this repository and want to work on `ekg-lib` itself:
 
 ```bash
 uv sync
 ```
 
-This will create and populate a virtual environment using `uv` based on `pyproject.toml`.
+This creates a virtual environment using `uv` based on `pyproject.toml`.
 
 ## Tests
 
@@ -137,4 +136,3 @@ uv run pytest tests/<path-to-test> -k <name-of-test>
 ```bash
 uv build
 ```
-

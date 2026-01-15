@@ -2,7 +2,7 @@ import os
 import sys
 import textwrap
 
-import ekglib
+import ekg_lib
 
 
 class TestPersonaParser:
@@ -19,7 +19,7 @@ class TestPersonaParser:
             '--kgiri-base-replace',
             'https://placeholder.kg',
         ]
-        ekglib.persona_parser.parse.main()
+        ekg_lib.persona_parser.parse.main()
         with open(output_file) as f:
             actual = textwrap.dedent(f.read())
         os.remove(output_file)

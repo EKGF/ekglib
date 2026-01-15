@@ -2,8 +2,8 @@ import os
 import sys
 import textwrap
 
-from ekglib.user_story_parser.parse import main
-from ekglib.exceptions import PrefixException
+from ekg_lib.user_story_parser.parse import main
+from ekg_lib.exceptions import PrefixException
 
 
 class TestUserStoryParser:

@@ -1,7 +1,7 @@
 import os
 import sys
 
-import ekglib
+import ekg_lib
 
 
 class TestDataopsRuleParser:
@@ -22,7 +22,7 @@ class TestDataopsRuleParser:
             '--kgiri-base-replace',
             'https://placeholder.kg',
         ]
-        ekglib.dataops_rule_parser.parse.main()
+        ekg_lib.dataops_rule_parser.parse.main()
         with open(output) as f:
             actual = f.read()
         os.remove(output)

@@ -2,7 +2,7 @@ import sys
 
 import pytest
 
-import ekglib
+import ekg_lib
 
 
 class TestDataopsRulesCapture:
@@ -35,5 +35,5 @@ class TestDataopsRulesCapture:
             'https://placeholder.kg',
             '--verbose',
         ]
-        actual = ekglib.dataops_rules_capture.main()
+        actual = ekg_lib.dataops_rules_capture.main()
         print(actual)

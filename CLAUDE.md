@@ -5,7 +5,7 @@ working with code in this repository.
 
 ## Project overview
 
-ekglib is a Python library for Enterprise Knowledge Graph (EKG)
+ekg-lib is a Python library for Enterprise Knowledge Graph (EKG)
 DataOps operations. It provides metadata parsers that transform
 Excel/documents to RDF, data capture tools, and knowledge graph
 utilities. The library focuses on semantic data representation
@@ -58,7 +58,7 @@ uv run pipeline-example --help
 
 ## Architecture
 
-### Module organization (`src/ekglib/`)
+### Module organization (`src/ekg_lib/`)
 
 **Metadata parsers** - Transform documents to RDF:
 

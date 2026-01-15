@@ -1,7 +1,7 @@
 from rdflib import URIRef
 
-import ekglib
-from ekglib.kgiri import EKG_NS, set_kgiri_base
+import ekg_lib
+from ekg_lib.kgiri import EKG_NS, set_kgiri_base
 
 
 class TestKGIRI:
@@ -14,15 +14,15 @@ class TestKGIRI:
 
 class TestParseIdentityKey:
     def test_1(self):
-        actual = ekglib.parse_identity_key('commercialRegisterNumber')
+        actual = ekg_lib.parse_identity_key('commercialRegisterNumber')
         assert 'commercial-register-number' == actual
 
     def test_2(self):
-        actual = ekglib.parse_identity_key('employeeId')
+        actual = ekg_lib.parse_identity_key('employeeId')
         assert 'employee-id' == actual
 
     def test_3(self):
-        actual = ekglib.parse_identity_key(
+        actual = ekg_lib.parse_identity_key(
             'Ich möchte die Qualität des Produkts überprüfen, bevor ich es kaufe.'
         )
         assert (
@@ -31,9 +31,9 @@ class TestParseIdentityKey:
         )
 
     def test_4(self):
-        actual = ekglib.parse_identity_key('#(this) & {that};')
+        actual = ekg_lib.parse_identity_key('#(this) & {that};')
         assert 'this-and-that' == actual
 
     def test_5(self):
-        actual = ekglib.parse_identity_key('theFATCA&someOtherDoddFrank')
+        actual = ekg_lib.parse_identity_key('theFATCA&someOtherDoddFrank')
         assert 'the-fatca-and-some-other-dodd-frank' == actual

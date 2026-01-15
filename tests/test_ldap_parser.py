@@ -5,8 +5,8 @@ from unittest import mock
 
 import pytest
 
-from ekglib.ldap_parser_to_file import main as ldap_parser_to_file
-from ekglib.log import log_item
+from ekg_lib.ldap_parser_to_file import main as ldap_parser_to_file
+from ekg_lib.log import log_item
 
 
 @pytest.mark.ldap

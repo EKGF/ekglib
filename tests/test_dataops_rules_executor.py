@@ -2,7 +2,7 @@ import sys
 
 import pytest
 
-import ekglib
+import ekg_lib
 
 
 class TestDataopsRulesExecutor:
@@ -30,5 +30,5 @@ class TestDataopsRulesExecutor:
             f'{test_data_dir}/dataops/generic/00001-check-dataset-not-empty.ttl',
         ]
         assert (
-            ekglib.dataops_rules_execute.main() == 0
+            ekg_lib.dataops_rules_execute.main() == 0
         )  # TODO: make more meaningful assertions here

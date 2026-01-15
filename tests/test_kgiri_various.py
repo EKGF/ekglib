@@ -1,4 +1,4 @@
-from ekglib.kgiri.various import parse_identity_key
+from ekg_lib.kgiri.various import parse_identity_key
 
 
 class TestKgiriVarious:

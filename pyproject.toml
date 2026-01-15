@@ -1,9 +1,21 @@
 [project]
-name = "ekglib"
+name = "ekg-lib"
 dynamic = ["version"]
 description = "A Python Library for various tasks in an EKG DataOps operation."
+readme = "README.md"
 authors = [{ name = "Jacobus Geluk", email = "jacobus.geluk@ekgf.org" }]
 license = { file = "LICENSE" }
+keywords = [
+    "knowledge-graph",
+    "enterprise-knowledge-graph",
+    "ekg",
+    "rdf",
+    "sparql",
+    "dataops",
+    "ontology",
+    "semantic-web",
+    "linked-data",
+]
 classifiers = [
     "Development Status :: 2 - Pre-Alpha",
     "Environment :: Console",
@@ -59,14 +71,14 @@ dev = [
 # See https://packaging.python.org/en/latest/specifications/declaring-project-metadata/#urls
 # See https://peps.python.org/pep-0753/#well-known-labels
 [project.urls]
-homepage = "https://github.com/ekgf/ekglib"
-documentation = "https://ekgf.github.io/ekglib/"
-repository = "https://github.com/ekgf/ekglib.git"
+homepage = "https://github.com/EKGF/ekg-lib"
+documentation = "https://ekgf.github.io/ekg-lib/"
+repository = "https://github.com/EKGF/ekg-lib.git"
 
 [project.scripts]
-xlsx-parser = "ekglib.xlsx_parser:main"
-user-story-parser = "ekglib.user_story_parser:user_story_processor"
-pipeline-example = "ekglib.pipeline.example:main"
+xlsx-parser = "ekg_lib.xlsx_parser:main"
+user-story-parser = "ekg_lib.user_story_parser:user_story_processor"
+pipeline-example = "ekg_lib.pipeline.example:main"
 
 [build-system]
 requires = ["hatchling"]
@@ -151,14 +163,14 @@ extend-select = ["C901"]
 "docs/.hooks/*" = ["INP001", "T201"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["foo", "bar"]
+known-first-party = ["ekg_lib"]
 
 [tool.ruff.format]
 preview = true
 quote-style = "single"
 
 [tool.hatch.version]
-path = "src/ekglib/__about__.py"
+path = "src/ekg_lib/__about__.py"
 
 [tool.hatch.build]
 skip-excluded-dirs = true
@@ -178,12 +190,12 @@ dependencies = [
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/ekglib"]
+packages = ["src/ekg_lib"]
 only-packages = true
 
 [tool.hatch.build.targets.sdist]
-packages = ["src/ekglib"]
-include = ["src/ekglib/*.py", "tests/*.py", "typings/*.py"]
+packages = ["src/ekg_lib"]
+include = ["src/ekg_lib/*.py", "tests/*.py", "typings/*.py"]
 exclude = [".editorconfig"]
 only-packages = true
 

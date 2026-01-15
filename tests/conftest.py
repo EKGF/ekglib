@@ -1,7 +1,7 @@
 import os  # noqa
 import sys  # noqa
 import pytest  # noqa
-import ekglib  # noqa
+import ekg_lib  # noqa
 
 from .fixtures import local_sparql_port, local_s3_port  # noqa
 from .fixtures import local_ldap_port, ldap_naming_context, ldap_bind_dn, ldap_bind_auth  # noqa

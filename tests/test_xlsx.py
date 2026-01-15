@@ -6,10 +6,10 @@ from datetime import date
 import pytest
 from rdflib import RDF, term, Literal, XSD
 
-import ekglib
-from ekglib.kgiri import set_kgiri_base
-from ekglib.string import argv_list
-from ekglib.xlsx_parser.parser import convert_to_date, main, parse_literal
+import ekg_lib
+from ekg_lib.kgiri import set_kgiri_base
+from ekg_lib.string import argv_list
+from ekg_lib.xlsx_parser.parser import convert_to_date, main, parse_literal
 
 
 class TestXlsxProcessor:
@@ -27,7 +27,7 @@ class TestXlsxProcessor:
         assert expected2.datatype == actual2.datatype
 
     def test_parse_column_name(self):
-        actual = ekglib.parse_column_name('Reference ID')
+        actual = ekg_lib.parse_column_name('Reference ID')
         assert actual is not None
         expected = 'referenceId'
         assert expected == actual
@@ -53,10 +53,10 @@ class TestXlsxProcessor:
             output=None,
         )
         set_kgiri_base(kgiri_base)
-        parser = ekglib.XlsxParser(args)
+        parser = ekg_lib.XlsxParser(args)
         assert parser is not None
 
-        rdf_string_value = ekglib.RAW.StringValue
+        rdf_string_value = ekg_lib.RAW.StringValue
         assert 'URIRef' == type(rdf_string_value).__name__
         assert (
             'https://ekgf.org/ontology/raw/StringValue' == rdf_string_value.toPython()

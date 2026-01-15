@@ -40,18 +40,18 @@ jobs:
 
       - name: Clean gh-pages branch and prepare documentation
         run: |
-          # Copy README files from src/ekglib/*/ to root-level directories first
-          # This fixes the URL structure: files at concept_parser/README.md 
-          # will be served as https://ekgf.github.io/ekglib/concept_parser/
-          # instead of https://ekgf.github.io/ekglib/ekglib/concept_parser/
-          if [ -d "src/ekglib" ]; then
+          # Copy README files from src/ekg_lib/*/ to root-level directories first
+          # This fixes the URL structure: files at concept_parser/README.md
+          # will be served as https://ekgf.github.io/ekg-lib/concept_parser/
+          # instead of https://ekgf.github.io/ekg-lib/ekg_lib/concept_parser/
+          if [ -d "src/ekg_lib" ]; then
             # Copy each subdirectory's README.md to root-level directory
-            find src/ekglib -type d -mindepth 1 -maxdepth 1 | while read -r dir; do
+            find src/ekg_lib -type d -mindepth 1 -maxdepth 1 | while read -r dir; do
               dirname=$(basename "$dir")
               if [ -f "$dir/README.md" ]; then
                 mkdir -p "$dirname"
                 # Copy and fix relative links: ../../ becomes ../ (one level up to root)
-                sed 's|\[ekglib\](\.\./\.\./)|[ekglib](../)|g' "$dir/README.md" > "$dirname/README.md"
+                sed 's|\[ekg-lib\](\.\./\.\./)|[ekg-lib](../)|g' "$dir/README.md" > "$dirname/README.md"
               fi
             done
           fi

@@ -1,7 +1,7 @@
 import os  # noqa
 import sys  # noqa
 import pytest  # noqa
-import ekglib  # noqa
+import ekg_lib  # noqa
 
 
 from .fixtures import test_data_dir, kgiri_base  # noqa

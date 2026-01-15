@@ -679,7 +679,7 @@ select = [
 ban-relative-imports = "all"
 
 [lint.isort]
-known-first-party = ["ekglib"]
+known-first-party = ["ekg_lib"]
 
 [lint.flake8-pytest-style]
 fixture-parentheses = false

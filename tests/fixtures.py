@@ -47,7 +47,7 @@ def test_ekgmm_output_dir():
 
 
 def require_port(number, name):
-    from ekglib.main.main import is_port_in_use
+    from ekg_lib.main.main import is_port_in_use
 
     if not is_port_in_use(number):
         pytest.skip(f'{name} mock server not running on localhost:{number}')

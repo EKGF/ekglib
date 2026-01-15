@@ -62,7 +62,7 @@ class TestMaturityModelParser:
         docs_root = Path(f'{test_data_dir}/maturity-model/docs')
         fragments_root = Path(f'{test_data_dir}/maturity-model/docs-fragments')
         config = Config(
-            model_name='EKG/Maturity',
+            model_name='EKG Maturity',
             verbose=False,
             mkdocs=False,
             model_root=Path(f'{test_data_dir}/maturity-model'),
@@ -99,7 +99,7 @@ class TestMaturityModelParser:
         docs_root = output_root / 'docs'
         makedirs(docs_root, 'Test 002 Output')
         config = Config(
-            model_name='EKG/Maturity',
+            model_name='EKG Maturity',
             verbose=True,
             mkdocs=False,
             model_root=Path(test_ekgmm_repo_dir),
@@ -113,7 +113,7 @@ class TestMaturityModelParser:
         models = list(graph.model_nodes())
         log_item('# models', len(models))
         assert len(models) == 1
-        model = graph.model_with_name('EKG/Maturity')
+        model = graph.model_with_name('EKG Maturity')
         pillars = model.pillars()
         log_item('# pillars', len(pillars))
         assert len(pillars) == 4
@@ -142,7 +142,7 @@ class TestMaturityModelParser:
             '--output',
             f'{test_output_dir}/ekgmm_test_003',
             '--model',
-            'EKG/Maturity',
+            'EKG Maturity',
             '--verbose',
         ]
         assert 0 == ekglib.maturity_model_parser.main()

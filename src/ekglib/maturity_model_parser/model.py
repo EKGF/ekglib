@@ -120,21 +120,26 @@ class MaturityModel:
         assert self.md_file is not None
         card_indent_1 = ' ' * 4
         card_indent_2 = ' ' * 8
-        icon = ':orange_book:'
+        pillar_icons = {
+            'business': ':material-briefcase-outline:',
+            'organization': ':material-account-group-outline:',
+            'data': ':material-database-outline:',
+            'technology': ':material-cog-outline:',
+        }
         arrow = ':octicons-arrow-right-24:'
-        icon_style = '{ .lg .middle }'
+        icon_style = '{ .middle }'
         md_file = self.md_file
         for pillar in self.pillars():
+            icon = pillar_icons.get(pillar.local_name, ':material-cube-outline:')
             md_file.new_line(f'\n=== "{pillar.name}"\n')
             md_file.indent = card_indent_1
-            md_file.new_line('<div class="grid cards annotate" markdown>')
-            for index, area in enumerate(pillar.capability_areas()):
-                index2 = index + 1
+            md_file.new_line('<div class="grid cards" markdown>')
+            for area in pillar.capability_areas():
                 capability_area_path = relpath(area.full_dir, pillars_root)
                 md_file.indent = card_indent_1
                 md_file.new_line()
                 md_file.new_line_no_wrap(
-                    f'- {icon}{icon_style} __[{area.name}]({capability_area_path}/index.md)__({index2})'
+                    f'- {icon}{icon_style} __[{area.name}]({capability_area_path}/index.md)__'
                 )
                 md_file.indent = card_indent_2
                 md_file.new_line()
@@ -154,11 +159,6 @@ class MaturityModel:
                 )
             md_file.indent = card_indent_1
             md_file.new_line('</div>\n')
-            for index, area in enumerate(pillar.capability_areas()):
-                index2 = index + 1
-                md_file.new_line(
-                    f'{index2}.  This is the Capability Area {area.name} in the {pillar.name}'
-                )
 
         md_file.create_md_file()
 

@@ -113,11 +113,17 @@ class MaturityModelPillar:
 
     def generate_capability_areas(self) -> None:
         assert self.md_file is not None
-        icon = ':orange_book:'
+        pillar_icons = {
+            'business': ':material-briefcase-outline:',
+            'organization': ':material-account-group-outline:',
+            'data': ':material-database-outline:',
+            'technology': ':material-cog-outline:',
+        }
+        icon = pillar_icons.get(self.local_name, ':material-cube-outline:')
         arrow = ':octicons-arrow-right-24:'
-        icon_style = '{ .lg .middle }'
+        icon_style = '{ .middle }'
         md_file = self.md_file
-        md_file.new_line('<div class="grid cards annotate" markdown>')
+        md_file.new_line('<div class="grid cards" markdown>')
         for area in self.capability_areas():
             capability_area_path = relpath(area.full_dir, self.full_dir)
             md_file.new_line()

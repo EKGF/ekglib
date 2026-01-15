@@ -264,7 +264,7 @@ maturity-site:maturity-model rdf:type owl:NamedIndividual ,
                                              maturity-site:data-pillar ,
                                              maturity-site:organization-pillar ,
                                              maturity-site:technology-pillar ;
-                             rdfs:label "EKG/Maturity"@en ;
+                             rdfs:label "EKG Maturity"@en ;
                              ekgmm:iriLocalName "ekg-maturity" .
 
 

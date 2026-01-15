@@ -69,7 +69,7 @@ def main() -> int:
         required=False,
     )
     parser.add_argument('--output', help='The output directory', required=True)
-    parser.add_argument('--model', help='The name of the model', default='EKG/Maturity')
+    parser.add_argument('--model', help='The name of the model', default='EKG Maturity')
 
     return run_with_args(parser.parse_args())
 

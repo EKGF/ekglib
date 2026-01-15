@@ -35,7 +35,7 @@ jobs:
           echo X
           git rev-parse --short HEAD > /tmp/commit-hash.txt
           cat /tmp/commit-hash.txt
-          git checkout --orphan gh-pages main 1>/dev/null
+          git checkout --orphan gh-pages HEAD 1>/dev/null
         shell: bash
 
       - name: Clean gh-pages branch and prepare documentation

@@ -14,7 +14,7 @@ classifiers = [
     "Operating System :: OS Independent",
     "Natural Language :: English",
 ]
-requires-python = ">=3.13"
+requires-python = ">=3.14"
 dependencies = [
     "boto3-stubs",
     "boto3",

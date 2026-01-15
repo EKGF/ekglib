@@ -134,9 +134,11 @@ uv run pipeline-example --help
   linear history
 - Commit only when explicitly requested
 - Use Angular Conventional Commits: `<type>(<scope>): <subject>`
-  - Types: feat, fix, docs, refactor, test, style, perf, build,
-    ci, chore, revert
+  - Types: `build`, `ci`, `docs`, `feat`, `fix`, `perf`, `refactor`,
+    `revert`, `style`, `test`
+  - Scope is required (e.g., `feat(parser):`, `fix(ui):`)
   - All lowercase, imperative mood, no period at end
+  - Note: `chore` is NOT allowed in Angular convention
 
 ### Pre-commit hooks
 

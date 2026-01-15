@@ -18,10 +18,10 @@ jobs:
       matrix:
         python_version: ['3.14']
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v3
+        uses: astral-sh/setup-uv@v7
         with:
             enable-cache: true
             cache-dependency-glob: "uv.lock"
@@ -58,7 +58,7 @@ jobs:
             --tb=short
 
       - name: Upload pytest test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: test-results-${{ matrix.python_version }}
           path: test-results-${{ matrix.python_version }}.html

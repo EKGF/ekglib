@@ -1,0 +1,50 @@
+# Story Validate Rules Executor
+
+```bash
+python3 -m ekg_lib.dataops_rules_executor --help
+```
+
+```text
+usage: python3 -m ekg_lib.dataops_rules_executor [-h] [--verbose]
+  [--dataops-root STORY_RULE_ROOT]
+  [--static-datasets-root STATIC_DATASETS_ROOT]
+  [--dataset-code DATASET_CODE]
+  [--branch BRANCH]
+  [--sparql-endpoint SPARQL_ENDPOINT]
+  [--sparql-database SPARQL_DATABASE]
+  [--sparql-userid SPARQL_USERID]
+  [--sparql-passwd SPARQL_PASSWD]
+
+Processes each rule.ttl file in the given directory and executes it against
+the given SPARQL endpoint
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --verbose, -v         verbose output
+  --dataops-root DATAOPS_RULE_ROOT
+                        The root directory where all rule subdirectories can
+                        be found
+  --static-datasets-root STATIC_DATASETS_ROOT
+                        The static datasets root, relevant when dataset-
+                        code=metadata
+  --dataset-code DATASET_CODE
+                        The code of the dataset that we're going to run the
+                        dataops rules against
+  --branch BRANCH       The branch name we're working on, default main
+  --sparql-endpoint SPARQL_ENDPOINT
+                        The SPARQL endpoint
+  --sparql-database SPARQL_DATABASE
+                        The SPARQL database
+  --sparql-userid SPARQL_USERID
+                        The SPARQL userid
+  --sparql-passwd SPARQL_PASSWD, --sparql-password SPARQL_PASSWD
+                        The SPARQL password
+
+Currently only supports turtle.
+```
+
+## Links
+
+- [ekg_lib](../../)
+- [EKGF](https://ekgf.org)
+

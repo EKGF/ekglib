@@ -1,0 +1,13 @@
+*.obda
+*.properties
+/catalog-v001.xml
+ekgf-business-outcome.ttl
+ekgf-dataset.ttl
+ekgf-docker.ttl
+ekgf-ekg*
+ekgf-history.ttl
+ekgf-jira.ttl
+ekgf-kubernetes.ttl
+ekgf-persona.ttl
+ekgf-use-case.ttl
+ekgf-user-story.ttl

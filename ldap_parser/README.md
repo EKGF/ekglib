@@ -1,0 +1,113 @@
+# LDAP Parser
+
+> **Warning:** TODO
+
+Connects with a given LDAP server, reads all entries and converts those entries to "raw RDF".
+
+## Capture to file
+
+```bash
+python3 -m ekg_lib.ldap_parser_to_file --help
+```
+
+```text
+usage: python3 -m ekg_lib.ldap_parser_to_file [-h] --output OUTPUT [--verbose]
+  [--ldap-search-filter LDAP_SEARCH_FILTER]
+  --ldap-bind-dn LDAP_BIND_DN --ldap-bind-auth LDAP_BIND_AUTH
+  --ldap-host LDAP_HOST --ldap-port LDAP_PORT [--ldap-log]
+  [--kgiri-base KGIRI_BASE]  [--kgiri-base-replace KGIRI_BASE_REPLACE]
+  --data-source-code DATA_SOURCE_CODE
+
+Capture all information from the given LDAP endpoint and store it as RDF "raw data" file
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --output OUTPUT, -o OUTPUT
+                        The name of the output RDF file (must be .ttl)
+  --verbose, -v         verbose output
+  --ldap-search-filter LDAP_SEARCH_FILTER
+                        An optional search filter, defaults to '(objectClass=*)'
+  --ldap-bind-dn LDAP_BIND_DN
+                        The user that we bind with
+  --ldap-bind-auth LDAP_BIND_AUTH
+                        The credentials of the user that we bind with
+  --ldap-host LDAP_HOST
+                        LDAP host
+  --ldap-port LDAP_PORT
+                        LDAP port
+  --ldap-log            Switch on LDAP logging
+
+KGIRI:
+  --kgiri-base KGIRI_BASE
+                        A root level URL to be used for all KGIRI types (default is EKG_KGIRI_BASE=https://kg.your-company.kom/)
+  --kgiri-base-replace KGIRI_BASE_REPLACE
+                        The KGIRI base fragment that is to be replaced with the EKG_KGIRI_BASE
+                        (default is EKG_KGIRI_BASE_REPLACE=https://placeholder.kg)
+
+Data Source:
+  --data-source-code DATA_SOURCE_CODE
+                        The code of the dataset (can also be set with env var EKG_DATA_SOURCE_CODE)
+
+Currently only supports N-Triples output.
+```
+
+## Capture to S3
+
+```bash
+python3 -m ekg_lib.ldap_parser_to_s3 --help
+```
+
+```text
+usage: python3 -m ekg_lib.ldap_parser_to_s3 [-h] [--verbose]
+  [--ldap-search-filter LDAP_SEARCH_FILTER]
+  --ldap-naming-context LDAP_SEARCH_BASE --ldap-host LDAP_HOST
+  --ldap-port LDAP_PORT [--kgiri-base KGIRI_BASE]
+  --data-source-code DATA_SOURCE_CODE
+  --s3-endpoint S3_ENDPOINT --s3-bucket S3_BUCKET
+  [--s3-create-bucket] --aws-region AWS_REGION
+  --aws-access-key-id AWS_ACCESS_KEY_ID
+  --aws-secret-access-key AWS_SECRET_ACCESS_KEY
+
+Capture all information from the given LDAP endpoint and store it in S3 as an RDF "raw data" file
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --verbose, -v         verbose output
+  --ldap-naming-context LDAP_SEARCH_BASE
+                        The root level domain
+  --ldap-search-filter LDAP_SEARCH_FILTER
+                        An optional search filter, defaults to '(objectClass=*)'
+  --ldap-host LDAP_HOST
+                        LDAP host
+  --ldap-port LDAP_PORT
+                        LDAP port
+
+KGIRI:
+  --kgiri-base KGIRI_BASE
+                        A root level URL to be used for all KGIRI types (default is EKG_KGIRI_BASE=https://kg.your-company.kom/)
+
+Data Source:
+  --data-source-code DATA_SOURCE_CODE
+                        The code of the dataset (can also be set with env var EKG_DATA_SOURCE_CODE)
+
+Object Store:
+  --s3-endpoint S3_ENDPOINT
+                        The S3 s3_endpoint, default can be set via env var S3_ENDPOINT_URL
+  --s3-bucket S3_BUCKET
+                        The S3 bucket name, default can be set via env var S3_BUCKET_NAME
+  --s3-create-bucket    Create the bucket if it's missing
+  --aws-region AWS_REGION
+                        The AWS region, default can be set via env var AWS_REGION
+  --aws-access-key-id AWS_ACCESS_KEY_ID
+                        The AWS access key id, default can be set via env var AWS_ACCESS_KEY_ID
+  --aws-secret-access-key AWS_SECRET_ACCESS_KEY
+                        The AWS secret access key, default can be set via env var AWS_SECRET_ACCESS_KEY
+
+Currently only supports N-Triples output.
+```
+
+## Links
+
+- [ekg_lib](../../)
+- [EKGF](https://ekgf.org)
+

@@ -1,0 +1,25 @@
+# Tests
+
+## Fixtures
+
+For a number of common variables we have some fixtures that initialize themselves from
+files in the `./tests` directory:
+
+| Fixture | Example value |
+|---------|---------------|
+| `kgiri-base`       | `https://kg.yourcompany.com` |
+| `ldap-bind-dn`     | `cn=Directory Manager` |
+| `ldap-bind-auth`   | `admin-password` |
+| `ldap-naming-context` | `dc=yourcompany,dc=com` |
+
+Create a one-line text file with the name of the fixture and the value as its content.
+
+## Run all tests
+
+To run all tests you can use the `./run-tests.sh` script in the root of the repo:
+
+```bash
+cd <repo root>
+./run-tests.sh
+```
+

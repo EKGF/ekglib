@@ -1,0 +1,10 @@
+PREFIX dcat: <http://www.w3.org/ns/dcat#>
+PREFIX kgiri: <https://placeholder.kg/id/>
+PREFIX kggraph: <https://placeholder.kg/graph/>
+PREFIX dataset: <https://ekgf.org/ontology/dataset/>
+
+INSERT DATA {
+  GRAPH kggraph:ontologies {
+    kgiri:dataset-ontologies a dcat:Dataset, dataset:Dataset, dataset:StaticDataset .
+  }
+}

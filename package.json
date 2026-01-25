@@ -11,6 +11,6 @@
     "@commitlint/config-conventional": "^20.3.0",
     "husky": "^9.1.7",
     "markdownlint-cli": "^0.47.0",
-    "prettier": "^3.7.4"
+    "prettier": "^3.8.1"
   }
 }

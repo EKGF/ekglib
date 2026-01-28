@@ -284,6 +284,18 @@ wheels = [
 ]
 
 [[package]]
+name = "dotenvage"
+version = "0.3.1"
+source = { registry = "https://pypi.org/simple" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/3e/be/9fa1ca8be95cdcf1db470a819bcea30983022f7265659e153c63038c0c95/dotenvage-0.3.1-cp310-abi3-macosx_10_12_x86_64.whl", hash = "sha256:3f852535ce4109322056374f86e0748fa40e776945ab2417509c1039fead9823", size = 651627, upload-time = "2026-01-28T18:13:05.552Z" },
+    { url = "https://files.pythonhosted.org/packages/65/b4/e752d82601a7f431b6c9663e48b3817ba6a7a8031bd1d3738633efbf2470/dotenvage-0.3.1-cp310-abi3-macosx_11_0_arm64.whl", hash = "sha256:8b02e693afabb1f78fcc0b6ab62a3b0edfcd28588a68708f47554ec957c78f31", size = 631487, upload-time = "2026-01-28T18:13:07.94Z" },
+    { url = "https://files.pythonhosted.org/packages/74/44/1e99691e201e56b63b70f6749dd53f487edae591f7fc0abb86cc462abc1b/dotenvage-0.3.1-cp310-abi3-manylinux_2_34_aarch64.whl", hash = "sha256:d77ab9b175f68a0c46fce489ea492296a018443f6b902125d543d580060e6858", size = 684617, upload-time = "2026-01-28T18:13:09.79Z" },
+    { url = "https://files.pythonhosted.org/packages/9e/5d/dd7ec5be9ae9c6becd19437e936cc2d61f6620a833b7c28bf1413005dfbf/dotenvage-0.3.1-cp310-abi3-manylinux_2_34_x86_64.whl", hash = "sha256:fd9e4eaa6c8fe991af43905f643962715e55d279e4e2ac3c858c3a018ddbe455", size = 711792, upload-time = "2026-01-28T18:13:11.58Z" },
+    { url = "https://files.pythonhosted.org/packages/05/06/c3b70aa0b1993bbb4febf84307cafb7842904f77c1375724e77a870c5c26/dotenvage-0.3.1-cp310-abi3-win_amd64.whl", hash = "sha256:676ff89bdd824a71cbf3f919d95e7dc99423c82b449204439481890ab98a1ef4", size = 517290, upload-time = "2026-01-28T18:13:12.83Z" },
+]
+
+[[package]]
 name = "ekg-lib"
 source = { editable = "." }
 dependencies = [
@@ -291,6 +303,7 @@ dependencies = [
     { name = "boto3-stubs" },
     { name = "botocore" },
     { name = "data-science-types" },
+    { name = "dotenvage" },
     { name = "humps" },
     { name = "inflection" },
     { name = "ldap3" },
@@ -333,6 +346,7 @@ requires-dist = [
     { name = "boto3-stubs" },
     { name = "botocore" },
     { name = "data-science-types" },
+    { name = "dotenvage" },
     { name = "humps" },
     { name = "inflection" },
     { name = "ldap3" },

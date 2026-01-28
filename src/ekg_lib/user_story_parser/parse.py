@@ -12,6 +12,7 @@ from ..kgiri import (
 )
 from ..kgiri import set_cli_params as kgiri_set_cli_params
 from ..log import log_error, log_item, warning
+from ..main import load_env
 from ..namespace import EKGPSS, USERSTORY
 
 
@@ -128,6 +129,7 @@ class UserStoryParser:
 
 
 def main() -> int:
+    load_env()
     parser = argparse.ArgumentParser(
         prog='python3 -m ekg_lib.user_story_parser',
         description='Adds any referenced SPARQL file to the graph as text and writes a new Turtle file',

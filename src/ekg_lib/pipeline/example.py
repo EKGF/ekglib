@@ -5,6 +5,8 @@ from typing import Any, AsyncGenerator, Callable, List, Optional
 
 import pandas as pd
 
+from ..main import load_env
+
 R = Any  # Type received by the generator
 S = Any  # Type sent by the generator
 
@@ -159,6 +161,7 @@ Charlie,35,San Francisco"""
 
 
 def main() -> None:
+    load_env()
     try:
         asyncio.run(run_pipeline())
     except KeyboardInterrupt:

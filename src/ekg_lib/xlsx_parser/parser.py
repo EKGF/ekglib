@@ -27,7 +27,7 @@ from ..kgiri import (
 )
 from ..kgiri import set_cli_params as kgiri_set_cli_params
 from ..log import error, log_item, log_list, warning
-from ..main import dump_as_ttl_to_stdout
+from ..main import dump_as_ttl_to_stdout, load_env
 from ..namespace import DATAOPS, RAW
 from ..string import (
     argv_check_list,
@@ -635,6 +635,7 @@ class _KeyColumnNumberAction(argparse.Action):
 
 
 def main() -> int:
+    load_env()
     parser = argparse.ArgumentParser(
         prog='python3 -m ekg_lib.xlsx_parser',
         description='Capture all information from the given .xlsx file and store it as RDF "raw data"',

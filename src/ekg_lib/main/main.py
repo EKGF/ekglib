@@ -2,11 +2,23 @@ import pathlib
 from io import BytesIO
 
 import rdflib
+from dotenvage import EnvLoader
 from rdflib import Graph, plugin
 
 from ..kgiri import kgiri_replace_iri_in_graph
 from ..log import log_item
 from ..log.various import value_error
+
+
+def load_env() -> None:
+    """Load environment variables from .env files using dotenvage.
+
+    Discovers and loads .env files with automatic decryption of
+    age-encrypted values. Should be called early in CLI entry points,
+    before any os.getenv() calls.
+    """
+    loader = EnvLoader()
+    loader.load()
 
 
 def load_rdf_file_into_graph(graph: rdflib.Graph, rdf_file: pathlib.Path) -> None:

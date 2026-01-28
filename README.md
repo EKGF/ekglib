@@ -107,6 +107,35 @@ To install as global commands using `uv`:
 uv tool install ekg-lib
 ```
 
+## Environment variables
+
+ekg-lib uses [dotenvage](https://github.com/dataroadinc/dotenvage)
+to load environment variables from `.env` files with optional
+[age](https://crates.io/crates/age) encryption of sensitive
+values.
+
+All CLI entry points (`xlsx-parser`, `user-story-parser`,
+`pipeline-example`) call `load_env()` at startup, which
+discovers and loads `.env*` files before any `os.getenv()` calls.
+
+To use encrypted secrets:
+
+```bash
+# Install the dotenvage CLI
+cargo binstall dotenvage
+
+# Generate an age key (stored in ~/.local/state/)
+dotenvage keygen
+
+# Encrypt sensitive values in your .env file
+dotenvage encrypt .env.local
+```
+
+Encrypted values are safe to commit to version control.
+See the [dotenvage documentation](https://github.com/dataroadinc/dotenvage)
+for details on file layering, key management, and CI/CD
+integration.
+
 ## Development setup (from source)
 
 If you cloned this repository and want to work on `ekg-lib` itself:
